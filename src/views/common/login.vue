@@ -54,12 +54,12 @@
               url: this.$http.adornUrl('/login/pwdPcLogin'),
               method: 'post',
               data: this.$http.adornData({
-                'username': this.dataForm.userName,
+                'userName': this.dataForm.userName,
                 'password': this.dataForm.password
               })
             }).then(({data}) => {
-              if (data && data.code === 0) {
-                this.$cookie.set('token', data.token)
+              if (data && data.code === 20000) {
+                this.$cookie.set('token', data.data.token)
                 this.$router.replace({ name: 'home' })
               } else {
                 this.$message.error(data.msg)
