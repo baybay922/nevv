@@ -8,28 +8,54 @@
         class="site-sidebar__menu">
         <el-menu-item index="home" @click="$router.push({ name: 'home' })">
           <icon-svg name="shouye" class="site-sidebar__menu-icon"></icon-svg>
-          <span slot="title">首页</span>
+          <span slot="title">home</span>
         </el-menu-item>
-        <!-- <el-submenu index="demo">
+        <el-submenu index="1">
           <template slot="title">
-            <icon-svg name="shoucang" class="site-sidebar__menu-icon"></icon-svg>
-            <span>demo</span>
+             <i class="el-icon-s-custom"></i>
+            <span>User Management</span>
           </template>
-          <el-menu-item index="demo-echarts" @click="$router.push({ name: 'demo-echarts' })">
-            <icon-svg name="tubiao" class="site-sidebar__menu-icon"></icon-svg>
-            <span slot="title">echarts</span>
-          </el-menu-item>
-          <el-menu-item index="demo-ueditor" @click="$router.push({ name: 'demo-ueditor' })">
-            <icon-svg name="editor" class="site-sidebar__menu-icon"></icon-svg>
-            <span slot="title">ueditor</span>
-          </el-menu-item>
+          <el-menu-item index="1-1" @click="$router.push({ name: 'gamer' })">Gamer</el-menu-item>
+          <el-menu-item index="1-2" @click="$router.push({ name: 'admin' })">Administator</el-menu-item>
+        </el-submenu>
+
+        <!-- <el-submenu index="2">
+          <template slot="title">
+            <i class="el-icon-platform-eleme"></i>
+            <span>Inventory Management</span>
+          </template>
+          <el-menu-item index="2-1">Asset</el-menu-item>
         </el-submenu> -->
-        <sub-menu
+
+        <el-submenu index="3">
+          <template slot="title">
+            <i class="el-icon-goods"></i>
+            <span>Shop Management</span>
+          </template>
+          <el-menu-item index="3-1" @click="$router.push({ name: 'item' })">Real Item</el-menu-item>
+        </el-submenu>
+
+        <el-submenu index="4">
+          <template slot="title">
+            <i class="el-icon-s-check"></i>
+            <span>Event Management</span>
+          </template>
+          <el-menu-item index="4-1" @click="$router.push({ name: 'event' })">Event</el-menu-item>
+          <el-menu-item index="4-2" @click="$router.push({ name: 'prize' })">Prizepool</el-menu-item>
+          <!-- <el-menu-item index="4-3">Term & Condition</el-menu-item> -->
+          <el-menu-item index="4-4" @click="$router.push({ name: 'ranking' })">Leaderboard</el-menu-item>
+          <el-menu-item index="4-3" @click="$router.push({ name: 'watch' })">Watch</el-menu-item>
+          <el-menu-item index="4-5" @click="$router.push({ name: 'quest' })">Quest</el-menu-item>
+          <el-menu-item index="4-6" @click="$router.push({ name: 'code' })">Code</el-menu-item>
+          <el-menu-item index="4-7" @click="$router.push({ name: 'match' })">Match</el-menu-item>
+        </el-submenu>
+
+        <!-- <sub-menu
           v-for="menu in menuList"
           :key="menu.menuId"
           :menu="menu"
           :dynamicMenuRoutes="dynamicMenuRoutes">
-        </sub-menu>
+        </sub-menu> -->
       </el-menu>
     </div>
   </aside>

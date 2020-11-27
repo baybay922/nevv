@@ -6,7 +6,7 @@ import merge from 'lodash/merge'
 import { clearLoginInfo } from '@/utils'
 
 const http = axios.create({
-  timeout: 1000 * 30,
+  timeout: 10000 * 30,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json; charset=utf-8'
@@ -66,9 +66,7 @@ http.adornParams = (params = {}, openDefultParams = true) => {
  *  form: 'application/x-www-form-urlencoded; charset=utf-8'
  */
 http.adornData = (data = {}, openDefultdata = true, contentType = 'json') => {
-  var defaults = {
-    't': new Date().getTime()
-  }
+  var defaults = {}
   data = openDefultdata ? merge(defaults, data) : data
   return contentType === 'json' ? JSON.stringify(data) : qs.stringify(data)
 }

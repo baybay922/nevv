@@ -16,17 +16,6 @@
             <el-form-item prop="password">
               <el-input v-model="dataForm.password" type="password" placeholder="Please input your password"></el-input>
             </el-form-item>
-            <el-form-item prop="captcha">
-              <el-row :gutter="20">
-                <el-col :span="14">
-                  <el-input v-model="dataForm.captcha" placeholder="Verification code">
-                  </el-input>
-                </el-col>
-                <el-col :span="10" class="login-captcha">
-                  <img :src="captchaPath" @click="getCaptcha()" alt="">
-                </el-col>
-              </el-row>
-            </el-form-item>
             <el-form-item>
               <el-button class="login-btn-submit" type="primary" @click="dataFormSubmit()">Login</el-button>
             </el-form-item>
@@ -44,9 +33,7 @@
       return {
         dataForm: {
           userName: '',
-          password: '',
-          uuid: '',
-          captcha: ''
+          password: ''
         },
         dataRule: {
           userName: [
@@ -54,16 +41,9 @@
           ],
           password: [
             { required: true, message: 'password can not be blank', trigger: 'blur' }
-          ],
-          captcha: [
-            { required: true, message: 'verification code must be filled', trigger: 'blur' }
           ]
-        },
-        captchaPath: ''
+        }
       }
-    },
-    created () {
-      this.getCaptcha()
     },
     methods: {
       // 提交表单
@@ -71,30 +51,22 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
-              url: this.$http.adornUrl('/sys/login'),
+              url: this.$http.adornUrl('/login/pwdPcLogin'),
               method: 'post',
               data: this.$http.adornData({
                 'username': this.dataForm.userName,
-                'password': this.dataForm.password,
-                'uuid': this.dataForm.uuid,
-                'captcha': this.dataForm.captcha
+                'password': this.dataForm.password
               })
             }).then(({data}) => {
               if (data && data.code === 0) {
                 this.$cookie.set('token', data.token)
                 this.$router.replace({ name: 'home' })
               } else {
-                this.getCaptcha()
                 this.$message.error(data.msg)
               }
             })
           }
         })
-      },
-      // 获取验证码
-      getCaptcha () {
-        this.dataForm.uuid = getUUID()
-        this.captchaPath = this.$http.adornUrl(`/captcha.jpg?uuid=${this.dataForm.uuid}`)
       }
     }
   }

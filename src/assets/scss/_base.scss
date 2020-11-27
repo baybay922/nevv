@@ -362,3 +362,17 @@ img {
   vertical-align: middle;
   margin-right: 5px;
 }
+
+.el-link{
+  padding: 0 5px;
+  cursor: pointer;
+}
+
+.dialog .el-form-item__label{
+  width: 250px!important;
+}
+
+.dialog .el-form-item__content{
+  width: 50%;
+  margin-left: 250px!important;
+}

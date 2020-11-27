@@ -1,6 +1,6 @@
 <template>
   <div class="mod-home">
-      你好
+      Welcome To Nevv World Admin Dashboard !!!!!
   </div>
 </template>
 
