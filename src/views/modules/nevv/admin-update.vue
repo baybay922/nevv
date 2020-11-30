@@ -4,21 +4,21 @@
     :title="!dataForm.id ? 'Add' : 'Modify'"
     :close-on-click-modal="false"
     :visible.sync="visible">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
-      <el-form-item label=" Admin Name" prop="Name">
-        <el-input v-model="dataForm.Name" placeholder=" Admin Name"></el-input>
+    <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
+      <el-form-item label="AdminName" prop="Admin-Name">
+        <el-input v-model="dataForm.adminUserName" placeholder="Admin Name" autocomplete="off"></el-input>
       </el-form-item>
 
-      <el-form-item label="email" prop="cronExpression">
-        <el-input v-model="dataForm.Phone" placeholder="email"></el-input>
+      <el-form-item label="email" prop="email">
+        <el-input v-model="dataForm.email" placeholder="email" autocomplete="off"></el-input>
       </el-form-item>
 
-      <el-form-item label="password" prop="cronExpression">
-        <el-input v-model="dataForm.Phone" placeholder="password"></el-input>
+      <el-form-item label="password" prop="passWord">
+        <el-input v-model="dataForm.passWord" placeholder="password" autocomplete="off"></el-input>
       </el-form-item>
 
       <el-form-item label="Blocked" prop="Blocked">
-        <el-switch v-model="dataForm.Blocked"></el-switch>
+        <el-switch v-model="dataForm.isBlock"></el-switch>
       </el-form-item>
 
     </el-form>
@@ -35,50 +35,34 @@
       return {
         visible: false,
         dataForm: {
-          id: 0,
-          Name:"",
-          Avatar:"",
-          Phone:"",
-          BirthDate:"",
-          Gender:"Male",
-          Country:"",
-          City:"",
-          Genre:"",
-          Nevv:"",
-          Blocked:false
-        },
-        dataRule: {
-          beanName: [
-            { required: true, message: '用户名不能为空', trigger: 'blur' }
-          ]
-        },
-        fileList: [
-          {name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}
-        ],
-        options: [{
-          value: '0',
-          label: 'Action'
-        }]
+          id: "",
+          adminUserName:"",
+          email:"",
+          passWord:"",
+          isBlock:false
+        }
       }
     },
     methods: {
       init (id) {
-        this.dataForm.id = id || 0
+        this.dataForm.id = id || ""
         this.visible = true
         this.$nextTick(() => {
           this.$refs['dataForm'].resetFields()
           if (this.dataForm.id) {
-            this.$http({
-              url: this.$http.adornUrl(`/sys/schedule/info/${this.dataForm.id}`),
-              method: 'get',
-              params: this.$http.adornParams()
+           this.$http({
+              url: this.$http.adornUrl("/adminUser/pc/findAdminUserInfo"),
+              method: 'post',
+              data: this.$http.adornData({
+                'functionId': this.dataForm.id
+              })
             }).then(({data}) => {
-              if (data && data.code === 0) {
-                this.dataForm.beanName = data.schedule.beanName
-                this.dataForm.params = data.schedule.params
-                this.dataForm.cronExpression = data.schedule.cronExpression
-                this.dataForm.remark = data.schedule.remark
-                this.dataForm.status = data.schedule.status
+              if (data && data.code === 20000) {
+                this.dataForm.id = data.data.userId
+                this.dataForm.adminUserName = data.data.adminUserName
+                this.dataForm.email = data.data.email
+                this.dataForm.passWord = data.data.passWord
+                this.dataForm.remark = data.data.isBlock==1?true:false
               }
             })
           }
@@ -86,42 +70,43 @@
       },
       // 表单提交
       dataFormSubmit () {
-        this.$refs['dataForm'].validate((valid) => {
-          if (valid) {
-            this.$http({
-              url: this.$http.adornUrl(`/sys/schedule/${!this.dataForm.id ? 'save' : 'update'}`),
-              method: 'post',
-              data: this.$http.adornData({
-                'jobId': this.dataForm.id || undefined,
-                'beanName': this.dataForm.beanName,
-                'params': this.dataForm.params,
-                'cronExpression': this.dataForm.cronExpression,
-                'remark': this.dataForm.remark,
-                'status': !this.dataForm.id ? undefined : this.dataForm.status
-              })
-            }).then(({data}) => {
-              if (data && data.code === 0) {
-                this.$message({
-                  message: '操作成功',
-                  type: 'success',
-                  duration: 1500,
-                  onClose: () => {
-                    this.visible = false
-                    this.$emit('refreshDataList')
-                  }
-                })
-              } else {
-                this.$message.error(data.msg)
+        if(this.dataForm.adminUserName == ""){
+          this.$message.error("Username can not be empty");
+          return;
+        }
+        if(this.dataForm.email == ""){
+          this.$message.error("Email can not be empty");
+          return;
+        }
+        if(this.dataForm.passWord == ""){
+          this.$message.error("Password can not be empty");
+          return;
+        }
+        this.$http({
+          url: this.$http.adornUrl(`/adminUser/pc/${!this.dataForm.id ? 'addAdminUser' : 'editAdminUser'}`),
+          method: 'post',
+          data: this.$http.adornData({
+            'userId': this.dataForm.id || undefined,
+            'adminUserName':this.dataForm.adminUserName,
+            'email':this.dataForm.email,
+            "passWord":this.dataForm.passWord,
+            "isBlock":this.dataForm.isBlock?1:0,
+          })
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: '操作成功',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.visible = false
+                this.$emit('refreshDataList')
               }
             })
+          } else {
+            this.$message.error(data.msg)
           }
         })
-      },
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-      handlePreview(file) {
-        console.log(file);
       }
     }
   }

@@ -4,10 +4,10 @@
 	<el-col :span="24" class="toolbar">
 		<el-form :inline="true" :model="filters">
 			<el-form-item label-width="120px">
-				<el-input autocomplete="off" v-model="filters.studentId" placeholder="Search by name"></el-input>
+				<el-input autocomplete="off" v-model="filters.keyWord" placeholder="Search by name"></el-input>
 			</el-form-item>
 			<el-form-item>
-				<el-button type="primary">Search</el-button>
+				<el-button type="primary" @click="searchFilters()">Search</el-button>
 			</el-form-item>
 
 			<el-form-item>
@@ -18,13 +18,14 @@
 
 	<!--列表-->
 	<el-table class="userTable" border :data="dataList" highlight-current-row v-loading="listLoading">
-		<el-table-column prop="name" label="Admin Name"></el-table-column> 
+		<el-table-column prop="adminUserName" label="Admin Name"></el-table-column> 
 		<el-table-column prop="email" label="email"></el-table-column> 
-		<el-table-column prop="courseCode" label="Create Date"></el-table-column> 
-		<el-table-column label="Operation" width="150">
+		<el-table-column prop="createTime" label="Create Date"></el-table-column> 
+		<el-table-column label="Operation" width="200">
 			<template slot-scope="scope">
-				<el-link icon="el-icon-edit">Edit</el-link>
-				<el-link icon="el-icon-check">Block</el-link>
+				<el-link icon="el-icon-edit" @click="addOrUpdateHandle(scope.row.adminUserId)">Edit</el-link>
+				<el-link icon="el-icon-lock" @click="isLockHandle(scope.row.adminUserId, 1)" v-if="scope.row.isLock == 0">Block</el-link>
+				<el-link icon="el-icon-unlock" @click="isLockHandle(scope.row.adminUserId, 0)" v-else>Unblock</el-link>
 			</template>
 		</el-table-column>
 	</el-table>
@@ -53,34 +54,56 @@ export default {
 	data() {
 		return {
 			filters: {
+				keyWord:"",
 				pageSize: 10,
-				pageNum: 1,
-				total: 0,
+				pageNum: 1
 			},
-			dataList: [{}],
+			dataList: [],
 			listLoading: false,
 			addOrUpdateVisible: false,
+			total: 0,
 		}
 	},
 	components: {
 		AddOrUpdate
 	},
 	methods: {
+		isLockHandle(id, isLock){//关闭或打开
+			let params = {
+				functionId:id,
+				isLock:isLock
+			};
+			this.$http({
+              url: this.$http.adornUrl('/adminUser/pc/lockAdminUserInfo'),
+              method: 'post',
+              data: this.$http.adornData(params)
+            }).then(({data}) => {
+              if (data && data.code === 20000) {
+				this.$message.success(data.msg)
+				let filters = {
+					keyWord:"",
+					pageNum:1,
+					pageSize:10
+				}
+				this.filters = filters;
+				this.getDataList(this.filters);
+              } else {
+                this.$message.error(data.msg)
+              }
+            })
+		},
 		 // 新增 / 修改
 		addOrUpdateHandle (id) {
 			this.addOrUpdateVisible = true
 			this.$nextTick(() => {
-			this.$refs.addOrUpdate.init(id)
+				this.$refs.addOrUpdate.init(id)
 			})
 		},
-		getSearchFilters(){//搜索
+		searchFilters(){//搜索
 			let params = {
-				studentId: this.filters.studentId,
-				pageNum:0,
+				keyWord:this.filters.keyWord,
+				pageNum:1,
 				pageSize:10
-			}
-			if(this.filters.explainDate !== ''){
-				params.explainDate = this.filters.explainDate
 			}
 			this.filters = params;
 			this.getDataList(this.filters);
@@ -92,6 +115,19 @@ export default {
 		getDataList(params) {//获取书单列表
 			let that = this;
 			this.listLoading = true;
+			this.$http({
+              url: this.$http.adornUrl('/adminUser/pc/findAdminUserList'),
+              method: 'post',
+              data: this.$http.adornData(params)
+            }).then(({data}) => {
+              if (data && data.code === 20000) {
+				that.listLoading = false;
+				that.dataList = data.data.list;
+				this.total = data.total
+              } else {
+                this.$message.error(data.msg)
+              }
+            })
 		},
 		handleSizeChange(val) {
 			this.filters.pageSize = val;
@@ -101,7 +137,7 @@ export default {
 		
 	},
 	mounted() {
-		//his.getDataList(this.filters);
+		this.getDataList(this.filters);
 	}
 }
 

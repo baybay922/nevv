@@ -7,11 +7,11 @@
 				<el-input autocomplete="off" v-model="filters.keyWord" placeholder="Search by name"></el-input>
 			</el-form-item>
 			<el-form-item>
-				<el-button type="primary">Search</el-button>
+				<el-button type="primary" @click="searchFilters()">Search</el-button>
 			</el-form-item>
 
 			<el-form-item>
-				<el-button type="primary" @click="addOrUpdateHandle()">Add</el-button>
+				<el-button type="primary" @click="exportHandle()">Export</el-button>
 			</el-form-item>
 		</el-form>
 	</el-col>
@@ -21,16 +21,63 @@
 		<el-table-column prop="ign" label="In-Game Name"></el-table-column> 
 		<el-table-column prop="phone" label="Phone Number"></el-table-column> 
 		<el-table-column prop="birthdate" label="Birth Date"></el-table-column> 
-		<el-table-column prop="genter"  label="Gender"></el-table-column>
+		<el-table-column prop="genter"  label="Gender">
+			<template slot-scope="scope">
+				<p v-if="scope.row.genter == 0">No Select</p>
+				<p v-else-if="scope.row.genter == 1">Female</p>
+				<p v-else>Male</p>
+			</template>
+		</el-table-column>
 		<el-table-column prop="country"  label="Country"></el-table-column>
 		<el-table-column prop="nevv"  label="Nevv"></el-table-column>
-		<el-table-column prop="eventCount"  label="Event Point"></el-table-column>
-		<el-table-column prop="predictCount"  label="History Predict"></el-table-column>
-		<el-table-column prop="createDate"  label="Create Date"></el-table-column>
-		<el-table-column label="Operation" width="150">
+		<el-table-column prop="eventCount"  label="Event Point">
 			<template slot-scope="scope">
-				<el-link icon="el-icon-edit">Edit</el-link>
-				<el-link icon="el-icon-check">Block</el-link>
+				<el-button type="text" v-if="scope.row.eventCount == 0">
+					{{scope.row.eventCount}} items
+				</el-button>
+				<el-popover
+					v-else
+					placement="left"
+					width="300"
+					trigger="click">
+					<el-table :data="eventCountList">
+						<el-table-column prop="eventName" label="Event"></el-table-column>
+						<el-table-column prop="eventPoint" label="Event point"></el-table-column>
+					</el-table>
+					<el-button slot="reference" type="text" @click="showEventCountList(scope.row.userId)">
+						{{scope.row.eventCount}} items
+					</el-button>
+				</el-popover>
+			</template>
+		</el-table-column>
+		<el-table-column prop="predictCount"  label="History Predict">
+			<template slot-scope="scope">
+				<el-button type="text" v-if="scope.row.predictCount == 0">
+					{{scope.row.predictCount}} items
+				</el-button>
+				<el-popover
+					v-else
+					placement="left"
+					width="500"
+					trigger="click">
+					<el-table :data="predictCountList">
+						<el-table-column prop="eventName" label="Event"></el-table-column>
+						<el-table-column prop="eventPoint" label="Match"></el-table-column>
+						<el-table-column prop="eventPoint" label="Predict"></el-table-column>
+						<el-table-column prop="eventPoint" label="Result"></el-table-column>
+					</el-table>
+					<el-button slot="reference" type="text" @click="showJoinMatchList(scope.row.userId)">
+						{{scope.row.predictCount}} items
+					</el-button>
+				</el-popover>
+			</template>
+		</el-table-column>
+		<el-table-column prop="createDate"  label="Create Date"></el-table-column>
+		<el-table-column label="Operation" width="200">
+			<template slot-scope="scope">
+				<el-link icon="el-icon-edit" @click="addOrUpdateHandle(scope.row.userId)">Edit</el-link>
+				<el-link icon="el-icon-lock" @click="isLockHandle(scope.row.userId, 1)" v-if="scope.row.isLock == 0">Block</el-link>
+				<el-link icon="el-icon-unlock" @click="isLockHandle(scope.row.userId, 0)" v-else>Unblock</el-link>
 			</template>
 		</el-table-column>
 	</el-table>
@@ -50,17 +97,6 @@
 	</el-col>
 	<!-- 弹窗, 新增 / 修改 -->
     <AddOrUpdate v-if="addOrUpdateVisible" ref="addOrUpdate"  @refreshDataList="getDataList"></AddOrUpdate>
-	<el-popover
-		placement="right"
-		width="450"
-		trigger="click">
-		<el-table :data="gridData">
-			<el-table-column width="150" property="date" label="日期"></el-table-column>
-			<el-table-column width="100" property="name" label="姓名"></el-table-column>
-			<el-table-column width="300" property="address" label="地址"></el-table-column>
-		</el-table>
-		<el-button >click 激活</el-button>
-	</el-popover>
 </section>
 </template>
 
@@ -73,62 +109,100 @@ export default {
 				keyWord:"",
 				pageSize: 10,
 				pageNum: 1,
-				total: 0,
 			},
+			total: 0,
 			dataList: [],
 			listLoading: false,
 			addOrUpdateVisible: false,
-			gridData:{
-				event:[
-					{
-						property:"",
-						label:"Event"
-					},
-					{
-						property:"",
-						label:"Event point"
-					}
-				],
-				predict:[
-					{
-						property:"",
-						label:"Event"
-					},
-					{
-						property:"",
-						label:"Match"
-					},
-					{
-						property:"",
-						label:"Predict"
-					},
-					{
-						property:"",
-						label:"Result"
-					}
-				]
-			}
+			eventCountList:[],
+			predictCountList:[]
 		}
 	},
 	components: {
 		AddOrUpdate
 	},
 	methods: {
+		showJoinMatchList(id){//获取竞猜数量
+			this.$http({
+              url: this.$http.adornUrl('/user/pc/joinMatchList'),
+              method: 'post',
+              data: this.$http.adornData({
+				keyWord:id,
+				pageSize:10,
+				pageNum:1
+			  })
+            }).then(({data}) => {
+              if (data && data.code === 20000) {
+				this.predictCountList = data.data.list
+              } else {
+                this.$message.error(data.msg)
+              }
+            })
+		},
+		showEventCountList(id){//获取用户
+			this.$http({
+              url: this.$http.adornUrl('/user/pc/joinEventList'),
+              method: 'post',
+              data: this.$http.adornData({
+				keyWord:id,
+				pageSize:10,
+				pageNum:1
+			  })
+            }).then(({data}) => {
+              if (data && data.code === 20000) {
+				this.eventCountList = data.data.list
+              } else {
+                this.$message.error(data.msg)
+              }
+            })
+		},
+		exportHandle(){//导出列表
+			let params = this.filters;
+			let _params = '';
+			for (const key in params) {
+				console.log(params[key])
+				_params+=key+'='+params[key]!==''?params[key]:""+'&'
+				
+			}
+			
+			console.log(_params)
+		},
+		isLockHandle(id, isLock){//关闭或打开
+			let params = {
+				functionId:id,
+				isLock:isLock
+			};
+			this.$http({
+              url: this.$http.adornUrl('/user/pc/lockUserInfo'),
+              method: 'post',
+              data: this.$http.adornData(params)
+            }).then(({data}) => {
+              if (data && data.code === 20000) {
+				this.$message.success(data.msg)
+				let filters = {
+					keyWord:"",
+					pageNum:1,
+					pageSize:10
+				}
+				this.filters = filters;
+				this.getDataList(this.filters);
+              } else {
+                this.$message.error(data.msg)
+              }
+            })
+		},
 		 // 新增 / 修改
 		addOrUpdateHandle (id) {
 			this.addOrUpdateVisible = true
 			this.$nextTick(() => {
-			this.$refs.addOrUpdate.init(id)
+				this.$refs.addOrUpdate.init(id)
 			})
 		},
-		getSearchFilters(){//搜索
+		searchFilters(){//搜索
 			let params = {
-				studentId: this.filters.studentId,
-				pageNum:0,
+				keyWord:this.filters.keyWord,
+				pageNum:1,
 				pageSize:10
-			}
-			if(this.filters.explainDate !== ''){
-				params.explainDate = this.filters.explainDate
 			}
 			this.filters = params;
 			this.getDataList(this.filters);
@@ -145,8 +219,10 @@ export default {
               method: 'post',
               data: this.$http.adornData(params)
             }).then(({data}) => {
-              if (data && data.code === 200) {
-                
+              if (data && data.code === 20000) {
+				that.listLoading = false;
+				that.dataList = data.data.list;
+				this.total = data.total
               } else {
                 this.$message.error(data.msg)
               }
@@ -160,7 +236,7 @@ export default {
 		
 	},
 	mounted() {
-		//his.getDataList(this.filters);
+		this.getDataList(this.filters);
 	}
 }
 

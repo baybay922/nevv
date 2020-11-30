@@ -58,7 +58,6 @@ const mainRoutes = {
     next()
   }
 }
-
 const router = new Router({
   mode: 'hash',
   scrollBehavior: () => ({ y: 0 }),
@@ -73,27 +72,18 @@ router.beforeEach((to, from, next) => {
   if (router.options.isAddDynamicMenuRoutes || fnCurrentRouteType(to, globalRoutes) === 'global') {
     next()
   } else {
-    // http({
-    //   url: http.adornUrl('/sys/menu/nav'),
-    //   method: 'get',
-    //   params: http.adornParams()
-    // }).then(({data}) => {
-    //   if (data && data.code === 0) {
-    //     fnAddDynamicMenuRoutes(data.menuList)
-    //     router.options.isAddDynamicMenuRoutes = true
-    //     sessionStorage.setItem('menuList', JSON.stringify(data.menuList || '[]'))
-    //     sessionStorage.setItem('permissions', JSON.stringify(data.permissions || '[]'))
-    //     next({ ...to, replace: true })
-    //   } else {
-    //     sessionStorage.setItem('menuList', '[]')
-    //     sessionStorage.setItem('permissions', '[]')
-    //     next()
-    //   }
-    // }).catch((e) => {
-    //   console.log(`%c${e} 请求菜单列表和权限失败，跳转至登录页！！`, 'color:blue')
-    //   router.push({ name: 'login' })
-    // })
-    next()
+      let data = {"msg":"success","menuList":[], "code":0,"permissions":[]}
+      if (data && data.code === 0) {
+        fnAddDynamicMenuRoutes(data.menuList)
+        router.options.isAddDynamicMenuRoutes = true
+        sessionStorage.setItem('menuList', JSON.stringify(data.menuList || '[]'))
+        sessionStorage.setItem('permissions', JSON.stringify(data.permissions || '[]'))
+        next({ ...to, replace: true })
+      } else {
+        sessionStorage.setItem('menuList', '[]')
+        sessionStorage.setItem('permissions', '[]')
+        next()
+      }
   }
 })
 
@@ -160,10 +150,10 @@ function fnAddDynamicMenuRoutes (menuList = [], routes = []) {
       { path: '*', redirect: { name: '404' } }
     ])
     sessionStorage.setItem('dynamicMenuRoutes', JSON.stringify(mainRoutes.children || '[]'))
-    console.log('\n')
-    console.log('%c!<-------------------- 动态(菜单)路由 s -------------------->', 'color:blue')
-    console.log(mainRoutes.children)
-    console.log('%c!<-------------------- 动态(菜单)路由 e -------------------->', 'color:blue')
+    // console.log('\n')
+    // console.log('%c!<-------------------- 动态(菜单)路由 s -------------------->', 'color:blue')
+    // console.log(mainRoutes.children)
+    // console.log('%c!<-------------------- 动态(菜单)路由 e -------------------->', 'color:blue')
   }
 }
 
