@@ -113,6 +113,13 @@ export default {
 			this.getDataList(this.filters);
 		},
 		getDataList(params) {//获取书单列表
+			if(!params){
+				params = {
+					keyWord:"",
+					pageNum:1,
+					pageSize:10
+				}
+			}
 			let that = this;
 			this.listLoading = true;
 			this.$http({

@@ -5,11 +5,11 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
-      <el-form-item label="*In-Game Name" prop="Name">
+      <el-form-item label="*In-Game Name">
         <el-input v-model="dataForm.ign" placeholder="In-Game Name"></el-input>
       </el-form-item>
 
-      <el-form-item label="Avatar" prop="params">
+      <el-form-item label="Avatar" >
         <el-upload
           class="upload-demo"
           action="https://api.nevvorld.cn/api/public/cos/uploadfile"
@@ -17,17 +17,16 @@
           :on-success="handleUpload"
           :on-remove="handleRemove"
           :file-list="fileList"
-          :limit="1"
           list-type="picture">
           <el-button size="small" type="primary">Upload Image</el-button>
         </el-upload>
       </el-form-item>
 
-      <el-form-item label="Phone Number" prop="cronExpression">
+      <el-form-item label="Phone Number" >
         <el-input v-model="dataForm.phone" placeholder="Phone Number"></el-input>
       </el-form-item>
 
-      <el-form-item label="Birth Date" prop="remark">
+      <el-form-item label="Birth Date" >
         <el-date-picker
           v-model="dataForm.birthdate"
           type="date"
@@ -36,7 +35,7 @@
         </el-date-picker>
       </el-form-item>
 
-      <el-form-item label="Gender" prop="cronExpression" size="30">
+      <el-form-item label="Gender" size="30">
         <el-select v-model="dataForm.genter" placeholder="Gender">
           <el-option
             v-for="item in config.genter"
@@ -47,7 +46,7 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Country" prop="cronExpression">
+      <el-form-item label="Country" >
         <el-select v-model="dataForm.country" placeholder="Country" @change="selectCityName($event)">
           <el-option
             v-for="item in config.countryArray"
@@ -58,7 +57,7 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="City" prop="City">
+      <el-form-item label="City" >
         <el-select v-model="dataForm.city" placeholder="City">
           <el-option
             v-for="item in config.cityArray"
@@ -69,8 +68,8 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Favorite Game Genre" prop="Genre">
-        <el-select v-model="dataForm.fgameGen" filterable placeholder="Favorite Game  Genre">
+      <el-form-item label="Favorite Game Genre" >
+        <el-select v-model="dataForm.fgameGen" placeholder="Favorite Game Genre">
           <el-option
             v-for="item in config.favorite"
             :key="item.id"
@@ -80,11 +79,11 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Nevv" prop="Nevv">
+      <el-form-item label="Nevv" >
         <el-input v-model="dataForm.nevv" placeholder="Nevv"></el-input>
       </el-form-item>
 
-      <el-form-item label="Blocked" prop="Blocked">
+      <el-form-item label="Blocked" >
         <el-switch v-model="dataForm.isLocked"></el-switch>
       </el-form-item>
 
@@ -98,7 +97,8 @@
 
 <script>
   import countrys from '../../../../static/json/country';
-  
+  import { jsonp } from 'vue-jsonp'
+ 
   export default {
     data () {
       return {
@@ -143,6 +143,7 @@
         this.$nextTick(() => {
           this.$refs['dataForm'].resetFields()
           if (this.dataForm.userId) {
+            this.setSelectCountryArray();
             this.$http({
               url: this.$http.adornUrl("/user/pc/findUserInfo"),
               method: 'post',
@@ -151,19 +152,27 @@
               })
             }).then(({data}) => {
               if (data && data.code === 20000) {
-                this.dataForm = data.data;
-                this.dataForm.isLocked = data.data.isLocked==0?true:false;
+                this.dataForm.userId = data.data.userId
+                this.dataForm.ign = data.data.ign
+                this.dataForm.phone = data.data.phone
+                this.dataForm.birthdate = data.data.birthdate
+                this.dataForm.genter = data.data.genter
+                this.dataForm.country = data.data.country
+                this.dataForm.city = data.data.city
+                this.dataForm.fgameGen = data.data.fgameGen
+                this.dataForm.nevv = data.data.nevvCash
+                this.dataForm.isLocked = data.data.isBlock==0?true:false;
                 let files = [];
                 files.push({url:data.data.userImg})
-                this.fileList = files
+                this.fileList = files;
+                this.getFavoriteGameList(data.data.fgameGen);
               }else{
                 this.$message.error(data.msg)
               }
             })
           }
         })
-        this.getFavoriteGameList();
-        this.setSelectCountryArray();
+        
       },
       selectCityName(event){//获取城市
         let _cityChiren = [];
@@ -189,39 +198,52 @@
         this.config.cityArray = _cityChiren
       },
       setSelectCountryArray(){//获取国家
-        let countryArray = [];
-        let PCANEN = countrys.split("#");
+        // let countryArray = [];
+        // let PCANEN = countrys.split("#");
         
-        for (let i = 0; i < PCANEN.length; i++) {
-          if(PCANEN[i].split("$")[0] !== ""){
-            let _citys = PCANEN[i].split("$")[1].split(",");
-            let _country = {};
-            _country.value = PCANEN[i].split("$")[0];
-            _country.label = PCANEN[i].split("$")[0];
-            let countryChildren = [];
+        // for (let i = 0; i < PCANEN.length; i++) {
+        //   if(PCANEN[i].split("$")[0] !== ""){
+        //     let _citys = PCANEN[i].split("$")[1].split(",");
+        //     let _country = {};
+        //     _country.value = PCANEN[i].split("$")[0];
+        //     _country.label = PCANEN[i].split("$")[0];
+        //     let countryChildren = [];
             
-            for(let j =0; j < _citys.length; j++){
-              if(_citys[j] !== ""){
-                let _city = {};
-                _city.value = _citys[j];
-                _city.label = _citys[j];
-                countryChildren.push(_city)
-              }
-            }
-            _country.children = countryChildren;
-            countryArray.push(_country)
-          }
-        }
-        this.config.countryArray = countryArray;
+        //     for(let j =0; j < _citys.length; j++){
+        //       if(_citys[j] !== ""){
+        //         let _city = {};
+        //         _city.value = _citys[j];
+        //         _city.label = _citys[j];
+        //         countryChildren.push(_city)
+        //       }
+        //     }
+        //     _country.children = countryChildren;
+        //     countryArray.push(_country)
+        //   }
+        // }
+        // this.config.countryArray = countryArray;
+        let params = {
+          'key': "1cf1b88177bd77884000d6e42dcf1d19"
+        };
+        jsonp('https://api.rajaongkir.com/starter/province',params)
+        .then(function (response) {
+          console.log(response);
+        }).catch(function (error) {
+          console.log(error);
+        });
+
       },
       //获取最爱的游戏列表
-      getFavoriteGameList(){
+      getFavoriteGameList(id){
         this.$http({
           url: this.$http.adornUrl("/favoriteGameGenre/findGameGenreList"),
           method: 'post'
         }).then(({data}) => {
           if (data && data.code === 20000) {
+            
             this.config.favorite = data.data
+            
+            this.dataForm.fgameGen = parseInt(id)
           }
         })
       },
@@ -237,7 +259,6 @@
       },
       // 表单提交
       dataFormSubmit () {
-
         this.$http({
           url: this.$http.adornUrl('/user/pc/editUser'),
           method: 'post',
@@ -253,10 +274,10 @@
             'city':this.dataForm.city,
             'favoriteGameGenre': this.dataForm.fgameGen,
             'nevv': this.dataForm.nevv,
-            'isLocked': this.dataForm.isLocked?1:0
+            'isLocked': this.dataForm.isLocked?0:1
           })
         }).then(({data}) => {
-          if (data && data.code === 0) {
+          if (data && data.code === 20000) {
             this.$message({
               message: '操作成功',
               type: 'success',

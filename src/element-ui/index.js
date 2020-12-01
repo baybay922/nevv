@@ -76,7 +76,8 @@ import {
   MessageBox,
   Message,
   Notification,
-  Link
+  Link,
+  Image
 } from 'element-ui'
 import lang from 'element-ui/lib/locale/lang/en'
 import locale from 'element-ui/lib/locale'
@@ -84,6 +85,7 @@ import locale from 'element-ui/lib/locale'
 // 设置语言
 locale.use(lang)
 Vue.use(Link)
+Vue.use(Image)
 Vue.use(Pagination)
 Vue.use(Dialog)
 Vue.use(Autocomplete)

@@ -62,9 +62,17 @@
                 this.dataForm.adminUserName = data.data.adminUserName
                 this.dataForm.email = data.data.email
                 this.dataForm.passWord = data.data.passWord
-                this.dataForm.remark = data.data.isBlock==1?true:false
+                this.dataForm.isBlock = data.data.isBlock===1?true:false
+              }else{
+                this.$message.error(data.msg)
               }
             })
+          }else{
+            this.dataForm.id =  "";
+            this.dataForm.adminUserName = "";
+            this.dataForm.email = "";
+            this.dataForm.passWord = "";
+            this.dataForm.isBlock = false;
           }
         })
       },
@@ -93,7 +101,7 @@
             "isBlock":this.dataForm.isBlock?1:0,
           })
         }).then(({data}) => {
-          if (data && data.code === 0) {
+          if (data && data.code === 20000) {
             this.$message({
               message: '操作成功',
               type: 'success',

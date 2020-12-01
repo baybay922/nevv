@@ -23,9 +23,9 @@
 		<el-table-column prop="birthdate" label="Birth Date"></el-table-column> 
 		<el-table-column prop="genter"  label="Gender">
 			<template slot-scope="scope">
-				<p v-if="scope.row.genter == 0">No Select</p>
-				<p v-else-if="scope.row.genter == 1">Female</p>
-				<p v-else>Male</p>
+				<p v-if="scope.row.gender === 0">No Select</p>
+				<p v-else-if="scope.row.genter === 1">Male</p>
+				<p v-else>Female</p>
 			</template>
 		</el-table-column>
 		<el-table-column prop="country"  label="Country"></el-table-column>
@@ -44,7 +44,7 @@
 						<el-table-column prop="eventName" label="Event"></el-table-column>
 						<el-table-column prop="eventPoint" label="Event point"></el-table-column>
 					</el-table>
-					<el-button slot="reference" type="text" @click="showEventCountList(scope.row.userId)">
+					<el-button slot="reference" type="text" @click="showEventCountList(scope.row.userStrId)">
 						{{scope.row.eventCount}} items
 					</el-button>
 				</el-popover>
@@ -66,7 +66,7 @@
 						<el-table-column prop="eventPoint" label="Predict"></el-table-column>
 						<el-table-column prop="eventPoint" label="Result"></el-table-column>
 					</el-table>
-					<el-button slot="reference" type="text" @click="showJoinMatchList(scope.row.userId)">
+					<el-button slot="reference" type="text" @click="showJoinMatchList(scope.row.userStrId)">
 						{{scope.row.predictCount}} items
 					</el-button>
 				</el-popover>
@@ -76,7 +76,7 @@
 		<el-table-column label="Operation" width="200">
 			<template slot-scope="scope">
 				<el-link icon="el-icon-edit" @click="addOrUpdateHandle(scope.row.userId)">Edit</el-link>
-				<el-link icon="el-icon-lock" @click="isLockHandle(scope.row.userId, 1)" v-if="scope.row.isLock == 0">Block</el-link>
+				<el-link icon="el-icon-lock" @click="isLockHandle(scope.row.userId, 1)" v-if="scope.row.isLocked == 0">Block</el-link>
 				<el-link icon="el-icon-unlock" @click="isLockHandle(scope.row.userId, 0)" v-else>Unblock</el-link>
 			</template>
 		</el-table-column>
@@ -212,6 +212,13 @@ export default {
 			this.getDataList(this.filters);
 		},
 		getDataList(params) {//获取书单列表
+			if(!params){
+				params = {
+					keyWord:"",
+					pageNum:1,
+					pageSize:10
+				}
+			}
 			let that = this;
 			this.listLoading = true;
 			this.$http({
