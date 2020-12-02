@@ -4,77 +4,75 @@
     :title="!dataForm.id ? 'Add' : 'Modify'"
     :close-on-click-modal="false"
     :visible.sync="visible">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
-      <el-form-item label="Event Name" prop="Name">
-        <el-input v-model="dataForm.Name" placeholder="Event Name"></el-input>
+    <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
+      <el-form-item label="Event Name" >
+        <el-input v-model="dataForm.eventName" placeholder="Event Name"></el-input>
       </el-form-item>
 
-      <el-form-item label="Icon" prop="params">
-        <el-upload
+      <el-form-item label="Icon" >
+       <el-upload
           class="upload-demo"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :file-list="fileList"
+          action="https://api.nevvorld.cn/api/public/cos/uploadfile"
+          :on-success="iconHandleUpload"
+          :file-list="iconImg"
           list-type="picture">
           <el-button size="small" type="primary">Upload Image</el-button>
         </el-upload>
       </el-form-item>
 
-      <el-form-item label="Schedule From" prop="cronExpression">
+      <el-form-item label="Schedule From" >
         <el-date-picker
-          v-model="dataForm.BirthDate"
+          v-model="dataForm.startTime"
           type="date"
-          placeholder="Birth Date">
+          placeholder="Schedule From">
         </el-date-picker>
       </el-form-item>
 
-      <el-form-item label="Schedule To" prop="cronExpression">
+      <el-form-item label="Schedule To" >
         <el-date-picker
-          v-model="dataForm.BirthDate"
+          v-model="dataForm.endTime"
           type="date"
-          placeholder="Birth Date">
+          placeholder="Schedule To">
         </el-date-picker>
       </el-form-item>
 
-      <el-form-item label="Description" prop="cronExpression">
-        <el-input type="textarea" v-model="dataForm.Description"></el-input>
+      <el-form-item label="Description" >
+        <el-input type="textarea" v-model="dataForm.description"></el-input>
       </el-form-item>
 
-      <el-form-item label="Rules" prop="cronExpression">
-        <el-input type="textarea" v-model="dataForm.Rules"></el-input>
+      <el-form-item label="Rules" >
+        <el-input type="textarea" v-model="dataForm.rules"></el-input>
       </el-form-item>
 
-      <el-form-item label="Registeration Url" prop="Name">
-        <el-input v-model="dataForm.Name" placeholder="Event Name"></el-input>
+      <el-form-item label="Registeration Url" >
+        <el-input v-model="dataForm.resUrl" placeholder="https://"></el-input>
       </el-form-item>
 
-      <el-form-item label="Tournament Url" prop="Name">
-        <el-input v-model="dataForm.Name" placeholder="Event Name"></el-input>
+      <el-form-item label="Tournament Url" >
+        <el-input v-model="dataForm.tourUrl" placeholder="https://"></el-input>
       </el-form-item>
 
-      <el-form-item label="Background Image" prop="params">
-        <el-upload
+      <el-form-item label="Background Image" >
+       <el-upload
           class="upload-demo"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :file-list="fileList"
+          action="https://api.nevvorld.cn/api/public/cos/uploadfile"
+          :on-success="bgHandleUpload"
+          :file-list="bgImg"
           list-type="picture">
           <el-button size="small" type="primary">Upload Image</el-button>
         </el-upload>
       </el-form-item>
 
-      <el-form-item label="Sort" prop="Sort">
-        <el-input v-model="dataForm.Nevv" placeholder="Nevv"></el-input>
+      <el-form-item label="Sort" >
+        <el-input v-model="dataForm.sortActivity" placeholder="Sort"></el-input>
       </el-form-item>
 
-      <el-form-item label="Publishing" prop="Publishing">
-        <el-switch v-model="dataForm.Blocked"></el-switch>
+      <el-form-item label="Publishing" >
+        <el-switch v-model="dataForm.isRecommend"></el-switch>
       </el-form-item>
 
-      <el-form-item label="Transfer Event Point" prop="Transfer Event Point">
-        <el-switch v-model="dataForm.Blocked"></el-switch>
+      <el-form-item label="Transfer Event Point">
+        <el-switch v-model="dataForm.isEnabled"></el-switch>
       </el-form-item>
 
     </el-form>
@@ -91,27 +89,20 @@
       return {
         visible: false,
         dataForm: {
-          id: 0,
-          Name:"",
-          Avatar:"",
-          Description:"",
-          Phone:"",
-          BirthDate:"",
-          Gender:"Male",
-          Country:"",
-          City:"",
-          Genre:"",
-          Nevv:"",
-          Blocked:false
+          functionId:"",
+          eventName:"",
+          startTime:"",
+          endTime:"",
+          description:"",
+          rules:"",
+          resUrl:"",
+          tourUrl:"",
+          sortActivity:"",
+          isEnabled:false,
+          isRecommend:false,
         },
-        dataRule: {
-          beanName: [
-            { required: true, message: '用户名不能为空', trigger: 'blur' }
-          ]
-        },
-        fileList: [
-          {name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}
-        ],
+        iconImg: [],
+        bgImg:[],
         options: [{
           value: '0',
           label: 'Action'
@@ -120,24 +111,51 @@
     },
     methods: {
       init (id) {
-        this.dataForm.id = id || 0
+        this.dataForm.functionId = id || 0
         this.visible = true
         this.$nextTick(() => {
           this.$refs['dataForm'].resetFields()
-          if (this.dataForm.id) {
+          if (this.dataForm.functionId) {
             this.$http({
-              url: this.$http.adornUrl(`/sys/schedule/info/${this.dataForm.id}`),
-              method: 'get',
-              params: this.$http.adornParams()
+              url: this.$http.adornUrl("/event/pc/findEventInfo"),
+              method: 'post',
+              data: this.$http.adornData({
+                'functionId':this.dataForm.functionId
+              })
             }).then(({data}) => {
-              if (data && data.code === 0) {
-                this.dataForm.beanName = data.schedule.beanName
-                this.dataForm.params = data.schedule.params
-                this.dataForm.cronExpression = data.schedule.cronExpression
-                this.dataForm.remark = data.schedule.remark
-                this.dataForm.status = data.schedule.status
+              if (data && data.code === 20000) {
+                this.dataForm.functionId = data.data.eventId
+                this.dataForm.eventName = data.data.eventName;
+                this.dataForm.startTime = data.data.startTime;
+                this.dataForm.endTime = data.data.endTime;
+                this.dataForm.description = data.data.description;
+                this.dataForm.rules = data.data.rules;
+                this.dataForm.resUrl = data.data.resUrl;
+                this.dataForm.tourUrl = data.data.tourUrl;
+                this.dataForm.sortActivity = data.data.sortActivity;
+                this.dataForm.isEnabled = data.data.isEnabled===1?true:false
+                this.dataForm.isRecommend = data.data.isRecommend===1?true:false
+                let _iconImg = [];
+                _iconImg.push({url:data.data.eventImgCover})
+                this.iconImg = _iconImg;
+                let _bgImg = [];
+                _bgImg.push({url:data.data.backgroundImg})
+                this.bgImg = _bgImg;
               }
             })
+          }else{
+            this.dataForm.eventName = ""
+            this.dataForm.startTime = ""
+            this.dataForm.endTime = ""
+            this.dataForm.description = ""
+            this.dataForm.rules = ""
+            this.dataForm.resUrl = ""
+            this.dataForm.tourUrl = ""
+            this.dataForm.sortActivity = ""
+            this.dataForm.isEnabled = false
+            this.dataForm.isRecommend = false
+            this.iconImg = [];
+            this.bgImg = [];
           }
         })
       },
@@ -146,18 +164,25 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
-              url: this.$http.adornUrl(`/sys/schedule/${!this.dataForm.id ? 'save' : 'update'}`),
+              url: this.$http.adornUrl(`/event/pc/${!this.dataForm.functionId ? 'addEvent' : 'editEvent'}`),
               method: 'post',
               data: this.$http.adornData({
-                'jobId': this.dataForm.id || undefined,
-                'beanName': this.dataForm.beanName,
-                'params': this.dataForm.params,
-                'cronExpression': this.dataForm.cronExpression,
-                'remark': this.dataForm.remark,
-                'status': !this.dataForm.id ? undefined : this.dataForm.status
+                'eventId': this.dataForm.functionId || undefined,
+                'eventName': this.dataForm.eventName,
+                'eventImgCover': this.iconImg.length>0?this.iconImg[0].url:"",
+                'startTime': this.dataForm.startTime,
+                'endTime': this.dataForm.endTime,
+                'description': this.dataForm.description,
+                'rules':this.dataForm.rules,
+                'resUrl':this.dataForm.resUrl,
+                'tourUrl':this.dataForm.tourUrl,
+                'backgroundImg': this.bgImg.length>0?this.bgImg[0].url:"",
+                'sortActivity':this.dataForm.sortActivity,
+                'isEnabled':this.dataForm.isEnabled?1:0,
+                'isRecommend':this.dataForm.isRecommend?1:0,
               })
             }).then(({data}) => {
-              if (data && data.code === 0) {
+              if (data && data.code === 20000) {
                 this.$message({
                   message: '操作成功',
                   type: 'success',
@@ -174,12 +199,24 @@
           }
         })
       },
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
+      iconHandleUpload(response, file, fileList){//上传封面图
+        if(response && response.code === 20000){
+          let files = [];
+          files.push({url:response.data.cosUrl})
+          this.iconImg = files
+        }else{
+          this.$message.error(data.msg)
+        }
       },
-      handlePreview(file) {
-        console.log(file);
-      }
+      bgHandleUpload(response, file, fileList){//上传背景图
+        if(response && response.code === 20000){
+          let files = [];
+          files.push({url:response.data.cosUrl})
+          this.bgImg = files
+        }else{
+          this.$message.error(data.msg)
+        }
+      },
     }
   }
 </script>

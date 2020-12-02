@@ -4,24 +4,23 @@
     :title="!dataForm.id ? 'Add' : 'Modify'"
     :close-on-click-modal="false"
     :visible.sync="visible">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
+    <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
       <el-form-item label="Relate to Event" prop="Name">
-        <el-select v-model="dataForm.Genre" filterable placeholder="Favorite Game  Genre">
+        <el-select v-model="dataForm.eventId" filterable placeholder="Favorite Game  Genre">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
+					v-for="item in config.eventList"
+					:key="item.eventId"
+					:label="item.eventName"
+					:value="item.eventId">
+					</el-option>
         </el-select>
       </el-form-item>
 
       <el-form-item label="Image" prop="params">
         <el-upload
           class="upload-demo"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
+          action="https://api.nevvorld.cn/api/public/cos/uploadfile"
+          :on-success="handleUpload"
           :file-list="fileList"
           list-type="picture">
           <el-button size="small" type="primary">Upload Image</el-button>
@@ -29,19 +28,19 @@
       </el-form-item>
 
       <el-form-item label="Title" prop="Title">
-        <el-input v-model="dataForm.Nevv" placeholder="Nevv"></el-input>
+        <el-input v-model="dataForm.watchTitle" placeholder="Title"></el-input>
       </el-form-item>
 
       <el-form-item label="Plat URL" prop="Plat URL">
-        <el-input v-model="dataForm.Nevv" placeholder="Nevv"></el-input>
+        <el-input v-model="dataForm.eventWatchUrl" placeholder="Plat URL"></el-input>
       </el-form-item>
       
       <el-form-item label="Banner" prop="Banner">
-        <el-switch v-model="dataForm.Blocked"></el-switch>
+        <el-switch v-model="dataForm.isBanner"></el-switch>
       </el-form-item>
 
       <el-form-item label="Sort" prop="Sort">
-        <el-input v-model="dataForm.Nevv" placeholder="Nevv"></el-input>
+        <el-input v-model="dataForm.sort" placeholder="sort"></el-input>
       </el-form-item>
 
     </el-form>
@@ -58,31 +57,17 @@
       return {
         visible: false,
         dataForm: {
-          id: 0,
-          Name:"",
-          Avatar:"",
-          Description:"",
-          Phone:"",
-          BirthDate:"",
-          Gender:"Male",
-          Country:"",
-          City:"",
-          Genre:"",
-          Nevv:"",
-          Blocked:false
+          id: "",
+          eventId:"",
+          watchTitle:"",
+          eventWatchUrl:"",
+          isBanner:false,
+          sort:""
         },
-        dataRule: {
-          beanName: [
-            { required: true, message: '用户名不能为空', trigger: 'blur' }
-          ]
-        },
-        fileList: [
-          {name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}
-        ],
-        options: [{
-          value: '0',
-          label: 'Action'
-        }]
+        fileList: [],
+        config:{
+          eventList:[]
+        }
       }
     },
     methods: {
@@ -91,20 +76,36 @@
         this.visible = true
         this.$nextTick(() => {
           this.$refs['dataForm'].resetFields()
+          this.getSearchEventList()
           if (this.dataForm.id) {
             this.$http({
-              url: this.$http.adornUrl(`/sys/schedule/info/${this.dataForm.id}`),
-              method: 'get',
-              params: this.$http.adornParams()
+              url: this.$http.adornUrl('/eventWatch/pc/findWatchInfo'),
+              method: 'post',
+              data: this.$http.adornData({
+                'functionId': this.dataForm.id
+              })
             }).then(({data}) => {
-              if (data && data.code === 0) {
-                this.dataForm.beanName = data.schedule.beanName
-                this.dataForm.params = data.schedule.params
-                this.dataForm.cronExpression = data.schedule.cronExpression
-                this.dataForm.remark = data.schedule.remark
-                this.dataForm.status = data.schedule.status
+              if (data && data.code === 20000) {
+                this.dataForm.id = data.data.id;
+                this.dataForm.eventId = data.data.eventId;
+                this.dataForm.watchTitle = data.data.watchTitle;
+                this.dataForm.eventWatchUrl = data.data.eventWatchUrl;
+                this.dataForm.isBanner = data.data.isBanner===1?true:false;
+                this.dataForm.sort = data.data.sort;
+                let files = [];
+                files.push({url:data.data.eventWatchImg})
+                this.fileList = files;
+              }else{
+                this.$message.error(data.msg)
               }
             })
+          }else{
+            this.dataForm.eventId = "";
+            this.dataForm.watchTitle = "";
+            this.dataForm.eventWatchUrl = "";
+            this.dataForm.isBanner = false;
+            this.dataForm.sort = "";
+            this.fileList = [];
           }
         })
       },
@@ -113,18 +114,19 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
-              url: this.$http.adornUrl(`/sys/schedule/${!this.dataForm.id ? 'save' : 'update'}`),
+              url: this.$http.adornUrl(`/eventWatch/pc/${!this.dataForm.id ? 'addWatch' : 'editWatch'}`),
               method: 'post',
               data: this.$http.adornData({
-                'jobId': this.dataForm.id || undefined,
-                'beanName': this.dataForm.beanName,
-                'params': this.dataForm.params,
-                'cronExpression': this.dataForm.cronExpression,
-                'remark': this.dataForm.remark,
-                'status': !this.dataForm.id ? undefined : this.dataForm.status
+                'id': this.dataForm.id || undefined,
+                'eventId': this.dataForm.eventId,
+                'watchTitle': this.dataForm.watchTitle,
+                'eventWatchUrl': this.dataForm.eventWatchUrl,
+                'eventWatchImg': this.fileList.length>0?this.fileList[0].url:"",
+                'isBanner': this.dataForm.isBanner ? 1 : 0,
+                'sort': this.dataForm.sort,
               })
             }).then(({data}) => {
-              if (data && data.code === 0) {
+              if (data && data.code === 20000) {
                 this.$message({
                   message: '操作成功',
                   type: 'success',
@@ -141,12 +143,27 @@
           }
         })
       },
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
+      getSearchEventList(){
+        this.$http({
+          url: this.$http.adornUrl("/event/pc/searchEventList"),
+          method: 'post'
+        }).then(({data}) => {
+          if (data && data.code === 20000) {
+            this.config.eventList = data.data
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
       },
-      handlePreview(file) {
-        console.log(file);
-      }
+      handleUpload(response, file, fileList){
+        if(response && response.code === 20000){
+          let files = [];
+          files.push({url:response.data.cosUrl})
+          this.fileList = files
+        }else{
+          this.$message.error(data.msg)
+        }
+      },
     }
   }
 </script>

@@ -60,6 +60,7 @@
             }).then(({data}) => {
               if (data && data.code === 20000) {
                 this.$cookie.set('token', data.data.token)
+                this.$cookie.set('userName', data.data.userName)
                 this.$router.replace({ name: 'home' })
               } else {
                 this.$message.error(data.msg)

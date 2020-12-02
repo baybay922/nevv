@@ -30,7 +30,6 @@
               <img src="~@/assets/img/avatar.png" :alt="userName">{{ userName }}
             </span>
             <el-dropdown-menu slot="dropdown">
-              <!-- <el-dropdown-item @click.native="updatePasswordHandle()">修改密码</el-dropdown-item> -->
               <el-dropdown-item @click.native="logoutHandle()">Logout</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -43,6 +42,7 @@
 </template>
 
 <script>
+  import Vue from 'vue'
   import UpdatePassword from './main-navbar-update-password'
   import { clearLoginInfo } from '@/utils'
   export default {
@@ -67,7 +67,7 @@
         set (val) { this.$store.commit('common/updateMainTabs', val) }
       },
       userName: {
-        get () { return this.$store.state.user.name }
+        get () { return  Vue.cookie.get('userName') }
       }
     },
     methods: {
@@ -85,16 +85,8 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$http({
-            url: this.$http.adornUrl('/sys/logout'),
-            method: 'post',
-            data: this.$http.adornData()
-          }).then(({data}) => {
-            if (data && data.code === 0) {
-              clearLoginInfo()
-              this.$router.push({ name: 'login' })
-            }
-          })
+          clearLoginInfo()
+          this.$router.push({ name: 'login' })
         }).catch(() => {})
       }
     }

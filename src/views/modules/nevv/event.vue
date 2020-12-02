@@ -4,10 +4,10 @@
 	<el-col :span="24" class="toolbar">
 		<el-form :inline="true" :model="filters">
 			<el-form-item label-width="120px">
-				<el-input autocomplete="off" v-model="filters.studentId" placeholder="Search by name"></el-input>
+				<el-input autocomplete="off" v-model="filters.keyWord" placeholder="Search by name"></el-input>
 			</el-form-item>
 			<el-form-item>
-				<el-button type="primary">Search</el-button>
+				<el-button type="primary" @click="searchFilters()">Search</el-button>
 			</el-form-item>
 
 			<el-form-item>
@@ -18,18 +18,34 @@
 
 	<!--列表-->
 	<el-table class="userTable" border :data="dataList" highlight-current-row v-loading="listLoading">
-		<el-table-column prop="name" label="Name"></el-table-column> 
-		<el-table-column prop="email" label="Icon"></el-table-column> 
-		<el-table-column prop="courseCode" label="Schedule From"></el-table-column> 
-		<el-table-column prop="courseCode" label="Schedule To"></el-table-column> 
-		<el-table-column prop="courseCode" label="Google Form"></el-table-column>
-		<el-table-column prop="courseCode" label="Sort"></el-table-column>
-		<el-table-column prop="courseCode" label="Publishing"></el-table-column>
-		<el-table-column prop="courseCode" label="Transfer Event Point"></el-table-column> 
-		<el-table-column label="Operation" width="150">
+		<el-table-column prop="eventName" label="Name"></el-table-column> 
+		<el-table-column prop="eventImgCover" label="Icon" width="70">
 			<template slot-scope="scope">
-				<el-link icon="el-icon-edit">Edit</el-link>
-				<el-link icon="el-icon-check">Block</el-link>
+				<img class="listImg" :src="scope.row.eventImgCover" @click="showPreviewImage(scope.row.eventImgCover)" />
+			</template>
+		</el-table-column> 
+		<el-table-column prop="startTime" label="Schedule From"></el-table-column> 
+		<el-table-column prop="endTime" label="Schedule To"></el-table-column> 
+		<el-table-column prop="endTime" label="Registeration url">
+			<template slot-scope="scope">
+				<a :href="scope.row.resUrl" target="_blank">link</a>
+			</template>
+		</el-table-column>
+		<el-table-column prop="sortActivity" label="Sort"></el-table-column>
+		<el-table-column prop="isRecommend" label="Publishing">
+			<template slot-scope="scope">
+				<el-switch v-model="scope.row.isRecommend" :active-value="1" :inactive-value="0" @change="switchHandle(scope.row.eventId,scope.row.isRecommend,'rec')"></el-switch>
+			</template>
+		</el-table-column>
+		<el-table-column prop="isEnabled" label="Transfer Event Point">
+			<template slot-scope="scope">
+				<el-switch v-model="scope.row.isEnabled" :active-value="1" :inactive-value="0" @change="switchHandle(scope.row.eventId,scope.row.isEnabled)"></el-switch>
+			</template>
+		</el-table-column> 
+		<el-table-column label="Operation" width="200">
+			<template slot-scope="scope">
+				<el-link icon="el-icon-edit" @click="addOrUpdateHandle(scope.row.eventId)">Edit</el-link>
+				<el-link icon="el-icon-delete" @click="deleteHandle(scope.row.eventId)">Delete</el-link>
 			</template>
 		</el-table-column>
 	</el-table>
@@ -49,6 +65,16 @@
 	</el-col>
 	<!-- 弹窗, 新增 / 修改 -->
     <AddOrUpdate v-if="addOrUpdateVisible" ref="addOrUpdate"  @refreshDataList="getDataList"></AddOrUpdate>
+	<!-- 图片查看器 -->
+	<el-dialog title="Photo Viewer" :visible.sync="imgsVisible" width="40%">
+      <div style="display: flex;justify-content: center;">
+        <el-image :src="imgs" fit="scale-down" lazy style="margin: 20px auto;">
+          <div slot="error" class="image-slot">
+            <i class="el-icon-picture-outline"></i>
+          </div>
+        </el-image>
+      </div>
+	</el-dialog>
 </section>
 </template>
 
@@ -58,34 +84,116 @@ export default {
 	data() {
 		return {
 			filters: {
+				keyWord:"",
 				pageSize: 10,
-				pageNum: 1,
-				total: 0,
+				pageNum: 1
 			},
-			dataList: [{}],
+			dataList: [],
 			listLoading: false,
 			addOrUpdateVisible: false,
+			total: 0,
+			imgsVisible:false,
+			imgs: "",
 		}
 	},
 	components: {
 		AddOrUpdate
 	},
 	methods: {
+		//是否开启
+		switchHandle(id, value, type){
+			let params = {};
+			params['functionId'] = id;
+			if(!type){
+				params['isEnabled'] = value
+			}else{
+				params['isPush'] = value
+			}
+			this.$http({
+              url: this.$http.adornUrl(`/event/pc/${!type ? 'enabledEventInfo' : 'pushEventInfo'}`),
+              method: 'post',
+              data: this.$http.adornData(params)
+            }).then(({data}) => {
+              if (data && data.code === 20000) {
+                this.$message({
+                  message: '操作成功',
+                  type: 'success',
+                  duration: 1500,
+                  onClose: () => {
+                    this.getDataList()
+                  }
+                })
+              } else {
+                this.$message.error(data.msg)
+              }
+            })
+		},
+		//删除
+		deleteHandle(id){
+			this.$confirm('This operation will permanently delete the file, do you want to continue?', 'Prompt', {
+				confirmButtonText: 'Confirm',
+				cancelButtonText: 'Cancel',
+				type: 'warning'
+			}).then(() => {
+				let params = {
+					'functionId':id
+				};
+				this.$http({
+					url: this.$http.adornUrl('/event/pc/delEventInfo'),
+					method: 'post',
+					data: this.$http.adornData(params)
+				}).then(({data}) => {
+					if (data && data.code === 20000) {
+						this.$message.success(data.msg)
+						this.getDataList()
+					} else {
+						this.$message.error(data.msg)
+					}
+				})
+				
+			})
+		},
+		//图片预览
+		showPreviewImage(url){
+			this.imgsVisible = true;
+			this.imgs = url
+		},
+		isLockHandle(id, isLock){//关闭或打开
+			let params = {
+				functionId:id,
+				isLock:isLock
+			};
+			this.$http({
+              url: this.$http.adornUrl('/adminUser/pc/lockAdminUserInfo'),
+              method: 'post',
+              data: this.$http.adornData(params)
+            }).then(({data}) => {
+              if (data && data.code === 20000) {
+				this.$message.success(data.msg)
+				let filters = {
+					keyWord:"",
+					pageNum:1,
+					pageSize:10
+				}
+				this.filters = filters;
+				this.getDataList(this.filters);
+              } else {
+                this.$message.error(data.msg)
+              }
+            })
+		},
 		 // 新增 / 修改
 		addOrUpdateHandle (id) {
 			this.addOrUpdateVisible = true
 			this.$nextTick(() => {
-			this.$refs.addOrUpdate.init(id)
+				this.$refs.addOrUpdate.init(id)
 			})
 		},
-		getSearchFilters(){//搜索
+		searchFilters(){//搜索
 			let params = {
-				studentId: this.filters.studentId,
-				pageNum:0,
+				keyWord:this.filters.keyWord,
+				pageNum:1,
 				pageSize:10
-			}
-			if(this.filters.explainDate !== ''){
-				params.explainDate = this.filters.explainDate
 			}
 			this.filters = params;
 			this.getDataList(this.filters);
@@ -94,9 +202,29 @@ export default {
 			this.filters.pageNum = val;
 			this.getDataList(this.filters);
 		},
-		getDataList(params) {//获取书单列表
+		getDataList(params) {//获取列表
+			if(!params){
+				params = {
+					keyWord:"",
+					pageNum:1,
+					pageSize:10
+				}
+			}
 			let that = this;
 			this.listLoading = true;
+			this.$http({
+              url: this.$http.adornUrl('/event/pc/findEventList'),
+              method: 'post',
+              data: this.$http.adornData(params)
+            }).then(({data}) => {
+              if (data && data.code === 20000) {
+				that.listLoading = false;
+				that.dataList = data.data.list;
+				this.total = data.total
+              } else {
+                this.$message.error(data.msg)
+              }
+            })
 		},
 		handleSizeChange(val) {
 			this.filters.pageSize = val;
@@ -106,7 +234,7 @@ export default {
 		
 	},
 	mounted() {
-		//his.getDataList(this.filters);
+		this.getDataList(this.filters);
 	}
 }
 

@@ -13,9 +13,7 @@
         <el-upload
           class="upload-demo"
           action="https://api.nevvorld.cn/api/public/cos/uploadfile"
-          :on-preview="handlePreview"
           :on-success="handleUpload"
-          :on-remove="handleRemove"
           :file-list="fileList"
           list-type="picture">
           <el-button size="small" type="primary">Upload Image</el-button>
@@ -291,12 +289,6 @@
             this.$message.error(data.msg)
           }
         })
-      },
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-      handlePreview(file) {
-        console.log(file);
       }
     }
   }

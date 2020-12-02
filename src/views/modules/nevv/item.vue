@@ -50,7 +50,7 @@
 	</el-col>
 	<!-- 弹窗, 新增 / 修改 -->
     <AddOrUpdate v-if="addOrUpdateVisible" ref="addOrUpdate"  @refreshDataList="getDataList"></AddOrUpdate>
-
+	<!-- 图片查看器 -->
 	<el-dialog title="Photo Viewer" :visible.sync="imgsVisible" width="40%">
       <div style="display: flex;justify-content: center;">
         <el-image :src="imgs" fit="scale-down" lazy style="margin: 20px auto;">

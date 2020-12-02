@@ -4,11 +4,11 @@
     :title="!dataForm.id ? 'Add' : 'Modify'"
     :close-on-click-modal="false"
     :visible.sync="visible">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
-      <el-form-item label="Relate to Event" prop="Name">
-        <el-select v-model="dataForm.Genre" filterable placeholder="Favorite Game  Genre">
+    <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
+      <el-form-item label="Relate to Event" >
+        <el-select v-model="dataForm.eventId" filterable placeholder="Relate to Event">
           <el-option
-            v-for="item in options"
+            v-for="item in config.eventList"
             :key="item.value"
             :label="item.label"
             :value="item.value">
@@ -16,46 +16,51 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Title" prop="Title">
-        <el-input v-model="dataForm.Nevv" placeholder="Nevv"></el-input>
+      <el-form-item label="Title" >
+        <el-input v-model="dataForm.Nevv" placeholder="Title"></el-input>
       </el-form-item>
 
-      <el-form-item label="Rules" prop="Rules">
-        <el-input type="textarea" v-model="dataForm.Rules"></el-input>
+      <el-form-item label="Rules" >
+        <el-input type="textarea" v-model="dataForm.questRule" placeholder="Rules"></el-input>
       </el-form-item>
 
-      <el-form-item label="FAQ" prop="FAQ">
-        <el-input type="textarea" v-model="dataForm.Rules"></el-input>
+      <el-form-item label="FAQ" >
+        <el-input type="textarea" v-model="dataForm.questFaq" placeholder="FAQ"></el-input>
       </el-form-item>
 
-      <el-form-item label="Objective" prop="Name">
-        <el-select v-model="dataForm.Genre" filterable placeholder="Favorite Game  Genre">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
+      <el-form-item label="Objective" >
+        <el-col :span="11">
+          <el-select v-model="dataForm.questType" filterable placeholder="Objective">
+            <el-option
+              v-for="item in config.urls"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-col>
+        <el-col :span="11" v-if="dataForm.questType===1">
+           <el-input v-model="dataForm.questUrl" placeholder="https://"></el-input>
+        </el-col>
       </el-form-item>
 
-      <el-form-item label="Event Point" prop="Event Point">
-        <el-input v-model="dataForm.Nevv" placeholder="10"></el-input>
+      <el-form-item label="Event Point">
+        <el-input v-model="dataForm.questCast" placeholder="Event Point"></el-input>
       </el-form-item>
 
-      <el-form-item label="Schedule From" prop="cronExpression">
+      <el-form-item label="Schedule From" >
         <el-date-picker
-          v-model="dataForm.BirthDate"
+          v-model="dataForm.startTime"
           type="date"
-          placeholder="Birth Date">
+          placeholder="Schedule From">
         </el-date-picker>
       </el-form-item>
 
-      <el-form-item label="Schedule To" prop="cronExpression">
+      <el-form-item label="Schedule To" >
         <el-date-picker
-          v-model="dataForm.BirthDate"
+          v-model="dataForm.endTime"
           type="date"
-          placeholder="Birth Date">
+          placeholder="Schedule To">
         </el-date-picker>
       </el-form-item>
 
@@ -86,18 +91,24 @@
           Nevv:"",
           Blocked:false
         },
-        dataRule: {
-          beanName: [
-            { required: true, message: '用户名不能为空', trigger: 'blur' }
+        isShowUrl:false,
+        config:{
+          eventList:[],
+          urls:[
+            {
+              value: 1,
+              label: 'Open the url'
+            },
+            {
+              value: 2,
+              label: 'Verify code'
+            },
+            {
+              value: 3,
+              label: 'Invite friend'
+            }
           ]
-        },
-        fileList: [
-          {name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}
-        ],
-        options: [{
-          value: '0',
-          label: 'Action'
-        }]
+        }
       }
     },
     methods: {
@@ -106,6 +117,7 @@
         this.visible = true
         this.$nextTick(() => {
           this.$refs['dataForm'].resetFields()
+           this.getSearchEventList()
           if (this.dataForm.id) {
             this.$http({
               url: this.$http.adornUrl(`/sys/schedule/info/${this.dataForm.id}`),
@@ -156,12 +168,18 @@
           }
         })
       },
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
+      getSearchEventList(){
+        this.$http({
+          url: this.$http.adornUrl("/event/pc/searchEventList"),
+          method: 'post'
+        }).then(({data}) => {
+          if (data && data.code === 20000) {
+            this.config.eventList = data.data
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
       },
-      handlePreview(file) {
-        console.log(file);
-      }
     }
   }
 </script>

@@ -13,9 +13,7 @@
         <el-upload
           class="upload-demo"
           action="https://api.nevvorld.cn/api/public/cos/uploadfile"
-          :on-preview="handlePreview"
           :on-success="handleUpload"
-          :on-remove="handleRemove"
           :file-list="fileList"
           list-type="picture">
           <el-button size="small" type="primary">Upload Image</el-button>
@@ -67,7 +65,7 @@
               url: this.$http.adornUrl('/product/pc/findItemInfo'),
               method: 'post',
               data: this.$http.adornData({
-                'productId': this.dataForm.productId
+                'functionId': this.dataForm.productId
               })
             }).then(({data}) => {
               if (data && data.code === 20000) {
