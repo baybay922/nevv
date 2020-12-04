@@ -30,7 +30,13 @@
 		<el-table-column prop="eventName" label="Event"></el-table-column> 
 		<el-table-column prop="questName" label="Title"></el-table-column> 
 		<el-table-column prop="questRule" label="Rules"></el-table-column> 
-		<el-table-column prop="Questyrl" label="Objective"></el-table-column> 
+		<el-table-column prop="questType" label="Objective">
+			<template slot-scope="scope">
+				<div v-if="scope.row.questType == '1'">{{scope.row.questUrl}}</div>
+				<div v-else-if="scope.row.questType == '2'">Verify code</div>
+				<div v-else>Invite friend</div>
+			</template>
+		</el-table-column> 
 		<el-table-column prop="questCast" label="Event Point"></el-table-column> 
 		<el-table-column prop="startTime" label="Schedule From"></el-table-column> 
 		<el-table-column prop="endTime" label="Schedule To"></el-table-column> 
@@ -53,7 +59,7 @@
 		:page-sizes="[5, 10, 15, 20]"
 		:page-size="filters.pageSize"
 		layout="total, sizes, prev, pager, next"
-		:total="filters.total">
+		:total="total">
 		</el-pagination>
 	</el-col>
 	<!-- 弹窗, 新增 / 修改 -->
@@ -168,7 +174,7 @@ export default {
               if (data && data.code === 20000) {
 				that.listLoading = false;
 				that.dataList = data.data.list;
-				this.total = data.total
+				this.total = data.data.total
               } else {
                 this.$message.error(data.msg)
               }
@@ -177,8 +183,14 @@ export default {
 		//每页个数
 		handleSizeChange(val) {
 			this.filters.pageSize = val;
-			this.filters.currentPage = 1;
-			console.log(`每页 ${val} 条`);
+			this.filters.pageNum = 1;//每次改变每页多少条都会重置当前页码为1
+			let params = {
+				keyWord:this.filters.keyWord,
+				pageNum: this.filters.pageNum,
+				pageSize:this.filters.pageSize
+			}
+			this.filters = params;
+			this.getDataList(this.filters);
 		},
 		//获取活动
 		getSearchEventList(){
@@ -205,7 +217,7 @@ export default {
 
 <style scoped lang="scss">
 .toolbar{
-padding-bottom: 0px;
+	padding-bottom: 20px;
 }
 .form-item{
 width: 310px;

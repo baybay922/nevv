@@ -5,19 +5,19 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
-      <el-form-item label="AdminName" prop="Admin-Name">
+      <el-form-item label="AdminName" class="required">
         <el-input v-model="dataForm.adminUserName" placeholder="Admin Name" autocomplete="off"></el-input>
       </el-form-item>
 
-      <el-form-item label="email" prop="email">
+      <el-form-item label="email" class="required">
         <el-input v-model="dataForm.email" placeholder="email" autocomplete="off"></el-input>
       </el-form-item>
 
-      <el-form-item label="password" prop="passWord">
-        <el-input v-model="dataForm.passWord" placeholder="password" autocomplete="off"></el-input>
+      <el-form-item label="password" class="required">
+        <el-input type="password" v-model="dataForm.passWord" placeholder="password" autocomplete="off"></el-input>
       </el-form-item>
 
-      <el-form-item label="Blocked" prop="Blocked">
+      <el-form-item label="Blocked" >
         <el-switch v-model="dataForm.isBlock"></el-switch>
       </el-form-item>
 

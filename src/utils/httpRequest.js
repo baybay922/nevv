@@ -4,6 +4,7 @@ import router from '@/router'
 import qs from 'qs'
 import merge from 'lodash/merge'
 import { clearLoginInfo } from '@/utils'
+import { Message } from 'element-ui';
 
 const http = axios.create({
   timeout: 100000 * 50,
@@ -33,6 +34,11 @@ http.interceptors.response.use(response => {
   }
   return response
 }, error => {
+  Message({
+    showClose: true,
+    message: 'Network error, please try again',
+    type: 'error'
+  });
   return Promise.reject(error)
 })
 

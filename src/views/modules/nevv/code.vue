@@ -3,11 +3,20 @@
 	<!--工具条-->
 	<el-col :span="24" class="toolbar">
 		<el-form :inline="true" :model="filters">
+
 			<el-form-item label-width="120px">
-				<el-input autocomplete="off" v-model="filters.studentId" placeholder="Search by name"></el-input>
+				<el-select v-model="filters.keyWord" placeholder="请选择">
+					<el-option
+					v-for="item in config.eventList"
+					:key="item.eventId"
+					:label="item.eventName"
+					:value="item.eventId">
+					</el-option>
+				</el-select>
 			</el-form-item>
+
 			<el-form-item>
-				<el-button type="primary">Search</el-button>
+				<el-button type="primary" @click="getSearchFilters()">Search</el-button>
 			</el-form-item>
 
 			<el-form-item>
@@ -17,20 +26,29 @@
 	</el-col>
 
 	<!--列表-->
-	<el-table class="userTable" border :data="dataList" highlight-current-row v-loading="listLoading">
-		<el-table-column prop="Event" label="Event"></el-table-column> 
-		<el-table-column prop="email" label="Logo"></el-table-column> 
-		<el-table-column prop="email" label="Code Type"></el-table-column> 
-		<el-table-column prop="email" label="Event Point"></el-table-column> 
-		<el-table-column prop="courseCode" label="Schedule From"></el-table-column> 
-		<el-table-column prop="courseCode" label="Schedule To"></el-table-column> 
-		<el-table-column prop="courseCode" label="Amount"></el-table-column>
-		<el-table-column prop="courseCode" label="Publishing"></el-table-column>
-		<el-table-column prop="courseCode" label="Create Date"></el-table-column> 
-		<el-table-column label="Operation" width="150">
+	<el-table class="userTable" border :data="dataList" highlight-current-row v-loading="listLoading"> 
+		<el-table-column prop="eventName" label="Event"></el-table-column> 
+		<el-table-column prop="logoUrl" label="Logo" width="70">
 			<template slot-scope="scope">
-				<el-link icon="el-icon-edit">Edit</el-link>
-				<el-link icon="el-icon-check">Block</el-link>
+				<img class="listImg" :src="scope.row.logoUrl" @click="showPreviewImage(scope.row.logoUrl)" />
+			</template>
+		</el-table-column> 
+		<el-table-column prop="couponsType" label="Code Type"></el-table-column> 
+		<el-table-column prop="couponsCast" label="Event Point"></el-table-column> 
+		<el-table-column prop="startTime" label="Schedule From"></el-table-column> 
+		<el-table-column prop="endTime" label="Schedule To"></el-table-column> 
+		<el-table-column prop="amount" label="Amount"></el-table-column>
+		<el-table-column prop="couponsStatus" label="Publishing">
+			<template slot-scope="scope">
+				<el-switch v-model="scope.row.couponsStatus" :active-value="1" :inactive-value="0" @change="switchHandle(scope.row.id,scope.row.couponsStatus)"></el-switch>
+			</template>
+		</el-table-column>
+		<el-table-column prop="createTime" label="Create Date"></el-table-column> 
+		<el-table-column label="Operation" width="250">
+			<template slot-scope="scope">
+				<!-- <el-link icon="el-icon-edit" @click="addOrUpdateHandle(scope.row.id)">Edit</el-link> -->
+				<el-link icon="el-icon-delete" @click="deleteHandle(scope.row.id)">Delete</el-link>
+				<el-link icon="el-icon-download"><a class="export" :href="scope.row.downloadUrl">Export</a></el-link>
 			</template>
 		</el-table-column>
 	</el-table>
@@ -45,11 +63,21 @@
 		:page-sizes="[5, 10, 15, 20]"
 		:page-size="filters.pageSize"
 		layout="total, sizes, prev, pager, next"
-		:total="filters.total">
+		:total="total">
 		</el-pagination>
 	</el-col>
 	<!-- 弹窗, 新增 / 修改 -->
     <AddOrUpdate v-if="addOrUpdateVisible" ref="addOrUpdate"  @refreshDataList="getDataList"></AddOrUpdate>
+	<!-- 图片查看器 -->
+	<el-dialog title="Photo Viewer" :visible.sync="imgsVisible" width="40%">
+      <div style="display: flex;justify-content: center;">
+        <el-image :src="imgs" fit="scale-down" lazy style="margin: 20px auto;">
+          <div slot="error" class="image-slot">
+            <i class="el-icon-picture-outline"></i>
+          </div>
+        </el-image>
+      </div>
+	</el-dialog>
 </section>
 </template>
 
@@ -59,55 +87,162 @@ export default {
 	data() {
 		return {
 			filters: {
+				keyWord:"",
 				pageSize: 10,
 				pageNum: 1,
-				total: 0,
 			},
-			dataList: [{}],
+			total: 0,
+			dataList: [],
 			listLoading: false,
 			addOrUpdateVisible: false,
+			imgsVisible:false,
+			imgs: "",
+			config:{
+				eventList:[]
+			},
+			all:[
+				{
+					'eventId':"",
+					'eventName':"All"
+				}
+			]
 		}
 	},
 	components: {
 		AddOrUpdate
 	},
 	methods: {
+		//是否开启
+		switchHandle(id, value){
+			let params = {};
+			params['functionId'] = id;
+			params['isPush'] = value
+
+			this.$http({
+              url: this.$http.adornUrl('/eventCoupon/pc/pushEventCouponInfo'),
+              method: 'post',
+              data: this.$http.adornData(params)
+            }).then(({data}) => {
+              if (data && data.code === 20000) {
+                this.$message({
+                  message: '操作成功',
+                  type: 'success',
+                  duration: 1500,
+                  onClose: () => {
+                    this.getDataList()
+                  }
+                })
+              } else {
+                this.$message.error(data.msg)
+              }
+            })
+		},
+		//删除
+		deleteHandle(id){
+			this.$confirm('This operation will permanently delete the file, do you want to continue?', 'Prompt', {
+				confirmButtonText: 'Confirm',
+				cancelButtonText: 'Cancel',
+				type: 'warning'
+			}).then(() => {
+				let params = {
+					'functionId':id
+				};
+				this.$http({
+					url: this.$http.adornUrl('/eventCoupon/pc/delCouponInfo'),
+					method: 'post',
+					data: this.$http.adornData(params)
+				}).then(({data}) => {
+					if (data && data.code === 20000) {
+						this.$message.success(data.msg)
+						this.getDataList()
+					} else {
+						this.$message.error(data.msg)
+					}
+				})
+				
+			})
+		},
+		showPreviewImage(url){
+			this.imgsVisible = true;
+			this.imgs = url
+		},
 		 // 新增 / 修改
 		addOrUpdateHandle (id) {
 			this.addOrUpdateVisible = true
 			this.$nextTick(() => {
-			this.$refs.addOrUpdate.init(id)
+				this.$refs.addOrUpdate.init(id)
 			})
 		},
-		getSearchFilters(){//搜索
+		//搜索
+		getSearchFilters(){
 			let params = {
-				studentId: this.filters.studentId,
-				pageNum:0,
+				keyWord:this.filters.keyWord,
+				pageNum:1,
 				pageSize:10
-			}
-			if(this.filters.explainDate !== ''){
-				params.explainDate = this.filters.explainDate
 			}
 			this.filters = params;
 			this.getDataList(this.filters);
 		},
-		handleCurrentChange(val) {//上一页或者下一页
+		//上一页或者下一页
+		handleCurrentChange(val) {
 			this.filters.pageNum = val;
 			this.getDataList(this.filters);
 		},
-		getDataList(params) {//获取书单列表
+		//获取列表
+		getDataList(params) {
+			if(!params){
+				params = {
+					keyWord:"",
+					pageNum:1,
+					pageSize:10
+				}
+			}
 			let that = this;
 			this.listLoading = true;
+			this.$http({
+              url: this.$http.adornUrl('/eventCoupon/pc/findCouponList'),
+              method: 'post',
+              data: this.$http.adornData(params)
+            }).then(({data}) => {
+              if (data && data.code === 20000) {
+				that.listLoading = false;
+				that.dataList = data.data.list;
+				this.total = data.data.total
+              } else {
+                this.$message.error(data.msg)
+              }
+            })
 		},
+		//每页个数
 		handleSizeChange(val) {
 			this.filters.pageSize = val;
-			this.filters.currentPage = 1;//每次改变每页多少条都会重置当前页码为1
-			console.log(`每页 ${val} 条`);
+			this.filters.pageNum = 1;//每次改变每页多少条都会重置当前页码为1
+			let params = {
+				keyWord:this.filters.keyWord,
+				pageNum: this.filters.pageNum,
+				pageSize:this.filters.pageSize
+			}
+			this.filters = params;
+			this.getDataList(this.filters);
 		},
+		//获取活动
+		getSearchEventList(){
+			this.$http({
+			url: this.$http.adornUrl("/event/pc/searchEventList"),
+			method: 'post'
+			}).then(({data}) => {
+			if (data && data.code === 20000) {
+				this.config.eventList = this.all.concat(data.data);
+			} else {
+				this.$message.error(data.msg)
+			}
+			})
+      },
 		
 	},
 	mounted() {
-		//his.getDataList(this.filters);
+		this.getDataList();
+		this.getSearchEventList()
 	}
 }
 
@@ -115,7 +250,7 @@ export default {
 
 <style scoped lang="scss">
 .toolbar{
-padding-bottom: 0px;
+	padding-bottom: 20px;
 }
 .form-item{
 width: 310px;
@@ -204,5 +339,11 @@ i{
 		font-size: 30px;
 		color: #fff;
 	}
+}
+.export{
+	color: #606266;
+}
+.export:hover{
+	color: #9733ff;
 }
 </style>

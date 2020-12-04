@@ -4,59 +4,58 @@
     :title="!dataForm.id ? 'Add' : 'Modify'"
     :close-on-click-modal="false"
     :visible.sync="visible">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
-      <el-form-item label="Relate to Event" prop="Name">
-        <el-select v-model="dataForm.Genre" filterable placeholder="Favorite Game  Genre">
+    <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
+      <el-form-item label="Relate to Event"  class="required">
+        <el-select v-model="dataForm.eventId" filterable placeholder="Relate to Event">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
+					v-for="item in config.eventList"
+					:key="item.eventId"
+					:label="item.eventName"
+					:value="item.eventId">
+					</el-option>
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Logo" prop="params">
+      <el-form-item label="Logo" >
         <el-upload
           class="upload-demo"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
+          action="https://api.nevvorld.cn/api/public/cos/uploadfile"
+          :on-success="handleUpload"
           :file-list="fileList"
           list-type="picture">
           <el-button size="small" type="primary">Upload Image</el-button>
         </el-upload>
       </el-form-item>
 
-      <el-form-item label="Code Type" prop="Code Type">
-        <el-radio-group v-model="dataForm.radio" size="small">
-          <el-radio-button label="QR Code"></el-radio-button>
-          <el-radio-button label="Unique Code"></el-radio-button>
+      <el-form-item label="Code Type"  class="required">
+        <el-radio-group v-model="dataForm.couponsType" size="small">
+          <el-radio-button label="2">QR Code</el-radio-button>
+          <el-radio-button label="1">Unique Code</el-radio-button>
         </el-radio-group>
       </el-form-item>
 
-      <el-form-item label="Schedule From" prop="cronExpression">
+      <el-form-item label="Schedule From" >
         <el-date-picker
-          v-model="dataForm.BirthDate"
+          v-model="dataForm.startTime"
           type="date"
-          placeholder="Birth Date">
+          placeholder="Schedule From">
         </el-date-picker>
       </el-form-item>
 
-      <el-form-item label="Schedule To" prop="cronExpression">
+      <el-form-item label="Schedule To" >
         <el-date-picker
-          v-model="dataForm.BirthDate"
+          v-model="dataForm.endTime"
           type="date"
-          placeholder="Birth Date">
+          placeholder="Schedule To">
         </el-date-picker>
       </el-form-item>
 
-      <el-form-item label="Event Points" prop="Event Points">
-        <el-input v-model="dataForm.Nevv" placeholder="10"></el-input>
+      <el-form-item label="Event Points"  class="required">
+        <el-input v-model="dataForm.couponsCast" placeholder="Event Points"></el-input>
       </el-form-item>
 
-      <el-form-item label="Batch amount" prop="Batch amount">
-        <el-input v-model="dataForm.Nevv" placeholder="10"></el-input>
+      <el-form-item label="Batch amount"  class="required">
+        <el-input v-model="dataForm.amount" placeholder="Batch amount"></el-input>
       </el-form-item>
 
     </el-form>
@@ -73,32 +72,17 @@
       return {
         visible: false,
         dataForm: {
-          id: 0,
-          Name:"",
-          Avatar:"",
-          Description:"",
-          Phone:"",
-          BirthDate:"",
-          Gender:"Male",
-          Country:"",
-          City:"",
-          Genre:"",
-          Nevv:"",
-          Blocked:false,
-          radio:'QR Code'
+          eventId:"",
+          couponsCast:"",
+          couponsType:2,
+          amount:"",
+          startTime:"",
+          endTime:""
         },
-        dataRule: {
-          beanName: [
-            { required: true, message: '用户名不能为空', trigger: 'blur' }
-          ]
-        },
-        fileList: [
-          {name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}
-        ],
-        options: [{
-          value: '0',
-          label: 'Action'
-        }]
+        fileList: [],
+        config:{
+          eventList:[]
+        }
       }
     },
     methods: {
@@ -107,40 +91,52 @@
         this.visible = true
         this.$nextTick(() => {
           this.$refs['dataForm'].resetFields()
-          if (this.dataForm.id) {
-            this.$http({
-              url: this.$http.adornUrl(`/sys/schedule/info/${this.dataForm.id}`),
-              method: 'get',
-              params: this.$http.adornParams()
-            }).then(({data}) => {
-              if (data && data.code === 0) {
-                this.dataForm.beanName = data.schedule.beanName
-                this.dataForm.params = data.schedule.params
-                this.dataForm.cronExpression = data.schedule.cronExpression
-                this.dataForm.remark = data.schedule.remark
-                this.dataForm.status = data.schedule.status
-              }
-            })
+          this.getSearchEventList()
+          if (!this.dataForm.id) {
+            this.dataForm.eventId = ""
+            this.dataForm.couponsCast = ""
+            this.dataForm.couponsType = 2
+            this.dataForm.amount = ""
+            this.dataForm.startTime = ""
+            this.dataForm.endTime = ""
+            this.fileList = []
           }
         })
       },
       // 表单提交
       dataFormSubmit () {
+        if(this.dataForm.eventId == ""){
+          this.$message.error("Relate to Event can not be empty");
+          return;
+        }
+        if(this.dataForm.couponsType == ""){
+          this.$message.error("Code Type can not be empty");
+          return;
+        }
+        if(this.dataForm.couponsCast == ""){
+          this.$message.error("Event Points can not be empty");
+          return;
+        }
+        if(this.dataForm.amount == ""){
+          this.$message.error("Batch amount can not be empty");
+          return;
+        }
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
-              url: this.$http.adornUrl(`/sys/schedule/${!this.dataForm.id ? 'save' : 'update'}`),
+              url: this.$http.adornUrl('/eventCoupon/pc/addCoupon'),
               method: 'post',
               data: this.$http.adornData({
-                'jobId': this.dataForm.id || undefined,
-                'beanName': this.dataForm.beanName,
-                'params': this.dataForm.params,
-                'cronExpression': this.dataForm.cronExpression,
-                'remark': this.dataForm.remark,
-                'status': !this.dataForm.id ? undefined : this.dataForm.status
+                eventId: this.dataForm.eventId,
+                couponsCast: this.dataForm.couponsCast,
+                couponsType: this.dataForm.couponsType,
+                amount: this.dataForm.amount,
+                startTime: this.dataForm.startTime,
+                endTime: this.dataForm.endTime,
+                logoUrl: this.fileList.length>0?this.fileList[0].url:"",
               })
             }).then(({data}) => {
-              if (data && data.code === 0) {
+              if (data && data.code === 20000) {
                 this.$message({
                   message: '操作成功',
                   type: 'success',
@@ -157,12 +153,27 @@
           }
         })
       },
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
+      getSearchEventList(){
+        this.$http({
+          url: this.$http.adornUrl("/event/pc/searchEventList"),
+          method: 'post'
+        }).then(({data}) => {
+          if (data && data.code === 20000) {
+            this.config.eventList = data.data
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
       },
-      handlePreview(file) {
-        console.log(file);
-      }
+      handleUpload(response, file, fileList){
+        if(response && response.code === 20000){
+          let files = [];
+          files.push({url:response.data.cosUrl})
+          this.fileList = files
+        }else{
+          this.$message.error(data.msg)
+        }
+      },
     }
   }
 </script>

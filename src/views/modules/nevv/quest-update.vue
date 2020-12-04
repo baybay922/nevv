@@ -5,32 +5,32 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
-      <el-form-item label="Relate to Event" >
-        <el-select v-model="dataForm.eventId" filterable placeholder="Relate to Event">
+      <el-form-item label="Relate to Event" class="required">
+        <el-select v-model="dataForm.eventId" placeholder="Relate to Event">
           <el-option
             v-for="item in config.eventList"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            :key="item.eventId"
+            :label="item.eventName"
+            :value="item.eventId">
           </el-option>
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Title" >
-        <el-input v-model="dataForm.Nevv" placeholder="Title"></el-input>
+      <el-form-item label="Title" class="required">
+        <el-input v-model="dataForm.questName" placeholder="Title"></el-input>
       </el-form-item>
 
-      <el-form-item label="Rules" >
+      <el-form-item label="Rules" class="required">
         <el-input type="textarea" v-model="dataForm.questRule" placeholder="Rules"></el-input>
       </el-form-item>
 
-      <el-form-item label="FAQ" >
+      <el-form-item label="FAQ" class="required">
         <el-input type="textarea" v-model="dataForm.questFaq" placeholder="FAQ"></el-input>
       </el-form-item>
 
-      <el-form-item label="Objective" >
+      <el-form-item label="Objective" class="required">
         <el-col :span="11">
-          <el-select v-model="dataForm.questType" filterable placeholder="Objective">
+          <el-select v-model="dataForm.questType" placeholder="Objective">
             <el-option
               v-for="item in config.urls"
               :key="item.value"
@@ -44,7 +44,7 @@
         </el-col>
       </el-form-item>
 
-      <el-form-item label="Event Point">
+      <el-form-item label="Event Point" class="required">
         <el-input v-model="dataForm.questCast" placeholder="Event Point"></el-input>
       </el-form-item>
 
@@ -79,17 +79,15 @@
         visible: false,
         dataForm: {
           id: 0,
-          Name:"",
-          Avatar:"",
-          Description:"",
-          Phone:"",
-          BirthDate:"",
-          Gender:"Male",
-          Country:"",
-          City:"",
-          Genre:"",
-          Nevv:"",
-          Blocked:false
+          eventId:"",
+          questName:"",
+          questRule:"",
+          questFaq:"",
+          questType:"",
+          questUrl:"",
+          questCast:"",
+          startTime:"",
+          endTime:""
         },
         isShowUrl:false,
         config:{
@@ -120,38 +118,91 @@
            this.getSearchEventList()
           if (this.dataForm.id) {
             this.$http({
-              url: this.$http.adornUrl(`/sys/schedule/info/${this.dataForm.id}`),
-              method: 'get',
-              params: this.$http.adornParams()
+              url: this.$http.adornUrl('/eventQuest/pc/findQuestInfo'),
+              method: 'post',
+              data: this.$http.adornData({
+                'functionId': this.dataForm.id
+              })
             }).then(({data}) => {
-              if (data && data.code === 0) {
-                this.dataForm.beanName = data.schedule.beanName
-                this.dataForm.params = data.schedule.params
-                this.dataForm.cronExpression = data.schedule.cronExpression
-                this.dataForm.remark = data.schedule.remark
-                this.dataForm.status = data.schedule.status
+              if (data && data.code === 20000) {
+                this.dataForm.id = data.data.id;
+                this.dataForm.eventId = data.data.eventId;
+                this.dataForm.questName = data.data.questName;
+                this.dataForm.questRule = data.data.questRule;
+                this.dataForm.questFaq = data.data.questFaq;
+                this.dataForm.questType = parseInt(data.data.questType);
+                this.dataForm.questUrl = data.data.questUrl;
+                this.dataForm.questCast = data.data.questCast;
+                this.dataForm.startTime = data.data.startTime;
+                this.dataForm.endTime = data.data.endTime;
               }
             })
+          }else{
+            this.dataForm.id = "";
+            this.dataForm.eventId = "";
+            this.dataForm.questName = "";
+            this.dataForm.questRule = "";
+            this.dataForm.questFaq = "";
+            this.dataForm.questType = "";
+            this.dataForm.questUrl = "";
+            this.dataForm.questCast = "";
+            this.dataForm.startTime = "";
+            this.dataForm.endTime = "";
           }
         })
       },
       // 表单提交
       dataFormSubmit () {
+        if(this.dataForm.eventId == ""){
+          this.$message.error("Relate to Event can not be empty");
+          return;
+        }
+        if(this.dataForm.questName == ""){
+          this.$message.error("Title can not be empty");
+          return;
+        }
+        if(this.dataForm.questRule == ""){
+          this.$message.error("Rules can not be empty");
+          return;
+        }
+        if(this.dataForm.questFaq == ""){
+          this.$message.error("FAQ can not be empty");
+          return;
+        }
+        if(this.dataForm.questType == ""){
+          this.$message.error("Objective can not be empty");
+          return;
+        }
+
+        if(this.dataForm.questType == 1 && this.dataForm.questUrl == ""){
+          this.$message.error("Objective Url can not be empty");
+          return;
+        }
+
+        if(this.dataForm.questCast == ""){
+          this.$message.error("Event Point can not be empty");
+          return;
+        }
+
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
-              url: this.$http.adornUrl(`/sys/schedule/${!this.dataForm.id ? 'save' : 'update'}`),
+              url: this.$http.adornUrl(`/eventQuest/pc/${!this.dataForm.id ? 'addQuest' : 'editQuest'}`),
               method: 'post',
               data: this.$http.adornData({
-                'jobId': this.dataForm.id || undefined,
-                'beanName': this.dataForm.beanName,
-                'params': this.dataForm.params,
-                'cronExpression': this.dataForm.cronExpression,
-                'remark': this.dataForm.remark,
-                'status': !this.dataForm.id ? undefined : this.dataForm.status
+                'id': this.dataForm.id || undefined,
+                'eventId': this.dataForm.eventId,
+                'questName': this.dataForm.questName,
+                'questRule': this.dataForm.questRule,
+                'questFaq': this.dataForm.questFaq,
+                'questType': this.dataForm.questType,
+                'questUrl': this.dataForm.questUrl,
+                'questCast': this.dataForm.questCast,
+                'startTime': this.dataForm.startTime,
+                'endTime': this.dataForm.endTime
               })
             }).then(({data}) => {
-              if (data && data.code === 0) {
+              if (data && data.code === 20000) {
                 this.$message({
                   message: '操作成功',
                   type: 'success',
@@ -183,3 +234,8 @@
     }
   }
 </script>
+<style  scoped>
+.toolbar{
+  padding-bottom: 20px;
+}
+</style>

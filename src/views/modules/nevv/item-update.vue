@@ -5,11 +5,11 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
-      <el-form-item label="Asset Name">
+      <el-form-item label="Asset Name" class="required">
         <el-input v-model="dataForm.productName" placeholder="Asset Name"></el-input>
       </el-form-item>
 
-      <el-form-item label="Icon">
+      <el-form-item label="Icon" class="required">
         <el-upload
           class="upload-demo"
           action="https://api.nevvorld.cn/api/public/cos/uploadfile"
@@ -20,11 +20,11 @@
         </el-upload>
       </el-form-item>
 
-      <el-form-item label="Description">
+      <el-form-item label="Description" class="required">
         <el-input type="textarea" v-model="dataForm.description"></el-input>
       </el-form-item>
 
-      <el-form-item label="Nevv">
+      <el-form-item label="Nevv" class="required">
         <el-input v-model="dataForm.nevv" placeholder="nevv"></el-input>
       </el-form-item>
 
@@ -91,6 +91,24 @@
       },
       // 表单提交
       dataFormSubmit () {
+        if(this.dataForm.productName == ""){
+          this.$message.error("Asset Name can not be empty");
+          return;
+        }
+        if(this.fileList.length <= 0){
+          this.$message.error("Icon can not be empty");
+          return;
+        }
+
+        if(this.dataForm.description == ""){
+          this.$message.error("Description can not be empty");
+          return;
+        }
+
+        if(this.dataForm.nevv == ""){
+          this.$message.error("Nevv can not be empty");
+          return;
+        }
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({

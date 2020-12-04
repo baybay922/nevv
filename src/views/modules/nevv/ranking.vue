@@ -46,7 +46,7 @@
 		:page-sizes="[5, 10, 15, 20]"
 		:page-size="filters.pageSize"
 		layout="total, sizes, prev, pager, next"
-		:total="filters.total">
+		:total="total">
 		</el-pagination>
 	</el-col>
 	<!-- 图片查看器 -->
@@ -127,7 +127,7 @@ export default {
               if (data && data.code === 20000) {
 				that.listLoading = false;
 				that.dataList = data.data.list;
-				this.total = data.total
+				this.total = data.data.total
               } else {
                 this.$message.error(data.msg)
               }
@@ -164,7 +164,7 @@ export default {
 
 <style scoped lang="scss">
 .toolbar{
-padding-bottom: 0px;
+	padding-bottom: 20px;
 }
 .form-item{
 width: 310px;

@@ -4,7 +4,14 @@
 	<el-col :span="24" class="toolbar">
 		<el-form :inline="true" :model="filters">
 			<el-form-item label-width="120px">
-				<el-input autocomplete="off" v-model="filters.keyWord" placeholder="Search by name"></el-input>
+				<el-select v-model="filters.keyWord" placeholder="请选择">
+					<el-option
+					v-for="item in config.eventList"
+					:key="item.eventId"
+					:label="item.eventName"
+					:value="item.eventId">
+					</el-option>
+				</el-select>
 			</el-form-item>
 
 			<el-form-item label-width="50px">
@@ -64,7 +71,7 @@
 		:page-sizes="[5, 10, 15, 20]"
 		:page-size="filters.pageSize"
 		layout="total, sizes, prev, pager, next"
-		:total="filters.total">
+		:total="total">
 		</el-pagination>
 	</el-col>
 	<!-- 弹窗, 新增 / 修改 -->
@@ -100,6 +107,7 @@ export default {
 			imgsVisible:false,
 			imgs: "",
 			config:{
+				eventList:[],
 				openOptions:[
 					{
 						value:"2",
@@ -114,7 +122,13 @@ export default {
 						label:"Close"
 					}
 				]
-			}
+			},
+			all:[
+				{
+					'eventId':"",
+					'eventName':"All"
+				}
+			]
 		}
 	},
 	components: {
@@ -202,7 +216,7 @@ export default {
 		getDataList(params) {
 			if(!params){
 				params = {
-					isOpen:"",
+					isOpen: this.filters.isOpen,
 					keyWord:"",
 					pageNum:1,
 					pageSize:10
@@ -218,7 +232,7 @@ export default {
               if (data && data.code === 20000) {
 				that.listLoading = false;
 				that.dataList = data.data.list;
-				this.total = data.total
+				this.total = data.data.total
               } else {
                 this.$message.error(data.msg)
               }
@@ -227,13 +241,34 @@ export default {
 		//每页个数
 		handleSizeChange(val) {
 			this.filters.pageSize = val;
-			this.filters.currentPage = 1;
-			console.log(`每页 ${val} 条`);
+			this.filters.pageNum = 1;//每次改变每页多少条都会重置当前页码为1
+			let params = {
+				keyWord:this.filters.keyWord,
+				isOpen:this.filters.isOpen,
+				pageNum: this.filters.pageNum,
+				pageSize:this.filters.pageSize
+			}
+			this.filters = params;
+			this.getDataList(this.filters);
 		},
+		//获取活动
+		getSearchEventList(){
+			this.$http({
+				url: this.$http.adornUrl("/event/pc/searchEventList"),
+				method: 'post'
+			}).then(({data}) => {
+				if (data && data.code === 20000) {
+					this.config.eventList = this.all.concat(data.data);
+				} else {
+					this.$message.error(data.msg)
+				}
+			})
+      	},
 		
 	},
 	mounted() {
 		this.getDataList(this.filters);
+		this.getSearchEventList()
 	}
 }
 
@@ -241,7 +276,7 @@ export default {
 
 <style scoped lang="scss">
 .toolbar{
-padding-bottom: 0px;
+padding-bottom: 20px;
 }
 .form-item{
 width: 310px;

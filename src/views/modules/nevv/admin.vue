@@ -40,7 +40,7 @@
 		:page-sizes="[5, 10, 15, 20]"
 		:page-size="filters.pageSize"
 		layout="total, sizes, prev, pager, next"
-		:total="filters.total">
+		:total="total">
 		</el-pagination>
 	</el-col>
 	<!-- 弹窗, 新增 / 修改 -->
@@ -102,7 +102,7 @@ export default {
 		searchFilters(){//搜索
 			let params = {
 				keyWord:this.filters.keyWord,
-				pageNum:1,
+				pageNum: this.filters.pageNum,
 				pageSize:10
 			}
 			this.filters = params;
@@ -112,11 +112,11 @@ export default {
 			this.filters.pageNum = val;
 			this.getDataList(this.filters);
 		},
-		getDataList(params) {//获取书单列表
+		getDataList(params) {//获取列表
 			if(!params){
 				params = {
 					keyWord:"",
-					pageNum:1,
+					pageNum:this.filters.pageNum,
 					pageSize:10
 				}
 			}
@@ -130,7 +130,7 @@ export default {
               if (data && data.code === 20000) {
 				that.listLoading = false;
 				that.dataList = data.data.list;
-				this.total = data.total
+				this.total = data.data.total
               } else {
                 this.$message.error(data.msg)
               }
@@ -138,8 +138,14 @@ export default {
 		},
 		handleSizeChange(val) {
 			this.filters.pageSize = val;
-			this.filters.currentPage = 1;//每次改变每页多少条都会重置当前页码为1
-			console.log(`每页 ${val} 条`);
+			this.filters.pageNum = 1;//每次改变每页多少条都会重置当前页码为1
+			let params = {
+				keyWord:this.filters.keyWord,
+				pageNum: this.filters.pageNum,
+				pageSize:this.filters.pageSize
+			}
+			this.filters = params;
+			this.getDataList(this.filters);
 		},
 		
 	},
@@ -152,7 +158,7 @@ export default {
 
 <style scoped lang="scss">
 .toolbar{
-padding-bottom: 0px;
+padding-bottom: 20px;
 }
 .form-item{
 width: 310px;

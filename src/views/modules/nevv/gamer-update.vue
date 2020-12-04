@@ -5,7 +5,7 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
-      <el-form-item label="*In-Game Name">
+      <el-form-item label="*In-Game Name" class="required">
         <el-input v-model="dataForm.ign" placeholder="In-Game Name"></el-input>
       </el-form-item>
 
@@ -44,24 +44,24 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Country" >
-        <el-select v-model="dataForm.country" placeholder="Country" @change="selectCityName($event)">
+      <el-form-item label="Province" >
+        <el-select v-model="dataForm.province" placeholder="Province" @change="selectCityName($event)">
           <el-option
             v-for="item in config.countryArray"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            :key="item.province_id"
+            :label="item.province"
+            :value="item.province_id">
           </el-option>
         </el-select>
       </el-form-item>
 
       <el-form-item label="City" >
-        <el-select v-model="dataForm.city" placeholder="City">
+        <el-select v-model="dataForm.city" placeholder="City" @change="selectCityText($event)">
           <el-option
             v-for="item in config.cityArray"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            :key="item.city_id"
+            :label="item.city_name"
+            :value="item.city_id">
           </el-option>
         </el-select>
       </el-form-item>
@@ -107,8 +107,10 @@
           phone:"",
           birthdate:"",
           genter:"",
-          country:"",
+          province:"",
+          provinceName:"",
           city:"",
+          cityName:"",
           fgameGen:"",
           nevv:"",
           isLocked:true
@@ -141,7 +143,6 @@
         this.$nextTick(() => {
           this.$refs['dataForm'].resetFields()
           if (this.dataForm.userId) {
-            this.setSelectCountryArray();
             this.$http({
               url: this.$http.adornUrl("/user/pc/findUserInfo"),
               method: 'post',
@@ -155,81 +156,76 @@
                 this.dataForm.phone = data.data.phone
                 this.dataForm.birthdate = data.data.birthdate
                 this.dataForm.genter = data.data.genter
-                this.dataForm.country = data.data.country
-                this.dataForm.city = data.data.city
-                this.dataForm.fgameGen = data.data.fgameGen
                 this.dataForm.nevv = data.data.nevvCash
                 this.dataForm.isLocked = data.data.isBlock==0?true:false;
                 let files = [];
                 files.push({url:data.data.userImg})
                 this.fileList = files;
                 this.getFavoriteGameList(data.data.fgameGen);
+                this.setSelectProvinceArray(data.data.province,data.data.city);
               }else{
                 this.$message.error(data.msg)
               }
             })
+          }else{
+            this.setSelectProvinceArray();
           }
         })
         
       },
-      selectCityName(event){//获取城市
-        let _cityChiren = [];
-        let PCANEN = countrys.split("#");
-        for (let i = 0; i < PCANEN.length; i++) {
-          if(PCANEN[i].split("$")[0] !== ""){
-            
-            let value = PCANEN[i].split("$")[0];
-            if(event === value){
-              let _citys = PCANEN[i].split("$")[1].split(",");
-              
-              for(let j =0; j < _citys.length; j++){
-                if(_citys[j] !== ""){
-                  let _city = {};
-                  _city.value = _citys[j];
-                  _city.label = _citys[j];
-                  _cityChiren.push(_city)
-                }
-              }
+      selectCityText(id){//获取市名称
+        let _cityText;
+        this.config.cityArray.map(item=>{
+          if(item.city_id == id){
+            _cityText = item.city_name;
+          }
+        })
+        this.dataForm.cityName = _cityText;
+      },
+      selectProvinceText(id){//获取省份名称
+        let _provinceText;
+        this.config.countryArray.map(item=>{
+          if(item.province_id == id){
+            _provinceText = item.province;
+          }
+        })
+        this.dataForm.provinceName = _provinceText;
+      },
+      selectCityName(id,cityID){//获取城市
+        this.$http({
+          url: this.$http.adornUrl("/public/rajaongkir/provinceAndCity"),
+          method: 'post',
+          data: this.$http.adornData({
+            'provinceId': id
+          })
+        }).then(({data}) => {
+          if (data && data.code === 20000) {
+            let res = JSON.parse(data.data);
+            this.config.cityArray = res.rajaongkir.results
+            if(cityID){
+              this.dataForm.city = cityID
+              this.selectCityText(cityID)
+            }
+            this.selectProvinceText(id)
+          }
+        })
+      },
+      setSelectProvinceArray(id,cityID){//获取省份数组
+        this.$http({
+          url: this.$http.adornUrl("/public/rajaongkir/provinceAndCity"),
+          method: 'post',
+          data: this.$http.adornData({
+            'provinceId': ""
+          })
+        }).then(({data}) => {
+          if (data && data.code === 20000) {
+            let res = JSON.parse(data.data);
+            this.config.countryArray = res.rajaongkir.results;
+            if(id){
+              this.selectCityName(id,cityID)
             }
           }
-        }
-        this.config.cityArray = _cityChiren
-      },
-      setSelectCountryArray(){//获取国家
-        // let countryArray = [];
-        // let PCANEN = countrys.split("#");
-        
-        // for (let i = 0; i < PCANEN.length; i++) {
-        //   if(PCANEN[i].split("$")[0] !== ""){
-        //     let _citys = PCANEN[i].split("$")[1].split(",");
-        //     let _country = {};
-        //     _country.value = PCANEN[i].split("$")[0];
-        //     _country.label = PCANEN[i].split("$")[0];
-        //     let countryChildren = [];
-            
-        //     for(let j =0; j < _citys.length; j++){
-        //       if(_citys[j] !== ""){
-        //         let _city = {};
-        //         _city.value = _citys[j];
-        //         _city.label = _citys[j];
-        //         countryChildren.push(_city)
-        //       }
-        //     }
-        //     _country.children = countryChildren;
-        //     countryArray.push(_country)
-        //   }
-        // }
-        // this.config.countryArray = countryArray;
-        let params = {
-          'key': "1cf1b88177bd77884000d6e42dcf1d19"
-        };
-        jsonp('https://api.rajaongkir.com/starter/province',params)
-        .then(function (response) {
-          console.log(response);
-        }).catch(function (error) {
-          console.log(error);
-        });
-
+        })
       },
       //获取最爱的游戏列表
       getFavoriteGameList(id){
@@ -238,10 +234,11 @@
           method: 'post'
         }).then(({data}) => {
           if (data && data.code === 20000) {
-            
             this.config.favorite = data.data
             
-            this.dataForm.fgameGen = parseInt(id)
+            this.$nextTick(()=>{
+              this.dataForm.fgameGen = parseInt(id);
+            })
           }
         })
       },
@@ -257,6 +254,10 @@
       },
       // 表单提交
       dataFormSubmit () {
+        if(this.dataForm.ign == ""){
+          this.$message.error('In-Game Name cannot be empty')
+          return;
+        }
         this.$http({
           url: this.$http.adornUrl('/user/pc/editUser'),
           method: 'post',
@@ -268,8 +269,10 @@
             'phone': this.dataForm.phone,
             'birthdate': this.dataForm.birthdate,
             'genter': this.dataForm.genter,
-            'country': this.dataForm.country,
+            'province': this.dataForm.province,
+            'provinceName':this.dataForm.provinceName,
             'city':this.dataForm.city,
+            'cityName':this.dataForm.cityName,
             'favoriteGameGenre': this.dataForm.fgameGen,
             'nevv': this.dataForm.nevv,
             'isLocked': this.dataForm.isLocked?0:1

@@ -5,11 +5,11 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
-      <el-form-item label="Event Name" >
+      <el-form-item label="Event Name" class="required">
         <el-input v-model="dataForm.eventName" placeholder="Event Name"></el-input>
       </el-form-item>
 
-      <el-form-item label="Icon" >
+      <el-form-item label="Icon" class="required">
        <el-upload
           class="upload-demo"
           action="https://api.nevvorld.cn/api/public/cos/uploadfile"
@@ -36,23 +36,23 @@
         </el-date-picker>
       </el-form-item>
 
-      <el-form-item label="Description" >
+      <el-form-item label="Description" class="required">
         <el-input type="textarea" v-model="dataForm.description"></el-input>
       </el-form-item>
 
-      <el-form-item label="Rules" >
+      <el-form-item label="Rules" class="required">
         <el-input type="textarea" v-model="dataForm.rules"></el-input>
       </el-form-item>
 
-      <el-form-item label="Registeration Url" >
+      <el-form-item label="Registeration Url" class="required">
         <el-input v-model="dataForm.resUrl" placeholder="https://"></el-input>
       </el-form-item>
 
-      <el-form-item label="Tournament Url" >
+      <el-form-item label="Tournament Url"class="required" >
         <el-input v-model="dataForm.tourUrl" placeholder="https://"></el-input>
       </el-form-item>
 
-      <el-form-item label="Background Image" >
+      <el-form-item label="Background Image" class="required">
        <el-upload
           class="upload-demo"
           action="https://api.nevvorld.cn/api/public/cos/uploadfile"
@@ -161,6 +161,36 @@
       },
       // 表单提交
       dataFormSubmit () {
+        if(this.dataForm.eventName == ""){
+          this.$message.error("Event Name can not be empty");
+          return;
+        }
+        if(this.iconImg.length <= 0){
+          this.$message.error("Icon can not be empty");
+          return;
+        }
+
+        if(this.dataForm.description == ""){
+          this.$message.error("Description can not be empty");
+          return;
+        }
+
+        if(this.dataForm.rules == ""){
+          this.$message.error("Rules can not be empty");
+          return;
+        }
+        if(this.dataForm.resUrl == ""){
+          this.$message.error("Registeration Url can not be empty");
+          return;
+        }
+        if(this.dataForm.tourUrl == ""){
+          this.$message.error("Tournament Url can not be empty");
+          return;
+        }
+        if(this.bgImg.length <= 0){
+          this.$message.error("Background Image can not be empty");
+          return;
+        }
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({

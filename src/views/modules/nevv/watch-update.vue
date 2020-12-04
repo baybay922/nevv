@@ -5,8 +5,8 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
-      <el-form-item label="Relate to Event" prop="Name">
-        <el-select v-model="dataForm.eventId" filterable placeholder="Favorite Game  Genre">
+      <el-form-item label="Relate to Event"  class="required">
+        <el-select v-model="dataForm.eventId" filterable placeholder="Relate to Event">
           <el-option
 					v-for="item in config.eventList"
 					:key="item.eventId"
@@ -16,7 +16,7 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Image" prop="params">
+      <el-form-item label="Image"  class="required">
         <el-upload
           class="upload-demo"
           action="https://api.nevvorld.cn/api/public/cos/uploadfile"
@@ -27,19 +27,19 @@
         </el-upload>
       </el-form-item>
 
-      <el-form-item label="Title" prop="Title">
+      <el-form-item label="Title"  class="required">
         <el-input v-model="dataForm.watchTitle" placeholder="Title"></el-input>
       </el-form-item>
 
-      <el-form-item label="Plat URL" prop="Plat URL">
+      <el-form-item label="Plat URL"  class="required">
         <el-input v-model="dataForm.eventWatchUrl" placeholder="Plat URL"></el-input>
       </el-form-item>
       
-      <el-form-item label="Banner" prop="Banner">
+      <el-form-item label="Banner">
         <el-switch v-model="dataForm.isBanner"></el-switch>
       </el-form-item>
 
-      <el-form-item label="Sort" prop="Sort">
+      <el-form-item label="Sort">
         <el-input v-model="dataForm.sort" placeholder="sort"></el-input>
       </el-form-item>
 
@@ -111,6 +111,22 @@
       },
       // 表单提交
       dataFormSubmit () {
+        if(this.dataForm.eventId == ""){
+          this.$message.error("Relate to Event can not be empty");
+          return;
+        }
+        if(this.fileList.length <= 0){
+          this.$message.error("Image can not be empty");
+          return;
+        }
+        if(this.dataForm.watchTitle == ""){
+          this.$message.error("Title can not be empty");
+          return;
+        }
+        if(this.dataForm.eventWatchUrl == ""){
+          this.$message.error("Plat URL can not be empty");
+          return;
+        }
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
