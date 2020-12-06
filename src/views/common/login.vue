@@ -17,7 +17,7 @@
               <el-input v-model="dataForm.password" type="password" placeholder="Please input your password"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button class="login-btn-submit" type="primary" @click="dataFormSubmit()">Login</el-button>
+              <el-button class="login-btn-submit" type="primary" @click="dataFormSubmit()" :loading="isLogin">{{isLogin?'Loging':'Login'}}</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -31,6 +31,7 @@
   export default {
     data () {
       return {
+        isLogin:false,
         dataForm: {
           userName: '',
           password: ''
@@ -50,6 +51,7 @@
       dataFormSubmit () {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
+            this.isLogin = true;
             this.$http({
               url: this.$http.adornUrl('/login/pwdPcLogin'),
               method: 'post',
@@ -64,6 +66,7 @@
                 this.$router.replace({ name: 'home' })
               } else {
                 this.$message.error(data.msg)
+                this.isLogin = false;
               }
             })
           }
