@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     class="dialog"
-    :title="!dataForm.id ? 'Add' : 'Modify'"
+    :title="!dataForm.productId ? 'Add' : 'Modify'"
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
@@ -25,7 +25,7 @@
       </el-form-item>
 
       <el-form-item label="Nevv" class="required">
-        <el-input v-model="dataForm.nevv" placeholder="nevv"></el-input>
+        <el-input v-model="dataForm.nevv" placeholder="nevv" type="number"></el-input>
       </el-form-item>
 
     </el-form>

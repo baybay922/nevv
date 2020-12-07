@@ -161,36 +161,60 @@ export default {
 			let params = this.filters;
 			let _params = '';
 			for (const key in params) {
+				console.log(key)
 				console.log(params[key])
-				_params+=key+'='+params[key]!==''?params[key]:""+'&'
-				
+				_params+= (key+'='+params[key]+'&')
 			}
-			
-			console.log(_params)
+			var link = document.createElement('a');
+			//设置下载的文件名
+			link.download = 'gamerList';
+			link.style.display = 'none';
+			//设置下载路径
+			link.href = _params;
+			//触发点击
+			document.body.appendChild(link);
+			link.click();
+			//移除节点
+			document.body.removeChild(link);
 		},
 		isLockHandle(id, isLock){//关闭或打开
-			let params = {
-				functionId:id,
-				isLock:isLock
-			};
-			this.$http({
-              url: this.$http.adornUrl('/user/pc/lockUserInfo'),
-              method: 'post',
-              data: this.$http.adornData(params)
-            }).then(({data}) => {
-              if (data && data.code === 20000) {
-				this.$message.success(data.msg)
-				let filters = {
-					keyWord:"",
-					pageNum:1,
-					pageSize:10
-				}
-				this.filters = filters;
-				this.getDataList(this.filters);
-              } else {
-                this.$message.error(data.msg)
-              }
-            })
+			let _message = "Are you sure you want to ";
+			if(isLock === 1){
+				_message+= 'Blocked'
+			}else{
+				_message+= 'Unblock'
+			}
+			_message+= " this user?";
+			this.$confirm(_message, 'Prompt', {
+				confirmButtonText: 'Confirm',
+				cancelButtonText: 'Cancel',
+				type: 'warning'
+			}).then(() => {
+				let params = {
+					functionId:id,
+					isLock:isLock
+				};
+				this.$http({
+					url: this.$http.adornUrl('/user/pc/lockUserInfo'),
+					method: 'post',
+					data: this.$http.adornData(params)
+					}).then(({data}) => {
+					if (data && data.code === 20000) {
+						this.$message.success(data.msg)
+						let filters = {
+							keyWord:"",
+							pageNum:1,
+							pageSize:10
+						}
+						this.filters = filters;
+						this.getDataList(this.filters);
+					} else {
+						this.$message.error(data.msg)
+					}
+				})
+				
+			})
+			
 		},
 		 // 新增 / 修改
 		addOrUpdateHandle (id) {

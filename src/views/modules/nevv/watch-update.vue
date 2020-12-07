@@ -40,7 +40,7 @@
       </el-form-item>
 
       <el-form-item label="Sort">
-        <el-input v-model="dataForm.sort" placeholder="sort"></el-input>
+        <el-input v-model="dataForm.sort" type="number" placeholder="sort"></el-input>
       </el-form-item>
 
     </el-form>

@@ -69,28 +69,43 @@ export default {
 	},
 	methods: {
 		isLockHandle(id, isLock){//关闭或打开
-			let params = {
-				functionId:id,
-				isLock:isLock
-			};
-			this.$http({
-              url: this.$http.adornUrl('/adminUser/pc/lockAdminUserInfo'),
-              method: 'post',
-              data: this.$http.adornData(params)
-            }).then(({data}) => {
-              if (data && data.code === 20000) {
-				this.$message.success(data.msg)
-				let filters = {
-					keyWord:"",
-					pageNum:1,
-					pageSize:10
+		let _message = "Are you sure you want to ";
+			if(isLock === 1){
+				_message+= 'Blocked'
+			}else{
+				_message+= 'Unblock'
+			}
+			_message+= " this user?";
+			this.$confirm(_message, 'Prompt', {
+				confirmButtonText: 'Confirm',
+				cancelButtonText: 'Cancel',
+				type: 'warning'
+			}).then(() => {
+				let params = {
+					functionId:id,
+					isLock:isLock
+				};
+				this.$http({
+				url: this.$http.adornUrl('/adminUser/pc/lockAdminUserInfo'),
+				method: 'post',
+				data: this.$http.adornData(params)
+				}).then(({data}) => {
+				if (data && data.code === 20000) {
+					this.$message.success(data.msg)
+					let filters = {
+						keyWord:"",
+						pageNum:1,
+						pageSize:10
+					}
+					this.filters = filters;
+					this.getDataList(this.filters);
+				} else {
+					this.$message.error(data.msg)
 				}
-				this.filters = filters;
-				this.getDataList(this.filters);
-              } else {
-                this.$message.error(data.msg)
-              }
-            })
+				})
+				
+			})
+			
 		},
 		 // 新增 / 修改
 		addOrUpdateHandle (id) {

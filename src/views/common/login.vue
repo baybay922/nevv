@@ -4,7 +4,7 @@
       <div class="site-content">
         <div class="login-head">
           <div class="login-logo"></div>
-          <div class="login-name">Nevv World Admin Dashboard</div>
+          <div class="login-name">Nevvorld Admin Dashboard</div>
           <div class="login-version">V 1.0.0</div>
         </div>
         <div class="login-main">

@@ -42,7 +42,28 @@
 		<el-table-column prop="eventName" label="Event"></el-table-column> 
 		<el-table-column prop="matchTeamNameA" label="Team A"></el-table-column> 
 		<el-table-column prop="matchTeamNameB" label="Team B"></el-table-column> 
-		<el-table-column prop="matchInfoParamsList" label="Matches"></el-table-column> 
+		<el-table-column prop="matchInfoParamsList" label="Matches">
+			<template slot-scope="scope">
+				<template slot-scope="scope">
+				<el-button type="text" v-if="scope.row.matchInfoParamsList == 0">
+					{{scope.row.matchInfoParamsList}} items
+				</el-button>
+				<el-popover
+					v-else
+					placement="left"
+					width="300"
+					trigger="click">
+					<el-table :data="matchList">
+						<el-table-column prop="eventName" label="Event"></el-table-column>
+						<el-table-column prop="eventPoint" label="Event point"></el-table-column>
+					</el-table>
+					<el-button slot="reference" type="text" @click="showMatchInfoParamsList(scope.row.userStrId)">
+						{{scope.row.matchInfoParamsList}} items
+					</el-button>
+				</el-popover>
+			</template>
+			</template>	
+		</el-table-column> 
 		<el-table-column prop="startTime" label="Schedule From"></el-table-column> 
 		<el-table-column prop="endTime" label="Schedule To"></el-table-column> 
 		<el-table-column prop="teamStatus" label="Publishing">
@@ -100,6 +121,7 @@ export default {
 			},
 			total: 0,
 			dataList: [],
+			matchList:[],
 			listLoading: false,
 			addOrUpdateVisible: false,
 			imgsVisible:false,
@@ -133,6 +155,22 @@ export default {
 		AddOrUpdate
 	},
 	methods: {
+		showMatchInfoParamsList(id){
+			let params = {};
+			params['functionId'] = id;
+
+			this.$http({
+              url: this.$http.adornUrl('/eventMatch/pc/findMatchInfoDetail'),
+              method: 'post',
+              data: this.$http.adornData(params)
+            }).then(({data}) => {
+              if (data && data.code === 20000) {
+				  this.matchList = data.data.list
+              } else {
+                this.$message.error(data.msg)
+              }
+            })
+		},
 		//是否开启
 		switchHandle(id, value){
 			let params = {};

@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     class="dialog"
-    :title="!dataForm.id ? 'Add' : 'Modify'"
+    :title="!dataForm.userId ? 'Add' : 'Modify'"
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
@@ -21,7 +21,7 @@
       </el-form-item>
 
       <el-form-item label="Phone Number" >
-        <el-input v-model="dataForm.phone" placeholder="Phone Number"></el-input>
+        <el-input v-model="dataForm.phone" type="number" placeholder="Phone Number"></el-input>
       </el-form-item>
 
       <el-form-item label="Birth Date" >
@@ -78,7 +78,7 @@
       </el-form-item>
 
       <el-form-item label="Nevv" >
-        <el-input v-model="dataForm.nevv" placeholder="Nevv"></el-input>
+        <el-input v-model="dataForm.nevv" type="number" placeholder="Nevv"></el-input>
       </el-form-item>
 
       <el-form-item label="Blocked" >

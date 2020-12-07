@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     class="dialog"
-    :title="!dataForm.id ? 'Add' : 'Modify'"
+    :title="!dataForm.functionId ? 'Add' : 'Modify'"
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
@@ -64,7 +64,7 @@
       </el-form-item>
 
       <el-form-item label="Sort" >
-        <el-input v-model="dataForm.sortActivity" placeholder="Sort"></el-input>
+        <el-input v-model="dataForm.sortActivity" type="number" placeholder="Sort"></el-input>
       </el-form-item>
 
       <el-form-item label="Publishing" >

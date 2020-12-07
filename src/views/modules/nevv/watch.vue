@@ -36,7 +36,7 @@
 		</el-table-column> 
 		<el-table-column prop="eventWatchUrl" label="Play URL">
 			<template slot-scope="scope">
-				<a :href="scope.row.eventWatchUrl" target="_blank">{{scope.row.eventWatchUrl}}</a>
+				<a :href="scope.row.eventWatchUrl" target="_blank">link</a>
 			</template>
 		</el-table-column> 
 		<el-table-column prop="sort" label="Sort"></el-table-column> 

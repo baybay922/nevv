@@ -54,8 +54,8 @@
         <el-input v-model="dataForm.couponsCast" placeholder="Event Points"></el-input>
       </el-form-item>
 
-      <el-form-item label="Batch amount"  class="required">
-        <el-input v-model="dataForm.amount" placeholder="Batch amount"></el-input>
+      <el-form-item label="Batch amount" class="required">
+        <el-input v-model="dataForm.amount" type="number" placeholder="Batch amount"></el-input>
       </el-form-item>
 
     </el-form>
