@@ -68,6 +68,8 @@
                 this.$message.error(data.msg)
                 this.isLogin = false;
               }
+            }).catch(() => {
+              this.isLogin = false;
             })
           }
         })

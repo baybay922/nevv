@@ -42,26 +42,42 @@
 		<el-table-column prop="eventName" label="Event"></el-table-column> 
 		<el-table-column prop="matchTeamNameA" label="Team A"></el-table-column> 
 		<el-table-column prop="matchTeamNameB" label="Team B"></el-table-column> 
-		<el-table-column prop="matchInfoParamsList" label="Matches">
+		<el-table-column prop="matches" label="Matches">
 			<template slot-scope="scope">
-				<template slot-scope="scope">
-				<el-button type="text" v-if="scope.row.matchInfoParamsList == 0">
-					{{scope.row.matchInfoParamsList}} items
+				<el-button type="text" v-if="scope.row.matches === 0">
+					{{scope.row.matches}} items
 				</el-button>
 				<el-popover
 					v-else
 					placement="left"
-					width="300"
+					width="530"
 					trigger="click">
 					<el-table :data="matchList">
-						<el-table-column prop="eventName" label="Event"></el-table-column>
-						<el-table-column prop="eventPoint" label="Event point"></el-table-column>
+						<el-table-column prop="title" label="Title" width="70"></el-table-column> 
+						<el-table-column prop="aicon" label="A Icon" width="70">
+							<template slot-scope="scope">
+								<img class="listImg" :src="scope.row.aicon" @click="showPreviewImage(scope.row.aicon)" v-if="scope.row.aicon !==''" />
+								<p v-else>--</p>
+							</template>
+						</el-table-column>
+						<el-table-column prop="bicon" label="B Icon" width="70">
+							<template slot-scope="scope">
+								<img class="listImg" :src="scope.row.bicon" @click="showPreviewImage(scope.row.bicon)"  v-if="scope.row.bicon !==''" />
+								<p v-else>--</p>
+							</template>
+						</el-table-column> 
+						<el-table-column prop="least" label="Minimum Point Reguired" width="200"></el-table-column> 
+						<el-table-column prop="winner" label="Winner" v-if="scope.row.isEnd == 1">
+							<template slot-scope="scope">
+								<el-radio v-model="scope.row.awinner" label="1">A</el-radio>
+  								<el-radio v-model="scope.row.bwinner" label="1">B</el-radio>
+							</template>
+						</el-table-column> 
 					</el-table>
-					<el-button slot="reference" type="text" @click="showMatchInfoParamsList(scope.row.userStrId)">
-						{{scope.row.matchInfoParamsList}} items
+					<el-button slot="reference" type="text" @click="showMatchInfoParamsList(scope.row.id)">
+						{{scope.row.matches}} items
 					</el-button>
 				</el-popover>
-			</template>
 			</template>	
 		</el-table-column> 
 		<el-table-column prop="startTime" label="Schedule From"></el-table-column> 
@@ -165,7 +181,7 @@ export default {
               data: this.$http.adornData(params)
             }).then(({data}) => {
               if (data && data.code === 20000) {
-				  this.matchList = data.data.list
+				  this.matchList = data.data
               } else {
                 this.$message.error(data.msg)
               }

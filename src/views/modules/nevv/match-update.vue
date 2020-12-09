@@ -60,6 +60,7 @@
         <el-date-picker
           v-model="dataForm.startTime"
           type="datetime"
+          value-format="yyyy-MM-dd HH:mm:ss"
           placeholder="Schedule From">
         </el-date-picker>
         
@@ -69,6 +70,7 @@
         <el-date-picker
           v-model="dataForm.endTime"
           type="datetime"
+          value-format="yyyy-MM-dd HH:mm:ss"
           placeholder="Schedule To">
         </el-date-picker>
       </el-form-item>
