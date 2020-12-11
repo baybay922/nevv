@@ -50,10 +50,10 @@
 				<el-popover
 					v-else
 					placement="left"
-					width="530"
+					width="600"
 					trigger="click">
 					<el-table :data="matchList">
-						<el-table-column prop="title" label="Title" width="70"></el-table-column> 
+						<el-table-column prop="title" label="Title" ></el-table-column> 
 						<el-table-column prop="aicon" label="A Icon" width="70">
 							<template slot-scope="scope">
 								<img class="listImg" :src="scope.row.aicon" @click="showPreviewImage(scope.row.aicon)" v-if="scope.row.aicon !==''" />
@@ -66,13 +66,21 @@
 								<p v-else>--</p>
 							</template>
 						</el-table-column> 
-						<el-table-column prop="least" label="Minimum Point Reguired" width="200"></el-table-column> 
-						<el-table-column prop="winner" label="Winner" v-if="scope.row.isEnd == 1">
-							<template slot-scope="scope">
-								<el-radio v-model="scope.row.awinner" label="1">A</el-radio>
-  								<el-radio v-model="scope.row.bwinner" label="1">B</el-radio>
+						<el-table-column prop="least" label="Minimum Point Reguired"></el-table-column> 
+						<el-table-column prop="winner" label="Winner">
+							<template slot-scope="scopes">
+								<el-select
+								v-model="scopes.row.winner" 
+								:disabled="(scopes.row.awinner==1 || scopes.row.bwinner==1 )?true:false " 
+								placeholder="Winner" 
+								@focus="setWinnerOptions(scopes.row)"
+								@change="selectWinner(scope.row.eventId,scopes.row.matchInfoId, $event)"
+								>
+									<el-option label="A" :value="scopes.row.amatchDetailId"></el-option>
+									<el-option label="B" :value="scopes.row.bmatchDetailId"></el-option>
+								</el-select>
 							</template>
-						</el-table-column> 
+						</el-table-column>
 					</el-table>
 					<el-button slot="reference" type="text" @click="showMatchInfoParamsList(scope.row.id)">
 						{{scope.row.matches}} items
@@ -129,6 +137,8 @@ import AddOrUpdate from './match-update'
 export default {
 	data() {
 		return {
+			winner:"",
+			winners:[],
 			filters: {
 				keyWord:"",
 				isOpen:"2",
@@ -171,6 +181,56 @@ export default {
 		AddOrUpdate
 	},
 	methods: {
+		setWinnerOptions(data){
+			let arr = [];
+			let aObj = {
+					value: data.amatchDetailId,
+					label: 'A'
+				},
+				bObj = {
+					value: data.bmatchDetailId,
+					label: 'B'
+				};
+			arr.push(aObj,bObj)
+			this.winners = arr;
+		},
+		selectWinner(eventId,matchInfoId,matchDetailId){
+			let _winnerName = ""
+			this.winners.map(items=>{
+				if(items.value == matchInfoId){
+					_winnerName = items.label
+				}
+			})
+
+			let _message = "Are you sure you want to choose ";
+			_message+= _winnerName;
+			_message+= " as Winner?";
+			this.$confirm(_message, 'Prompt', {
+				confirmButtonText: 'Confirm',
+				cancelButtonText: 'Cancel',
+				type: 'warning'
+			}).then(() => {
+				let params = {
+					'eventId':eventId,
+					'matchInfoId':matchInfoId,
+					'matchDetailId':matchDetailId,
+				};
+				this.$http({
+					url: this.$http.adornUrl('/eventMatch/pc/editMatchInfoWinner'),
+					method: 'post',
+					data: this.$http.adornData(params)
+				}).then(({data}) => {
+					if (data && data.code === 20000) {
+						this.$message.success(data.msg)
+						this.getDataList()
+					} else {
+						this.$message.error(data.msg)
+					}
+				})
+				
+			})
+			console.log(_winnerName)
+		},
 		showMatchInfoParamsList(id){
 			let params = {};
 			params['functionId'] = id;
@@ -181,7 +241,7 @@ export default {
               data: this.$http.adornData(params)
             }).then(({data}) => {
               if (data && data.code === 20000) {
-				  this.matchList = data.data
+				  this.matchList = data.data;
               } else {
                 this.$message.error(data.msg)
               }

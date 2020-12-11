@@ -7,7 +7,7 @@
     :visible.sync="visible">
     <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
       <el-form-item label="Relate to Event" class="required">
-        <el-select v-model="dataForm.eventId" filterable placeholder="Relate to Event">
+        <el-select v-model="dataForm.eventId" filterable placeholder="Relate to Event" :disabled="dataForm.isUpdate">
           <el-option
             v-for="item in config.eventList"
             :key="item.eventId"
@@ -16,18 +16,17 @@
           </el-option>
         </el-select>
       </el-form-item>
-
       <el-form-item label="Team A Name" class="required">
-        <el-input v-model="dataForm.matchTeamNameA" placeholder="Team A Name"></el-input>
+        <el-input v-model="dataForm.matchTeamNameA" placeholder="Team A Name"  :disabled="dataForm.isUpdate"></el-input>
       </el-form-item>
 
       <el-form-item label="Team B Name" class="required">
-        <el-input v-model="dataForm.matchTeamNameB" placeholder="Team B Name"></el-input>
+        <el-input v-model="dataForm.matchTeamNameB" placeholder="Team B Name"  :disabled="dataForm.isUpdate"></el-input>
       </el-form-item>
 
       <el-form-item label="Predict" class="required">
         <el-col :span="24" class="toolbar">
-          <el-button type="primary" @click="updatePredict()">Add</el-button>
+          <el-button type="primary" @click="updatePredict()" :disabled="dataForm.isUpdate">Add</el-button>
         </el-col>
 
         <!--列表-->
@@ -47,10 +46,10 @@
           </el-table-column> 
           <el-table-column prop="least" label="Minimum Point Reguired" width="250"></el-table-column> 
           <el-table-column prop="winner" label="Winner"></el-table-column> 
-          <el-table-column label="Operation" width="150">
+          <el-table-column label="Operation" width="150" >
             <template slot-scope="scope">
-              <el-link icon="el-icon-edit" @click="updatePredict(scope.row.matchInfoId,scope.$index)">Edit</el-link>
-              <el-link icon="el-icon-delete" @click="deletePredict(scope.row.matchInfoId,scope.$index)">Delete</el-link>
+              <el-link icon="el-icon-edit" @click="!dataForm.isUpdate && updatePredict(scope.row.matchInfoId,scope.$index)">Edit</el-link>
+              <el-link icon="el-icon-delete" @click="!dataForm.isUpdate && deletePredict(scope.row.matchInfoId,scope.$index)">Delete</el-link>
             </template>
           </el-table-column>
         </el-table>
@@ -58,6 +57,7 @@
 
       <el-form-item label="Schedule From">
         <el-date-picker
+        :disabled="dataForm.isUpdate"
           v-model="dataForm.startTime"
           type="datetime"
           value-format="yyyy-MM-dd HH:mm:ss"
@@ -68,6 +68,7 @@
 
       <el-form-item label="Schedule To">
         <el-date-picker
+        :disabled="dataForm.isUpdate"
           v-model="dataForm.endTime"
           type="datetime"
           value-format="yyyy-MM-dd HH:mm:ss"
@@ -76,13 +77,13 @@
       </el-form-item>
       
       <el-form-item label="Blocked">
-        <el-switch v-model="dataForm.teamStatus"></el-switch>
+        <el-switch v-model="dataForm.teamStatus" :disabled="dataForm.isUpdate"></el-switch>
       </el-form-item>
 
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">Cancel</el-button>
-      <el-button type="primary" @click="dataFormSubmit()">Save</el-button>
+      <el-button type="primary" @click="dataFormSubmit()" :disabled="dataForm.isUpdate">Save</el-button>
     </span>
     
   </el-dialog>
@@ -161,7 +162,8 @@
           matchInfoParamsList:[],
           startTime:"",
           endTime:"",
-          teamStatus:false
+          teamStatus:false,
+          isUpdate:false
         },
         innerForm:{
           aicon: "",
@@ -207,6 +209,8 @@
                 this.dataForm.startTime = data.data.startTime
                 this.dataForm.endTime = data.data.endTime
                 this.dataForm.teamStatus = data.data.teamStatus===0?false:true
+                this.dataForm.isUpdate = data.data.isUpdate===0?true:false
+                
               }
             })
           }else{
