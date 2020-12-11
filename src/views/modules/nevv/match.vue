@@ -74,7 +74,7 @@
 								:disabled="(scopes.row.awinner==1 || scopes.row.bwinner==1 )?true:false " 
 								placeholder="Winner" 
 								@focus="setWinnerOptions(scopes.row)"
-								@change="selectWinner(scope.row.eventId,scopes.row.matchInfoId, $event)"
+								@change="selectWinner(scope.row.eventId,$event, scopes.row.matchInfoId)"
 								>
 									<el-option label="A" :value="scopes.row.amatchDetailId"></el-option>
 									<el-option label="B" :value="scopes.row.bmatchDetailId"></el-option>
