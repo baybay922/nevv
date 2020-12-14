@@ -24,7 +24,8 @@
 			</template>
 		</el-table-column> 
 		<el-table-column prop="productName" label="Name"></el-table-column> 
-		<el-table-column prop="description" label="Description"></el-table-column> 
+		<el-table-column prop="description" label="Description"></el-table-column>
+		<el-table-column prop="weight" label="Weight"></el-table-column> 
 		<el-table-column prop="nevv" label="Nevv"></el-table-column> 
 		<el-table-column prop="createDate" label="Create Date"></el-table-column> 
 		<el-table-column label="Operation" width="200">

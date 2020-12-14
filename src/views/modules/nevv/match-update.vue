@@ -16,6 +16,11 @@
           </el-option>
         </el-select>
       </el-form-item>
+
+      <el-form-item label="Match Name">
+        <el-input v-model="dataForm.matchName" placeholder="Match Name"  :disabled="dataForm.isUpdate"></el-input>
+      </el-form-item>
+
       <el-form-item label="Team A Name" class="required">
         <el-input v-model="dataForm.matchTeamNameA" placeholder="Team A Name"  :disabled="dataForm.isUpdate"></el-input>
       </el-form-item>
@@ -45,7 +50,6 @@
             </template>
           </el-table-column> 
           <el-table-column prop="least" label="Minimum Point Reguired" width="250"></el-table-column> 
-          <el-table-column prop="winner" label="Winner"></el-table-column> 
           <el-table-column label="Operation" width="150" >
             <template slot-scope="scope">
               <el-link icon="el-icon-edit" @click="!dataForm.isUpdate && updatePredict(scope.row.matchInfoId,scope.$index)">Edit</el-link>
@@ -122,10 +126,6 @@
         <el-form-item label="Minimum Point Reguired" class="required">
           <el-input v-model="innerForm.least" type="number" placeholder="Minimum Point Reguired"></el-input>
         </el-form-item>
-
-        <el-form-item label="Winner">
-          <!-- <img :src="innerForm.awinner" alt=""> -->
-        </el-form-item>
       </el-form>
       
       <span slot="footer" class="dialog-footer">
@@ -157,6 +157,7 @@
         dataForm: {
           id: 0,
           eventId:"",
+          matchName:"",
           matchTeamNameA:"",
           matchTeamNameB:"",
           matchInfoParamsList:[],
@@ -201,6 +202,7 @@
               })
             }).then(({data}) => {
               if (data && data.code === 20000) {
+                this.dataForm.matchName = data.data.matchName;
                 this.dataForm.id = data.data.id;
                 this.dataForm.eventId = data.data.eventId;
                 this.dataForm.matchTeamNameA = data.data.matchTeamNameA
@@ -215,6 +217,7 @@
             })
           }else{
             this.dataForm.id = "" 
+            this.dataForm.matchName = ""
             this.dataForm.eventId = ""
             this.dataForm.matchTeamNameA = ""
             this.dataForm.matchTeamNameB = ""
@@ -251,6 +254,7 @@
               data: this.$http.adornData({
                 'id': this.dataForm.id || undefined,
                 'eventId': this.dataForm.eventId,
+                'matchName':this.dataForm.matchName,
                 'matchTeamNameA': this.dataForm.matchTeamNameA,
                 'matchTeamNameB': this.dataForm.matchTeamNameB,
                 'matchInfoParamsList':this.dataForm.matchInfoParamsList,

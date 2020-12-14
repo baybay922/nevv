@@ -20,8 +20,16 @@
         </el-upload>
       </el-form-item>
 
+      <el-form-item label="Email" >
+        <el-input v-model="dataForm.email" placeholder="Email"></el-input>
+      </el-form-item>
+
+      <el-form-item label="RealName" >
+        <el-input v-model="dataForm.realName" placeholder="RealName"></el-input>
+      </el-form-item>
+
       <el-form-item label="Phone Number" >
-        <el-input v-model="dataForm.phone" type="number" placeholder="Phone Number"></el-input>
+        <el-input v-model="dataForm.phone" placeholder="Phone Number"></el-input>
       </el-form-item>
 
       <el-form-item label="Birth Date" >
@@ -44,7 +52,7 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Province" >
+      <el-form-item label="Province">
         <el-select v-model="dataForm.province" placeholder="Province" @change="selectCityName($event)">
           <el-option
             v-for="item in config.countryArray"
@@ -66,7 +74,7 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Favorite Game Genre" >
+      <el-form-item label="Favorite Game Genre">
         <el-select v-model="dataForm.fgameGen" placeholder="Favorite Game Genre">
           <el-option
             v-for="item in config.favorite"
@@ -75,10 +83,6 @@
             :value="item.id">
           </el-option>
         </el-select>
-      </el-form-item>
-
-      <el-form-item label="Nevv" >
-        <el-input v-model="dataForm.nevv" type="number" placeholder="Nevv"></el-input>
       </el-form-item>
 
       <el-form-item label="Blocked" >
@@ -103,6 +107,8 @@
         visible: false,
         dataForm: {
           userId: "",
+          email:"",
+          realName:"",
           ign:"",
           phone:"",
           birthdate:"",
@@ -112,14 +118,28 @@
           city:"",
           cityName:"",
           fgameGen:"",
-          nevv:"",
           isLocked:true
         },
         fileList: [],
         config:{
-          favorite: [],
-          countryArray:[],
-          cityArray:[],
+          favorite: [
+            {
+              id:'',
+              genreName:'No Selected'
+            },
+          ],
+          countryArray:[
+            {
+              province_id:'',
+              province:"No Selected"
+            }
+          ],
+          cityArray:[
+            {
+              city_id:'',
+              city_name:"No Selected"
+            }
+          ],
           genter:[
             {
               value:0,
@@ -153,10 +173,13 @@
               if (data && data.code === 20000) {
                 this.dataForm.userId = data.data.userId
                 this.dataForm.ign = data.data.ign
+
+                this.dataForm.email = data.data.email
+                this.dataForm.realName = data.data.realName
+
                 this.dataForm.phone = data.data.phone
                 this.dataForm.birthdate = data.data.birthdate
                 this.dataForm.genter = data.data.genter
-                this.dataForm.nevv = data.data.nevvCash
                 this.dataForm.isLocked = data.data.isBlock==0?true:false;
                 let files = [];
                 files.push({url:data.data.userImg})
@@ -201,7 +224,7 @@
         }).then(({data}) => {
           if (data && data.code === 20000) {
             let res = JSON.parse(data.data);
-            this.config.cityArray = res.rajaongkir.results
+            this.config.cityArray = this.config.cityArray.concat(res.rajaongkir.results)
             if(cityID){
               this.dataForm.city = cityID
               this.selectCityText(cityID)
@@ -220,7 +243,7 @@
         }).then(({data}) => {
           if (data && data.code === 20000) {
             let res = JSON.parse(data.data);
-            this.config.countryArray = res.rajaongkir.results;
+            this.config.countryArray = this.config.countryArray.concat(res.rajaongkir.results)
             if(id){
               this.selectCityName(id,cityID)
             }
@@ -234,11 +257,13 @@
           method: 'post'
         }).then(({data}) => {
           if (data && data.code === 20000) {
-            this.config.favorite = data.data
+            this.config.favorite = this.config.favorite.concat(data.data)
+            if(id !== ""){
+              this.$nextTick(()=>{
+                this.dataForm.fgameGen = parseInt(id);
+              })
+            }
             
-            this.$nextTick(()=>{
-              this.dataForm.fgameGen = parseInt(id);
-            })
           }
         })
       },
@@ -266,6 +291,7 @@
             'userImg': this.fileList.length>0?this.fileList[0].url:"",
             'ign':this.dataForm.ign,
             'email':this.dataForm.email,
+            'realName':this.dataForm.realName,
             'phone': this.dataForm.phone,
             'birthdate': this.dataForm.birthdate,
             'genter': this.dataForm.genter,
@@ -274,7 +300,6 @@
             'city':this.dataForm.city,
             'cityName':this.dataForm.cityName,
             'favoriteGameGenre': this.dataForm.fgameGen,
-            'nevv': this.dataForm.nevv,
             'isLocked': this.dataForm.isLocked?0:1
           })
         }).then(({data}) => {

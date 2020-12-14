@@ -40,6 +40,7 @@
 	<el-table class="userTable" border :data="dataList" highlight-current-row v-loading="listLoading"> 
 
 		<el-table-column prop="eventName" label="Event"></el-table-column> 
+		<el-table-column prop="matchName" label="Match Name"></el-table-column> 
 		<el-table-column prop="matchTeamNameA" label="Team A"></el-table-column> 
 		<el-table-column prop="matchTeamNameB" label="Team B"></el-table-column> 
 		<el-table-column prop="matches" label="Matches">
@@ -70,8 +71,8 @@
 						<el-table-column prop="winner" label="Winner">
 							<template slot-scope="scopes">
 								<el-select
+								v-if="scopes.row.winner ==''"
 								v-model="scopes.row.winner" 
-								:disabled="(scopes.row.awinner==1 || scopes.row.bwinner==1 )?true:false " 
 								placeholder="Winner" 
 								@focus="setWinnerOptions(scopes.row)"
 								@change="selectWinner(scope.row.eventId,$event, scopes.row.matchInfoId)"
@@ -79,6 +80,10 @@
 									<el-option label="A" :value="scopes.row.amatchDetailId"></el-option>
 									<el-option label="B" :value="scopes.row.bmatchDetailId"></el-option>
 								</el-select>
+								<el-input
+									:value="scopes.row.winner==scopes.row.amatchDetailId?'A':'B'"
+									disabled="disabled"
+								v-else></el-input>
 							</template>
 						</el-table-column>
 					</el-table>

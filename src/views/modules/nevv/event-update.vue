@@ -50,7 +50,7 @@
         <el-input v-model="dataForm.resUrl" placeholder="https://"></el-input>
       </el-form-item>
 
-      <el-form-item label="Tournament Url"class="required" >
+      <el-form-item label="Tournament Url" class="required" >
         <el-input v-model="dataForm.tourUrl" placeholder="https://"></el-input>
       </el-form-item>
 

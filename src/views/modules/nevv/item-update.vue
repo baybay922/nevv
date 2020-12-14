@@ -24,6 +24,10 @@
         <el-input type="textarea" v-model="dataForm.description"></el-input>
       </el-form-item>
 
+       <el-form-item label="Weight">
+        <el-input type="input" v-model="dataForm.weight"></el-input>
+      </el-form-item>
+
       <el-form-item label="Nevv" class="required">
         <el-input v-model="dataForm.nevv" placeholder="nevv" type="number"></el-input>
       </el-form-item>
@@ -45,6 +49,7 @@
           productId: 0,
           productName:"",
           description:"",
+          weight:"",
           nevv:""
         },
         fileList: [],
@@ -72,6 +77,7 @@
                 this.dataForm.productId = data.data.productId
                 this.dataForm.productName = data.data.productName
                 this.dataForm.description = data.data.description
+                this.dataForm.weight = data.data.weight
                 this.dataForm.nevv = data.data.nevv
                 let files = [];
                 files.push({url:data.data.showUrl})
@@ -84,6 +90,7 @@
             this.dataForm.productId = ""
             this.dataForm.productName = ""
             this.dataForm.description = ""
+            this.dataForm.weight = ""
             this.dataForm.nevv = ""
             this.fileList = []
           }
@@ -119,6 +126,7 @@
                 'productName': this.dataForm.productName,
                 'showUrl': this.fileList.length>0?this.fileList[0].url:"",
                 'description': this.dataForm.description,
+                'weight': this.dataForm.weight,
                 'nevv': this.dataForm.nevv
               })
             }).then(({data}) => {

@@ -18,9 +18,11 @@
 
 	<!--列表-->
 	<el-table class="userTable" border :data="dataList" highlight-current-row v-loading="listLoading">
-		<el-table-column prop="ign" label="In-Game Name"></el-table-column> 
-		<el-table-column prop="phone" label="Phone Number"></el-table-column> 
-		<el-table-column prop="birthdate" label="Birth Date"></el-table-column> 
+		<el-table-column prop="ign" label="In-Game Name" width="200"></el-table-column> 
+		<el-table-column prop="phone" label="Phone Number" width="200"></el-table-column>
+		<el-table-column prop="email" label="email" width="200"></el-table-column> 
+		<el-table-column prop="realName" label="realName" width="200"></el-table-column> 
+		<el-table-column prop="birthdate" label="Birth Date" width="200"></el-table-column> 
 		<el-table-column prop="gender"  label="Gender">
 			<template slot-scope="scope">
 				<div v-if="scope.row.gender === 1">Male</div>
@@ -28,9 +30,8 @@
 				<div v-else>No Select</div>
 			</template>
 		</el-table-column>
-		<el-table-column prop="provinceName"  label="Province"></el-table-column>
-		<el-table-column prop="cityName"  label="City"></el-table-column>
-		<el-table-column prop="nevv"  label="Nevv"></el-table-column>
+		<el-table-column prop="provinceName"  label="Province" width="200"></el-table-column>
+		<el-table-column prop="cityName"  label="City" width="200"></el-table-column>
 		<el-table-column prop="eventCount"  label="Event Point">
 			<template slot-scope="scope">
 				<el-button type="text" v-if="scope.row.eventCount == 0">
@@ -42,8 +43,8 @@
 					width="300"
 					trigger="click">
 					<el-table :data="eventCountList">
-						<el-table-column prop="eventName" label="Event"></el-table-column>
-						<el-table-column prop="eventPoint" label="Event point"></el-table-column>
+						<el-table-column prop="eventName" label="Event" width="200"></el-table-column>
+						<el-table-column prop="eventPoint" label="Event point" width="200"></el-table-column>
 					</el-table>
 					<el-button slot="reference" type="text" @click="showEventCountList(scope.row.userStrId)">
 						{{scope.row.eventCount}} items
@@ -62,10 +63,10 @@
 					width="500"
 					trigger="click">
 					<el-table :data="predictCountList">
-						<el-table-column prop="eventName" label="Event"></el-table-column>
-						<el-table-column prop="eventPoint" label="Match"></el-table-column>
-						<el-table-column prop="eventPoint" label="Predict"></el-table-column>
-						<el-table-column prop="eventPoint" label="Result"></el-table-column>
+						<el-table-column prop="eventName" label="Event" width="200"></el-table-column>
+						<el-table-column prop="eventPoint" label="Match" width="200"></el-table-column>
+						<el-table-column prop="eventPoint" label="Predict" width="200"></el-table-column>
+						<el-table-column prop="eventPoint" label="Result" width="200"></el-table-column>
 					</el-table>
 					<el-button slot="reference" type="text" @click="showJoinMatchList(scope.row.userStrId)">
 						{{scope.row.predictCount}} items
@@ -73,8 +74,8 @@
 				</el-popover>
 			</template>
 		</el-table-column>
-		<el-table-column prop="createDate"  label="Create Date"></el-table-column>
-		<el-table-column label="Operation" width="200">
+		<el-table-column prop="createDate"  label="Create Date" width="200"></el-table-column>
+		<el-table-column label="Operation" width="200" fixed="right">
 			<template slot-scope="scope">
 				<el-link icon="el-icon-edit" @click="addOrUpdateHandle(scope.row.userId)">Edit</el-link>
 				<el-link icon="el-icon-lock" @click="isLockHandle(scope.row.userId, 1)" v-if="scope.row.isLocked == 0">Block</el-link>
