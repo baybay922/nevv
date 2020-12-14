@@ -358,8 +358,15 @@ export default {
 		//每页个数
 		handleSizeChange(val) {
 			this.filters.pageSize = val;
-			this.filters.currentPage = 1;
-			console.log(`每页 ${val} 条`);
+			this.filters.pageNum = 1;//每次改变每页多少条都会重置当前页码为1
+			let params = {
+				keyWord:this.filters.keyWord,
+				isOpen:this.filters.isOpen,
+				pageNum: this.filters.pageNum,
+				pageSize:this.filters.pageSize
+			}
+			this.filters = params;
+			this.getDataList(this.filters);
 		},
 		//获取活动
 		getSearchEventList(){

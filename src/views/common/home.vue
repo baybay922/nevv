@@ -1,6 +1,6 @@
 <template>
   <div class="mod-home">
-      Welcome To Nevv World Admin Dashboard !!!!!
+      Welcome To Nevvorld Admin Dashboard !!!!!
   </div>
 </template>
 

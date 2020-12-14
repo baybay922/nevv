@@ -3,7 +3,7 @@
     <div class="site-navbar__header">
       <h1 class="site-navbar__brand" @click="$router.push({ name: 'home' })">
         <a class="site-navbar__brand-lg" href="javascript:;">Nevvorld</a>
-        <a class="site-navbar__brand-mini" href="javascript:;">Nevvorld</a>
+        <a class="site-navbar__brand-mini" href="javascript:;">NVV</a>
       </h1>
     </div>
     <div class="site-navbar__body clearfix">
@@ -80,9 +80,9 @@
       },
       // 退出
       logoutHandle () {
-        this.$confirm(`确定进行[退出]操作?`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+        this.$confirm(`Are you sure to proceed with the [Exit] operation?`, 'Prompt', {
+          confirmButtonText: 'Confirm',
+          cancelButtonText: 'Cancel',
           type: 'warning'
         }).then(() => {
           clearLoginInfo()

@@ -10,10 +10,10 @@
       <el-dropdown class="site-tabs__tools" :show-timeout="0">
         <i class="el-icon-arrow-down el-icon--right"></i>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native="tabsCloseCurrentHandle">关闭当前标签页</el-dropdown-item>
-          <el-dropdown-item @click.native="tabsCloseOtherHandle">关闭其它标签页</el-dropdown-item>
-          <el-dropdown-item @click.native="tabsCloseAllHandle">关闭全部标签页</el-dropdown-item>
-          <el-dropdown-item @click.native="refresh()">刷新当前标签页</el-dropdown-item>
+          <el-dropdown-item @click.native="tabsCloseCurrentHandle">Close current tab</el-dropdown-item>
+          <el-dropdown-item @click.native="tabsCloseOtherHandle">Close other tabs</el-dropdown-item>
+          <el-dropdown-item @click.native="tabsCloseAllHandle">Close all tabs</el-dropdown-item>
+          <el-dropdown-item @click.native="refresh()">Refresh current tab</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
       <el-tab-pane

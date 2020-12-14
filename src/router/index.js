@@ -33,8 +33,8 @@ const mainRoutes = {
     // 1. isTab: 是否通过tab展示内容, true: 是, false: 否
     // 2. iframeUrl: 是否通过iframe嵌套展示内容, '以http[s]://开头': 是, '': 否
     // 提示: 如需要通过iframe嵌套展示内容, 但不通过tab打开, 请自行创建组件使用iframe处理!
-    { path: '/home', component: _import('common/home'), name: 'home', meta: { title: 'home' ,isTab: true} },
-    { path: '/theme', component: _import('common/theme'), name: 'theme', meta: { title: '主题' ,isTab: true} },
+    { path: '/home', component: _import('common/home'), name: 'home', meta: { title: 'Home' ,isTab: true} },
+    { path: '/theme', component: _import('common/theme'), name: 'theme', meta: { title: 'Theme' ,isTab: true} },
     { path: '/gamer', component: _import('modules/nevv/gamer'), name: 'gamer', meta: { title: 'Gamer List' ,isTab: true} },
     { path: '/admin', component: _import('modules/nevv/admin'), name: 'admin', meta: { title: 'Admin List' ,isTab: true} },
     { path: '/item', component: _import('modules/nevv/item'), name: 'item', meta: { title: 'Item List' ,isTab: true} },
