@@ -158,7 +158,7 @@ export default {
             }).then(({data}) => {
               if (data && data.code === 20000) {
                 this.$message({
-                  message: '操作成功',
+                  message: 'Success',
                   type: 'success',
                   duration: 1500,
                   onClose: () => {
@@ -216,7 +216,7 @@ export default {
 					keyWord:"",
 					isOpen:"2",
 					pageNum: this.filters.pageNum,
-					pageSize:10
+					pageSize:this.filters.pageSize,
 				}
 				this.filters = filters;
 				this.getDataList(this.filters);
@@ -236,8 +236,8 @@ export default {
 			let params = {
 				keyWord:this.filters.keyWord,
 				isOpen: this.filters.isOpen,
-				pageNum: this.filters.pageNum,
-				pageSize:10
+				pageNum: 1,
+				pageSize:this.filters.pageSize,
 			}
 			this.filters = params;
 			this.getDataList(this.filters);

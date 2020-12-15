@@ -7,6 +7,17 @@
 				<el-input autocomplete="off" v-model="filters.keyWord" placeholder="Search by name"></el-input>
 			</el-form-item>
 			<el-form-item>
+				<el-date-picker
+				v-model="searchTime"
+				type="daterange"
+				range-separator="to"
+				value-format="yyyy-MM-dd"
+				start-placeholder="Start Date"
+				end-placeholder="End Date"
+				@change="changeSearchTime">
+				</el-date-picker>
+			</el-form-item>
+			<el-form-item>
 				<el-button type="primary" @click="searchFilters()">Search</el-button>
 			</el-form-item>
 
@@ -78,8 +89,8 @@
 		<el-table-column label="Operation" width="200" fixed="right">
 			<template slot-scope="scope">
 				<el-link icon="el-icon-edit" @click="addOrUpdateHandle(scope.row.userId)">Edit</el-link>
-				<el-link icon="el-icon-lock" @click="isLockHandle(scope.row.userId, 1)" v-if="scope.row.isLocked == 0">Block</el-link>
-				<el-link icon="el-icon-unlock" @click="isLockHandle(scope.row.userId, 0)" v-else>Unblock</el-link>
+				<el-link icon="el-icon-lock" @click="isLockHandle(scope.row.userId, 0)" v-if="scope.row.isLocked == 0">Unblock</el-link>
+				<el-link icon="el-icon-unlock" @click="isLockHandle(scope.row.userId, 1)" v-else>Block</el-link>
 			</template>
 		</el-table-column>
 	</el-table>
@@ -107,10 +118,13 @@ import AddOrUpdate from './gamer-update'
 export default {
 	data() {
 		return {
+			searchTime:"",
 			filters: {
 				keyWord:"",
 				pageSize: 10,
 				pageNum: 1,
+				startTime:"",
+				endTime:""
 			},
 			total: 0,
 			dataList: [],
@@ -160,23 +174,11 @@ export default {
 		},
 		exportHandle(){//导出列表
 			let params = this.filters;
-			let _params = '';
+			let _params = "https://api.nevvorld.cn/api/user/pc/exportUserList";
 			for (const key in params) {
-				console.log(key)
-				console.log(params[key])
 				_params+= (key+'='+params[key]+'&')
 			}
-			var link = document.createElement('a');
-			//设置下载的文件名
-			link.download = 'gamerList';
-			link.style.display = 'none';
-			//设置下载路径
-			link.href = _params;
-			//触发点击
-			document.body.appendChild(link);
-			link.click();
-			//移除节点
-			document.body.removeChild(link);
+			window.location.href=_params
 		},
 		isLockHandle(id, isLock){//关闭或打开
 			let _message = "Are you sure you want to ";
@@ -217,6 +219,15 @@ export default {
 			})
 			
 		},
+		changeSearchTime(){//获取时间段
+			if(this.searchTime !== null){
+				this.filters.startTime = this.searchTime[0]
+				this.filters.endTime = this.searchTime[1]
+			}else{
+				this.filters.startTime =""
+				this.filters.endTime = ""
+			}
+		},
 		 // 新增 / 修改
 		addOrUpdateHandle (id) {
 			this.addOrUpdateVisible = true
@@ -227,8 +238,10 @@ export default {
 		searchFilters(){//搜索
 			let params = {
 				keyWord:this.filters.keyWord,
-				pageNum: this.filters.pageNum,
-				pageSize:10
+				pageNum: 1,
+				pageSize:this.filters.pageSize,
+				startTime:this.filters.startTime,
+				endTime:this.filters.endTime
 			}
 			this.filters = params;
 			this.getDataList(this.filters);
@@ -237,12 +250,14 @@ export default {
 			this.filters.pageNum = val;
 			this.getDataList(this.filters);
 		},
-		getDataList(params) {//获取书单列表
+		getDataList(params) {//
 			if(!params){
 				params = {
 					keyWord:"",
 					pageNum:this.filters.pageNum,
-					pageSize:10
+					pageSize:this.filters.pageSize,
+					startTime:this.filters.startTime,
+					endTime:this.filters.endTime
 				}
 			}
 			let that = this;
@@ -267,7 +282,9 @@ export default {
 			let params = {
 				keyWord:this.filters.keyWord,
 				pageNum: this.filters.pageNum,
-				pageSize:this.filters.pageSize
+				pageSize:this.filters.pageSize,
+				startTime:this.filters.startTime,
+				endTime:this.filters.endTime
 			}
 			this.filters = params;
 			this.getDataList(this.filters);

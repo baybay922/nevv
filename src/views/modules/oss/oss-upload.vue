@@ -49,7 +49,7 @@
         this.successNum++
         if (response && response.code === 0) {
           if (this.num === this.successNum) {
-            this.$confirm('操作成功, 是否继续操作?', '提示', {
+            this.$confirm('Success, 是否继续操作?', '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
               type: 'warning'

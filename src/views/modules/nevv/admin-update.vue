@@ -103,7 +103,7 @@
         }).then(({data}) => {
           if (data && data.code === 20000) {
             this.$message({
-              message: '操作成功',
+              message: 'Success',
               type: 'success',
               duration: 1500,
               onClose: () => {

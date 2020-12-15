@@ -4,7 +4,7 @@
     :title="!dataForm.productId ? 'Add' : 'Modify'"
     :close-on-click-modal="false"
     :visible.sync="visible">
-    <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
+    <el-form :model="dataForm" ref="dataForm" label-width="100px">
       <el-form-item label="Asset Name" class="required">
         <el-input v-model="dataForm.productName" placeholder="Asset Name"></el-input>
       </el-form-item>
@@ -132,7 +132,7 @@
             }).then(({data}) => {
               if (data && data.code === 20000) {
                 this.$message({
-                  message: '操作成功',
+                  message: 'Success',
                   type: 'success',
                   duration: 1500,
                   onClose: () => {

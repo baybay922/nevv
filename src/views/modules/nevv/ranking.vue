@@ -98,7 +98,7 @@ export default {
 			let params = {
 				keyWord:this.filters.keyWord,
 				pageNum:1,
-				pageSize:10
+				pageSize:this.filters.pageSize
 			}
 			this.filters = params;
 			this.getDataList(this.filters);
@@ -113,8 +113,8 @@ export default {
 			if(!params){
 				params = {
 					keyWord:"",
-					pageNum:1,
-					pageSize:10
+					pageNum:this.filters.pageNum,
+					pageSize:this.filters.pageSize
 				}
 			}
 			let that = this;

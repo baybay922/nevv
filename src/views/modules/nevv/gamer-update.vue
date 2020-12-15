@@ -37,6 +37,7 @@
           v-model="dataForm.birthdate"
           type="date"
           value-format="yyyy-MM-dd"
+          :picker-options="pickerOptions"
           placeholder="Birth Date">
         </el-date-picker>
       </el-form-item>
@@ -120,6 +121,11 @@
           fgameGen:"",
           isLocked:true
         },
+        pickerOptions: {
+          disabledDate(time) {
+            return time.getTime() > Date.now() - 8.64e6;//如果没有后面的-8.64e6就是不可以选择今天
+          }
+        }, 
         fileList: [],
         config:{
           favorite: [
@@ -305,7 +311,7 @@
         }).then(({data}) => {
           if (data && data.code === 20000) {
             this.$message({
-              message: '操作成功',
+              message: 'Success',
               type: 'success',
               duration: 1500,
               onClose: () => {

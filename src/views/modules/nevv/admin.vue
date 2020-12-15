@@ -93,9 +93,9 @@ export default {
 				if (data && data.code === 20000) {
 					this.$message.success(data.msg)
 					let filters = {
-						keyWord:"",
-						pageNum:1,
-						pageSize:10
+						keyWord:this.filters.keyWord,
+						pageNum: this.filters.pageNum,
+						pageSize:this.filters.pageSize
 					}
 					this.filters = filters;
 					this.getDataList(this.filters);
@@ -118,7 +118,7 @@ export default {
 			let params = {
 				keyWord:this.filters.keyWord,
 				pageNum: this.filters.pageNum,
-				pageSize:10
+				pageSize:this.filters.pageSize
 			}
 			this.filters = params;
 			this.getDataList(this.filters);
@@ -131,8 +131,8 @@ export default {
 			if(!params){
 				params = {
 					keyWord:"",
-					pageNum:this.filters.pageNum,
-					pageSize:10
+					pageNum: this.filters.pageNum,
+					pageSize:this.filters.pageSize
 				}
 			}
 			let that = this;
