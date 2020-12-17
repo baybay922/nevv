@@ -54,7 +54,7 @@
       </el-form-item>
 
       <el-form-item label="Province">
-        <el-select v-model="dataForm.province" placeholder="Province" @change="selectCityName($event)">
+        <el-select v-model="dataForm.province" placeholder="Province" @change="changeProvince($event)">
           <el-option
             v-for="item in config.countryArray"
             :key="item.province_id"
@@ -201,6 +201,21 @@
           }
         })
         
+      },
+      changeProvince(id){
+        this.$http({
+          url: this.$http.adornUrl("/public/rajaongkir/provinceAndCity"),
+          method: 'post',
+          data: this.$http.adornData({
+            'provinceId': id
+          })
+        }).then(({data}) => {
+          if (data && data.code === 20000) {
+            let res = JSON.parse(data.data);
+            this.config.cityArray = this.config.cityArray.concat(res.rajaongkir.results)
+            this.dataForm.city = ""
+          }
+        })
       },
       selectCityText(id){//获取市名称
         let _cityText;

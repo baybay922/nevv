@@ -163,6 +163,10 @@
       },
       // 表单提交
       dataFormSubmit () {
+        if(!this.compareDate()){
+          this.$message.error("The end time cannot be greater than the activity time");
+          return;
+        }
         if(this.dataForm.eventName == ""){
           this.$message.error("Event Name can not be empty");
           return;
@@ -249,6 +253,11 @@
           this.$message.error(data.msg)
         }
       },
+      compareDate(){//比较时间
+        let d1 = this.dataForm.endTime,
+            d2 = this.dataForm.startTime;
+        return ((new Date(d1.replace(/-/g,"\/"))) > (new Date(d2.replace(/-/g,"\/"))));
+      }
     }
   }
 </script>

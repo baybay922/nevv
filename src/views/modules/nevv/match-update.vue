@@ -366,6 +366,10 @@
         
       },
       savePredict(){//保存处理
+        if(!this.compareDate()){
+          this.$message.error("The end time cannot be greater than the activity time");
+          return;
+        }
         if(this.innerForm.title == ""){
           this.$message.error("title can not be empty");
           return;
@@ -415,6 +419,11 @@
         this.dataForm.matchInfoParamsList = _curArr;
         this.innerVisible = false;
         
+      },
+      compareDate(){//比较时间
+        let d1 = this.dataForm.endTime,
+            d2 = this.dataForm.startTime;
+        return ((new Date(d1.replace(/-/g,"\/"))) > (new Date(d2.replace(/-/g,"\/"))));
       }
     }
   }
