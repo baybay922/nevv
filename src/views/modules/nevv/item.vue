@@ -24,10 +24,29 @@
 			</template>
 		</el-table-column> 
 		<el-table-column prop="productName" label="Name"></el-table-column> 
-		<el-table-column prop="description" label="Description"></el-table-column>
+		<el-table-column prop="description" label="Description">
+			<template slot-scope="scope">
+				<el-popover
+					placement="top-start"
+					title="Detail"
+					width="500"
+					trigger="click"
+					:content="scope.row.description">
+					<el-button slot="reference" type="text">
+						View
+					</el-button>
+				</el-popover>
+			</template>
+			
+		</el-table-column>
 		<el-table-column prop="weight" label="Weight"></el-table-column> 
 		<el-table-column prop="nevv" label="Nevv"></el-table-column> 
 		<el-table-column prop="createDate" label="Create Date"></el-table-column> 
+		<el-table-column prop="publishing" label="Publishing">
+			<template slot-scope="scope">
+				<el-switch v-model="scope.row.publishing" :active-value="1" :inactive-value="0" @change="switchHandle(scope.row.eventId,scope.row.publishing,'rec')"></el-switch>
+			</template>
+		</el-table-column> 
 		<el-table-column label="Operation" width="200">
 			<template slot-scope="scope">
 				<el-link icon="el-icon-edit" @click="addOrUpdateHandle(scope.row.productId)">Edit</el-link>
@@ -86,6 +105,34 @@ export default {
 		AddOrUpdate
 	},
 	methods: {
+		//是否开启
+		switchHandle(id, value, type){
+			let params = {};
+			params['functionId'] = id;
+			if(!type){
+				params['isEnabled'] = value
+			}else{
+				params['isPush'] = value
+			}
+			this.$http({
+              url: this.$http.adornUrl(`/event/pc/${!type ? 'enabledEventInfo' : 'pushEventInfo'}`),
+              method: 'post',
+              data: this.$http.adornData(params)
+            }).then(({data}) => {
+              if (data && data.code === 20000) {
+                this.$message({
+                  message: 'Success',
+                  type: 'success',
+                  duration: 1500,
+                  onClose: () => {
+                    this.getDataList()
+                  }
+                })
+              } else {
+                this.$message.error(data.msg)
+              }
+            })
+		},
 		//删除
 		deleteHandle(id){
 			this.$confirm('This operation will permanently delete the file, do you want to continue?', 'Prompt', {

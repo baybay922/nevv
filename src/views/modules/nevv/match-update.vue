@@ -49,7 +49,7 @@
                 <p v-else>--</p>
             </template>
           </el-table-column> 
-          <el-table-column prop="least" label="Minimum Point Reguired" width="250"></el-table-column> 
+          <el-table-column prop="least" label="Minimum Point Reguired" width="150"></el-table-column> 
           <el-table-column label="Operation" width="150" >
             <template slot-scope="scope">
               <el-link icon="el-icon-edit" @click="!dataForm.isUpdate && updatePredict(scope.row.matchInfoId,scope.$index)">Edit</el-link>

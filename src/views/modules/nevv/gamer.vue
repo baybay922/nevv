@@ -89,8 +89,8 @@
 		<el-table-column label="Operation" width="200" fixed="right">
 			<template slot-scope="scope">
 				<el-link icon="el-icon-edit" @click="addOrUpdateHandle(scope.row.userId)">Edit</el-link>
-				<el-link icon="el-icon-lock" @click="isLockHandle(scope.row.userId, 0)" v-if="scope.row.isLocked == 0">Unblock</el-link>
-				<el-link icon="el-icon-unlock" @click="isLockHandle(scope.row.userId, 1)" v-else>Block</el-link>
+				<el-link icon="el-icon-lock" @click="isLockHandle(scope.row.userId, 1)" v-if="scope.row.isLocked == 0">Unblock</el-link>
+				<el-link icon="el-icon-unlock" @click="isLockHandle(scope.row.userId, 0)" v-else>Block</el-link>
 			</template>
 		</el-table-column>
 	</el-table>

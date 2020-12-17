@@ -41,7 +41,7 @@
 		<el-table-column prop="startTime" label="Schedule From"></el-table-column> 
 		<el-table-column prop="endTime" label="Schedule To"></el-table-column> 
 		<el-table-column prop="createTime" label="Create Date"></el-table-column> 
-		<el-table-column label="Operation" width="200">
+		<el-table-column label="Operation" width="200" fixed="right">
 			<template slot-scope="scope">
 				<el-link icon="el-icon-edit" @click="addOrUpdateHandle(scope.row.id)">Edit</el-link>
 				<el-link icon="el-icon-delete" @click="deleteHandle(scope.row.id)">Delete</el-link>
