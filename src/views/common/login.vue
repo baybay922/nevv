@@ -3,7 +3,9 @@
     <div class="site-content__wrapper">
       <div class="site-content">
         <div class="login-head">
-          <div class="login-logo"></div>
+          <div class="login-logo">
+            <img src="~@/assets/img/logo.jpg" alt="">
+          </div>
           <div class="login-name">Nevvorld Admin Dashboard</div>
           <div class="login-version">V 1.0.0</div>
         </div>
@@ -166,6 +168,10 @@
       height: 60px;
       background: #fff;
       border-radius: 50%;
+      overflow: hidden;
+      img{
+        width: 100%;
+      }
     }
     .login-name{
       color: #fff;
