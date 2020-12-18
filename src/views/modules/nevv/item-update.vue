@@ -32,6 +32,10 @@
         <el-input v-model="dataForm.nevv" placeholder="nevv" type="number"></el-input>
       </el-form-item>
 
+      <el-form-item label="Publishing" >
+        <el-switch v-model="dataForm.publishing"></el-switch>
+      </el-form-item>
+
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">Cancel</el-button>
@@ -50,7 +54,8 @@
           productName:"",
           description:"",
           weight:"",
-          nevv:""
+          nevv:"",
+          publishing:false
         },
         fileList: [],
         options: [{
@@ -79,6 +84,7 @@
                 this.dataForm.description = data.data.description
                 this.dataForm.weight = data.data.weight
                 this.dataForm.nevv = data.data.nevv
+                this.dataForm.publishing = data.data.publishing==0?false:true;
                 let files = [];
                 files.push({url:data.data.showUrl})
                 this.fileList = files;
@@ -92,6 +98,7 @@
             this.dataForm.description = ""
             this.dataForm.weight = ""
             this.dataForm.nevv = ""
+            this.dataForm.publishing = false
             this.fileList = []
           }
         })
@@ -127,7 +134,8 @@
                 'showUrl': this.fileList.length>0?this.fileList[0].url:"",
                 'description': this.dataForm.description,
                 'weight': this.dataForm.weight,
-                'nevv': this.dataForm.nevv
+                'nevv': this.dataForm.nevv,
+                'publishing':!this.dataForm.publishing?0:1
               })
             }).then(({data}) => {
               if (data && data.code === 20000) {

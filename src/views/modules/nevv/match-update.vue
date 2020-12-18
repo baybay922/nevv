@@ -48,8 +48,17 @@
                 <img class="listImg" :src="scope.row.bicon" @click="showPreviewImage(scope.row.bicon)"  v-if="scope.row.bicon !==''" />
                 <p v-else>--</p>
             </template>
-          </el-table-column> 
+          </el-table-column>          
           <el-table-column prop="least" label="Minimum Point Reguired" width="150"></el-table-column> 
+          <el-table-column prop="winner" label="winner">
+            <template slot-scope="scopes" v-if="scopes.row.winner!==''">
+              <el-input
+                :value="scopes.row.winner==scopes.row.amatchDetailId?'A':'B'"
+                disabled="disabled"
+							>
+              </el-input>
+            </template>
+          </el-table-column>
           <el-table-column label="Operation" width="150" >
             <template slot-scope="scope">
               <el-link icon="el-icon-edit" @click="!dataForm.isUpdate && updatePredict(scope.row.matchInfoId,scope.$index)">Edit</el-link>
@@ -225,6 +234,8 @@
             this.dataForm.startTime = ""
             this.dataForm.endTime = ""
             this.dataForm.teamStatus = false
+            this.aIconUrl = []
+            this.bIconUrl = []
           }
         })
       },

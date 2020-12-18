@@ -28,7 +28,7 @@
 			<template slot-scope="scope">
 				<el-popover
 					placement="top-start"
-					title="Detail"
+					title="Description"
 					width="500"
 					trigger="click"
 					:content="scope.row.description">
@@ -41,12 +41,12 @@
 		</el-table-column>
 		<el-table-column prop="weight" label="Weight"></el-table-column> 
 		<el-table-column prop="nevv" label="Nevv"></el-table-column> 
-		<el-table-column prop="createDate" label="Create Date"></el-table-column> 
 		<el-table-column prop="publishing" label="Publishing">
 			<template slot-scope="scope">
-				<el-switch v-model="scope.row.publishing" :active-value="1" :inactive-value="0" @change="switchHandle(scope.row.eventId,scope.row.publishing,'rec')"></el-switch>
+				<el-switch v-model="scope.row.publishing" :active-value="1" :inactive-value="0" @change="switchHandle(scope.row.productId,scope.row.publishing)"></el-switch>
 			</template>
 		</el-table-column> 
+		<el-table-column prop="createDate" label="Create Date"></el-table-column> 
 		<el-table-column label="Operation" width="200">
 			<template slot-scope="scope">
 				<el-link icon="el-icon-edit" @click="addOrUpdateHandle(scope.row.productId)">Edit</el-link>
@@ -106,16 +106,12 @@ export default {
 	},
 	methods: {
 		//是否开启
-		switchHandle(id, value, type){
+		switchHandle(id, value){
 			let params = {};
-			params['functionId'] = id;
-			if(!type){
-				params['isEnabled'] = value
-			}else{
-				params['isPush'] = value
-			}
+			params['id'] = id;
+			params['publishing'] = value
 			this.$http({
-              url: this.$http.adornUrl(`/event/pc/${!type ? 'enabledEventInfo' : 'pushEventInfo'}`),
+              url: this.$http.adornUrl("/product/pc/publishing"),
               method: 'post',
               data: this.$http.adornData(params)
             }).then(({data}) => {

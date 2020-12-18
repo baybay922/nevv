@@ -71,6 +71,7 @@
       return {
         visible: false,
         dataForm: {
+          id: 0,
           eventId: "",
           rankTitle:"",
           isPush:false,
@@ -96,11 +97,11 @@
               url: this.$http.adornUrl('/product/pc/findItemInfo'),
               method: 'post',
               data: this.$http.adornData({
-                'functionId': this.dataForm.productId
+                'functionId': this.dataForm.id
               })
             }).then(({data}) => {
               if (data && data.code === 20000) {
-                this.dataForm.productId = data.data.productId
+                this.dataForm.id = data.data.productId
                 this.dataForm.productName = data.data.productName
                 this.dataForm.description = data.data.description
                 this.dataForm.nevv = data.data.nevv
@@ -112,6 +113,7 @@
               }
             })
           }else{
+            this.dataForm.id = ""
             this.dataForm.eventId = "";
             this.dataForm.rankTitle = "";
             this.dataForm.isPush = false;
