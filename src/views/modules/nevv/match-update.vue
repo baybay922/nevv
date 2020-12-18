@@ -50,7 +50,7 @@
             </template>
           </el-table-column>          
           <el-table-column prop="least" label="Minimum Point Reguired" width="150"></el-table-column> 
-          <el-table-column prop="winner" label="winner">
+          <!-- <el-table-column prop="winner" label="winner">
             <template slot-scope="scopes" v-if="scopes.row.winner!==''">
               <el-input
                 :value="scopes.row.winner==scopes.row.amatchDetailId?'A':'B'"
@@ -58,7 +58,7 @@
 							>
               </el-input>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column label="Operation" width="150" >
             <template slot-scope="scope">
               <el-link icon="el-icon-edit" @click="!dataForm.isUpdate && updatePredict(scope.row.matchInfoId,scope.$index)">Edit</el-link>
@@ -241,6 +241,10 @@
       },
       // 表单提交
       dataFormSubmit () {
+        if(!this.compareDate()){
+          this.$message.error("The end time cannot be greater than the activity time");
+          return;
+        }
         if(this.dataForm.eventId == ""){
           this.$message.error("Relate to Event can not be empty");
           return;
@@ -377,10 +381,7 @@
         
       },
       savePredict(){//保存处理
-        if(!this.compareDate()){
-          this.$message.error("The end time cannot be greater than the activity time");
-          return;
-        }
+      console.log(this.innerForm.title)
         if(this.innerForm.title == ""){
           this.$message.error("title can not be empty");
           return;
@@ -432,9 +433,16 @@
         
       },
       compareDate(){//比较时间
-        let d1 = this.dataForm.endTime,
-            d2 = this.dataForm.startTime;
-        return ((new Date(d1.replace(/-/g,"\/"))) > (new Date(d2.replace(/-/g,"\/"))));
+        if(this.dataForm.startTime !=="" && this.dataForm.endTime !==""){
+          var oDate1 = new Date(this.dataForm.startTime);
+          var oDate2 = new Date(this.dataForm.endTime);
+          if(oDate1.getTime() > oDate2.getTime()){
+              return false
+          }
+        }else{
+          return true;
+        }
+        
       }
     }
   }

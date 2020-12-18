@@ -237,10 +237,14 @@
           }
         })
       },
-       compareDate(){//比较时间
-        let d1 = this.dataForm.endTime,
-            d2 = this.dataForm.startTime;
-        return ((new Date(d1.replace(/-/g,"\/"))) > (new Date(d2.replace(/-/g,"\/"))));
+      compareDate(){//比较时间
+        if(this.dataForm.startTime !=="" && this.dataForm.endTime !==""){
+          let d1 = this.dataForm.endTime,
+              d2 = this.dataForm.startTime;
+          return ((new Date(d1.replace(/-/g,"\/"))) > (new Date(d2.replace(/-/g,"\/"))));
+        }else{
+          return true;
+        }
       }
     }
   }

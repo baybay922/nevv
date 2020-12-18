@@ -29,7 +29,20 @@
 	<el-table class="userTable" border :data="dataList" highlight-current-row v-loading="listLoading"> 
 		<el-table-column prop="eventName" label="Event"></el-table-column> 
 		<el-table-column prop="questName" label="Title"></el-table-column> 
-		<el-table-column prop="questRule" label="Rules"></el-table-column> 
+		<el-table-column prop="questRule" label="Rules">
+			<template slot-scope="scope">
+				<el-popover
+					placement="top-start"
+					title="Rules Detail"
+					width="500"
+					trigger="click"
+					:content="scope.row.questRule">
+					<el-button slot="reference" type="text">
+						View
+					</el-button>
+				</el-popover>
+			</template>
+		</el-table-column> 
 		<el-table-column prop="questType" label="Objective">
 			<template slot-scope="scope">
 				<div v-if="scope.row.questType == '1'">{{scope.row.questUrl}}</div>
