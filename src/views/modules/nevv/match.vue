@@ -104,7 +104,7 @@
 		<el-table-column label="Operation" width="200">
 			<template slot-scope="scope">
 				<el-link icon="el-icon-edit" @click="addOrUpdateHandle(scope.row.id)">Edit</el-link>
-				<el-link icon="el-icon-delete" @click="deleteHandle(scope.row.id)">Delete</el-link>
+				<el-link icon="el-icon-delete" :disabled="scope.row.teamStatus==1" @click="deleteHandle(scope.row.id)">Delete</el-link>
 			</template>
 		</el-table-column>
 	</el-table>

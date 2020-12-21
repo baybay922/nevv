@@ -239,8 +239,20 @@
           }
         })
       },
+      compareDate () {//比较时间
+        if(this.dataForm.startTime !=="" && this.dataForm.endTime !=="" && this.dataForm.startTime !== this.dataForm.endTime){
+          var oDate1 = new Date(this.dataForm.startTime);
+          var oDate2 = new Date(this.dataForm.endTime);
+          if(oDate1.getTime() > oDate2.getTime()){
+              return false
+          }
+        }
+        return true
+        
+      },
       // 表单提交
       dataFormSubmit () {
+        console.log(this.compareDate())
         if(!this.compareDate()){
           this.$message.error("The end time cannot be greater than the activity time");
           return;
@@ -333,7 +345,7 @@
       updatePredict(id, index){//预览详情
         
         this.innerVisible = true;
-        if(id){
+        if(index !== undefined){
           this.savePredictIndex = index;
           let data = this.dataForm.matchInfoParamsList[index];
           this.innerForm.aicon =  data.aicon
@@ -355,10 +367,10 @@
           this.bIconUrl = _biconImg;
         }else{
           this.savePredictIndex = "";
-          this.innerForm.aicon =  "";
           this.innerForm.amatchDetailId = "";
           this.innerForm.awinner = "";
-          this.innerForm.bicon = "";
+          this.aIconUrl = []
+          this.bIconUrl = [];
           this.innerForm.bmatchDetailId = "";
           this.innerForm.bwinner = "";
           this.innerForm.least = "";
@@ -381,8 +393,7 @@
         
       },
       savePredict(){//保存处理
-      console.log(this.innerForm.title)
-        if(this.innerForm.title == ""){
+        if(this.innerForm.title == "" || this.innerForm.title == null){
           this.$message.error("title can not be empty");
           return;
         }
@@ -430,18 +441,6 @@
         this.dataForm.matchInfoParamsList = [];
         this.dataForm.matchInfoParamsList = _curArr;
         this.innerVisible = false;
-        
-      },
-      compareDate(){//比较时间
-        if(this.dataForm.startTime !=="" && this.dataForm.endTime !==""){
-          var oDate1 = new Date(this.dataForm.startTime);
-          var oDate2 = new Date(this.dataForm.endTime);
-          if(oDate1.getTime() > oDate2.getTime()){
-              return false
-          }
-        }else{
-          return true;
-        }
         
       }
     }

@@ -180,17 +180,26 @@
           this.$message.error("Description can not be empty");
           return;
         }
-
+        console.log()
         if(this.dataForm.rules == ""){
           this.$message.error("Rules can not be empty");
           return;
         }
+        
         if(this.dataForm.resUrl == ""){
           this.$message.error("Registeration Url can not be empty");
           return;
         }
         if(this.dataForm.tourUrl == ""){
           this.$message.error("Tournament Url can not be empty");
+          return;
+        }
+        if(!this.inHttpsLink(this.dataForm.resUrl)){
+          this.$message.error("Registeration Url must start with http or https");
+          return;
+        }
+        if(!this.inHttpsLink(this.dataForm.tourUrl)){
+          this.$message.error("Tournament Url must start with http or https");
           return;
         }
         if(this.bgImg.length <= 0){
@@ -254,13 +263,20 @@
         }
       },
       compareDate(){//比较时间
-        if(this.dataForm.startTime !=="" && this.dataForm.endTime !==""){
+        if(this.dataForm.startTime !=="" && this.dataForm.endTime !=="" && this.dataForm.startTime !== this.dataForm.endTime){
           let d1 = this.dataForm.endTime,
               d2 = this.dataForm.startTime;
+              console.log((new Date(d1.replace(/-/g,"\/"))))
           return ((new Date(d1.replace(/-/g,"\/"))) > (new Date(d2.replace(/-/g,"\/"))));
         }else{
           return true;
         }
+      },
+      inHttpsLink(str){
+        if(str.indexOf("http://") != -1 || str.indexOf("https://") != -1 ){
+          return true;
+        }
+        return false;
       }
     }
   }

@@ -123,6 +123,10 @@
           this.$message.error("Title can not be empty");
           return;
         }
+        if(!this.inHttpsLink(this.dataForm.eventWatchUrl)){
+          this.$message.error("Plat URL must start with http or https");
+          return;
+        }
         if(this.dataForm.eventWatchUrl == ""){
           this.$message.error("Plat URL can not be empty");
           return;
@@ -180,6 +184,12 @@
           this.$message.error(data.msg)
         }
       },
+      inHttpsLink(str){
+        if(str.indexOf("http://") != -1 || str.indexOf("https://") != -1 ){
+          return true;
+        }
+        return false;
+      }
     }
   }
 </script>

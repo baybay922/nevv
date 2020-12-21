@@ -186,7 +186,7 @@
                 this.dataForm.phone = data.data.phone
                 this.dataForm.birthdate = data.data.birthdate
                 this.dataForm.genter = data.data.genter
-                this.dataForm.isLocked = data.data.isBlock==0?true:false;
+                this.dataForm.isLocked = data.data.isBlock==1?true:false;
                 let files = [];
                 files.push({url:data.data.userImg})
                 this.fileList = files;
@@ -203,6 +203,10 @@
         
       },
       changeProvince(id){
+        this.config.cityArray = [{
+              city_id:'',
+              city_name:"No Selected"
+            }];
         this.$http({
           url: this.$http.adornUrl("/public/rajaongkir/provinceAndCity"),
           method: 'post',
