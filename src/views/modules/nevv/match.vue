@@ -334,7 +334,7 @@ export default {
 			if(!params){
 				params = {
 					isOpen:"2",
-					keyWord:"",
+					keyWord:this.filters.keyWord,
 					pageNum:this.filters.pageNum,
 					pageSize:this.filters.pageSize
 				}

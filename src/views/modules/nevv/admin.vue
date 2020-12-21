@@ -130,7 +130,7 @@ export default {
 		getDataList(params) {//获取列表
 			if(!params){
 				params = {
-					keyWord:"",
+					keyWord:this.filters.keyWord,
 					pageNum: this.filters.pageNum,
 					pageSize:this.filters.pageSize
 				}

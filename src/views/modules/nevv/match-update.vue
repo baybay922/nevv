@@ -50,19 +50,10 @@
             </template>
           </el-table-column>          
           <el-table-column prop="least" label="Minimum Point Reguired" width="150"></el-table-column> 
-          <!-- <el-table-column prop="winner" label="winner">
-            <template slot-scope="scopes" v-if="scopes.row.winner!==''">
-              <el-input
-                :value="scopes.row.winner==scopes.row.amatchDetailId?'A':'B'"
-                disabled="disabled"
-							>
-              </el-input>
-            </template>
-          </el-table-column> -->
           <el-table-column label="Operation" width="150" >
             <template slot-scope="scope">
-              <el-link icon="el-icon-edit" @click="!dataForm.isUpdate && updatePredict(scope.row.matchInfoId,scope.$index)">Edit</el-link>
-              <el-link icon="el-icon-delete" @click="!dataForm.isUpdate && deletePredict(scope.row.matchInfoId,scope.$index)">Delete</el-link>
+              <el-link icon="el-icon-edit" :disabled="dataForm.isUpdate" @click="updatePredict(scope.row.matchInfoId,scope.$index)">Edit</el-link>
+              <el-link icon="el-icon-delete" :disabled="dataForm.isUpdate" @click="deletePredict(scope.row.matchInfoId,scope.$index)">Delete</el-link>
             </template>
           </el-table-column>
         </el-table>

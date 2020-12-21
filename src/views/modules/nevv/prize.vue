@@ -247,7 +247,7 @@ export default {
 			if(!params){
 				params = {
 					isOpen: this.filters.isOpen,
-					keyWord:"",
+					keyWord:this.filters.keyWord,
 					pageNum:this.filters.pageNum,
 					pageSize:this.filters.pageSize,
 					startTime:this.filters.startTime,

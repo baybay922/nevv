@@ -208,7 +208,7 @@ export default {
 					if (data && data.code === 20000) {
 						this.$message.success(data.msg)
 						let filters = {
-							keyWord:"",
+							keyWord:this.filters.keyWord,
 							pageNum:1,
 							pageSize:10
 						}
@@ -256,7 +256,7 @@ export default {
 		getDataList(params) {//
 			if(!params){
 				params = {
-					keyWord:"",
+					keyWord:this.filters.keyWord,
 					pageNum:this.filters.pageNum,
 					pageSize:this.filters.pageSize,
 					startTime:this.filters.startTime,

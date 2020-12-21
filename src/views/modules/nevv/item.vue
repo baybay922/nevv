@@ -184,7 +184,7 @@ export default {
 		getDataList(params) {
 			if(!params){
 				params = {
-					keyWord:"",
+					keyWord:this.filters.keyWord,
 					pageNum:this.filters.pageNum,
 					pageSize:this.filters.pageSize
 				}

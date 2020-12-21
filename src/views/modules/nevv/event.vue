@@ -213,7 +213,7 @@ export default {
               if (data && data.code === 20000) {
 				this.$message.success(data.msg)
 				let filters = {
-					keyWord:"",
+					keyWord:this.filters.keyWord,
 					isOpen:"2",
 					pageNum: this.filters.pageNum,
 					pageSize:this.filters.pageSize,
@@ -249,7 +249,7 @@ export default {
 		getDataList(params) {//获取列表
 			if(!params){
 				params = {
-					keyWord:"",
+					keyWord:this.filters.keyWord,
 					pageNum:1,
 					isOpen: this.filters.isOpen,
 					pageSize:10
