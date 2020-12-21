@@ -220,7 +220,7 @@
                 this.dataForm.startTime = data.data.startTime
                 this.dataForm.endTime = data.data.endTime
                 this.dataForm.teamStatus = data.data.teamStatus===0?false:true
-                this.dataForm.isUpdate = data.data.isUpdate===0?true:false
+                this.dataForm.isUpdate = data.data.isUpdate===0?false:true
                 
               }
             })

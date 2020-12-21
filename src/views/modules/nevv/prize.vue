@@ -26,6 +26,18 @@
 			</el-form-item>
 
 			<el-form-item>
+				<el-date-picker
+				v-model="searchTime"
+				type="daterange"
+				range-separator="to"
+				value-format="yyyy-MM-dd"
+				start-placeholder="Start Date"
+				end-placeholder="End Date"
+				@change="changeSearchTime">
+				</el-date-picker>
+			</el-form-item>
+
+			<el-form-item>
 				<el-button type="primary" @click="getSearchFilters()">Search</el-button>
 			</el-form-item>
 
@@ -33,9 +45,9 @@
 				<el-button type="primary" @click="addOrUpdateHandle()">Add</el-button>
 			</el-form-item>
 
-			<!-- <el-form-item>
+			<el-form-item>
 				<el-button type="primary" @click="exportHandle()">Export</el-button>
-			</el-form-item> -->
+			</el-form-item>
 		</el-form>
 	</el-col>
 
@@ -98,11 +110,14 @@ import AddOrUpdate from './prize-update'
 export default {
 	data() {
 		return {
+			searchTime:"",
 			filters: {
 				isOpen:"2",
 				keyWord:"",
 				pageSize: 10,
 				pageNum: 1,
+				startTime:"",
+				endTime:""
 			},
 			total: 0,
 			dataList: [],
@@ -139,6 +154,15 @@ export default {
 		AddOrUpdate
 	},
 	methods: {
+		changeSearchTime(){//获取时间段
+			if(this.searchTime !== null){
+				this.filters.startTime = this.searchTime[0]
+				this.filters.endTime = this.searchTime[1]
+			}else{
+				this.filters.startTime =""
+				this.filters.endTime = ""
+			}
+		},
 		//是否开启
 		switchHandle(id, value){
 			let params = {};
@@ -206,7 +230,9 @@ export default {
 				isOpen:this.filters.isOpen,
 				keyWord:this.filters.keyWord,
 				pageNum:1,
-				pageSize:this.filters.pageSize
+				pageSize:this.filters.pageSize,
+				startTime:this.filters.startTime,
+				endTime:this.filters.endTime
 			}
 			this.filters = params;
 			this.getDataList(this.filters);
@@ -223,7 +249,9 @@ export default {
 					isOpen: this.filters.isOpen,
 					keyWord:"",
 					pageNum:this.filters.pageNum,
-					pageSize:this.filters.pageSize
+					pageSize:this.filters.pageSize,
+					startTime:this.filters.startTime,
+					endTime:this.filters.endTime
 				}
 			}
 			let that = this;
@@ -250,7 +278,9 @@ export default {
 				keyWord:this.filters.keyWord,
 				isOpen:this.filters.isOpen,
 				pageNum: this.filters.pageNum,
-				pageSize:this.filters.pageSize
+				pageSize:this.filters.pageSize,
+				startTime:this.filters.startTime,
+				endTime:this.filters.endTime
 			}
 			this.filters = params;
 			this.getDataList(this.filters);
@@ -270,10 +300,13 @@ export default {
 		  },
 		  exportHandle(){//导出列表
 			let params = this.filters;
-			let _params = "https://api.nevvorld.cn/api/user/pc/exportUserList";
+			let _params = "https://api.nevvorld.cn/api/eventPppOrder/pc/exportUserList?";
 			for (const key in params) {
-				_params+= (key+'='+params[key]+'&')
+				if(params[key] !== ""){
+					_params+= (key+'='+params[key]+'&')
+				}
 			}
+			_params = _params.substring(0,_params.length-1);
 			window.location.href=_params
 		},
 		

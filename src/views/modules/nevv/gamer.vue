@@ -174,10 +174,13 @@ export default {
 		},
 		exportHandle(){//导出列表
 			let params = this.filters;
-			let _params = "https://api.nevvorld.cn/api/user/pc/exportUserList";
+			let _params = "https://api.nevvorld.cn/api/user/pc/exportUserList?";
 			for (const key in params) {
-				_params+= (key+'='+params[key]+'&')
+				if(params[key] !== ""){
+					_params+= (key+'='+params[key]+'&')
+				}
 			}
+			_params = _params.substring(0,_params.length-1);
 			window.location.href=_params
 		},
 		isLockHandle(id, isLock){//关闭或打开
