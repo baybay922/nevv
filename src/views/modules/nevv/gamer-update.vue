@@ -325,7 +325,7 @@
             'city':this.dataForm.city,
             'cityName':this.dataForm.cityName,
             'favoriteGameGenre': this.dataForm.fgameGen,
-            'isLocked': this.dataForm.isLocked?0:1
+            'isLocked': this.dataForm.isLocked?1:0
           })
         }).then(({data}) => {
           if (data && data.code === 20000) {
