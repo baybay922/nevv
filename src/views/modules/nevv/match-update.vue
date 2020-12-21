@@ -236,8 +236,10 @@
             this.dataForm.teamStatus = false
             this.aIconUrl = []
             this.bIconUrl = []
+            this.dataForm.isUpdate = false
           }
         })
+        
       },
       compareDate () {//比较时间
         if(this.dataForm.startTime !=="" && this.dataForm.endTime !=="" && this.dataForm.startTime !== this.dataForm.endTime){

@@ -199,7 +199,7 @@ export default {
 			arr.push(aObj,bObj)
 			this.winners = arr;
 		},
-		selectWinner(eventId,matchInfoId,matchDetailId){
+		selectWinner(eventId,matchDetailId,matchInfoId){
 			let _winnerName = ""
 			this.winners.map(items=>{
 				if(items.value == matchInfoId){

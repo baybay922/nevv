@@ -32,6 +32,10 @@
 			<el-form-item>
 				<el-button type="primary" @click="addOrUpdateHandle()">Add</el-button>
 			</el-form-item>
+
+			<!-- <el-form-item>
+				<el-button type="primary" @click="exportHandle()">Export</el-button>
+			</el-form-item> -->
 		</el-form>
 	</el-col>
 
@@ -263,7 +267,15 @@ export default {
 					this.$message.error(data.msg)
 				}
 			})
-      	},
+		  },
+		  exportHandle(){//导出列表
+			let params = this.filters;
+			let _params = "https://api.nevvorld.cn/api/user/pc/exportUserList";
+			for (const key in params) {
+				_params+= (key+'='+params[key]+'&')
+			}
+			window.location.href=_params
+		},
 		
 	},
 	mounted() {

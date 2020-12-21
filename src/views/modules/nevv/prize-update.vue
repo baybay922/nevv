@@ -94,19 +94,22 @@
           this.getSearchEventList()
           if (this.dataForm.id) {
             this.$http({
-              url: this.$http.adornUrl('/product/pc/findItemInfo'),
+              url: this.$http.adornUrl('/eventPpp/pc/findPppInfo'),
               method: 'post',
               data: this.$http.adornData({
                 'functionId': this.dataForm.id
               })
             }).then(({data}) => {
               if (data && data.code === 20000) {
-                this.dataForm.id = data.data.productId
-                this.dataForm.productName = data.data.productName
-                this.dataForm.description = data.data.description
-                this.dataForm.nevv = data.data.nevv
+                this.dataForm.id = data.data.id
+                this.dataForm.eventId = data.data.eventId;
+                this.dataForm.rankTitle = data.data.rankTitle;
+                this.dataForm.isPush = data.data.isPush==0?false:true;
+                this.dataForm.pointNevv = data.data.pointNevv;
+                this.dataForm.startTime = data.data.startTime;
+                this.dataForm.endTime = data.data.endTime;
                 let files = [];
-                files.push({url:data.data.showUrl})
+                files.push({url:data.data.rankImg})
                 this.fileList = files;
               }else{
                 this.$message.error(data.msg)
