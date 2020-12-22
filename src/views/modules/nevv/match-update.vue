@@ -124,7 +124,7 @@
         </el-form-item>
 
         <el-form-item label="Minimum Point Reguired" class="required">
-          <el-input v-model="innerForm.least" type="number" placeholder="Minimum Point Reguired"></el-input>
+          <el-input-number v-model="innerForm.least" :min="1" label="Minimum Point Reguired"></el-input-number>
         </el-form-item>
       </el-form>
       
