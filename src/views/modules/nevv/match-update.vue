@@ -129,8 +129,8 @@
       </el-form>
       
       <span slot="footer" class="dialog-footer">
-        <el-button @click="innerVisible = false">取 消</el-button>
-        <el-button type="primary" @click="savePredict()">确 定</el-button>
+        <el-button @click="innerVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="savePredict()">Confirm</el-button>
       </span>
     </el-dialog>
     <!-- 图片查看器 -->

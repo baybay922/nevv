@@ -53,7 +53,7 @@
         </el-date-picker>
       </el-form-item>
       
-      <el-form-item label="Blocked" >
+      <el-form-item label="Publishing" >
         <el-switch v-model="dataForm.isPush"></el-switch>
       </el-form-item>
 

@@ -24,8 +24,8 @@
         <el-input type="textarea" v-model="dataForm.description"></el-input>
       </el-form-item>
 
-       <el-form-item label="Weight">
-        <el-input type="input" v-model="dataForm.weight"></el-input>
+       <el-form-item label="Weight(kg)" class="required">
+        <el-input type="number" v-model="dataForm.weight" ></el-input>
       </el-form-item>
 
       <el-form-item label="Nevv" class="required">
@@ -116,6 +116,10 @@
 
         if(this.dataForm.description == ""){
           this.$message.error("Description can not be empty");
+          return;
+        }
+        if(this.dataForm.weight == ""){
+          this.$message.error("Weight can not be empty");
           return;
         }
 

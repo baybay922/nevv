@@ -298,8 +298,11 @@ export default {
 				}
 			})
 		  },
-		  exportHandle(){//导出列表
+		exportHandle(){//导出列表
 			let params = this.filters;
+			params.isOpen = "";
+			params.pageSize = "";
+			params.pageNum = "";
 			let _params = "https://api.nevvorld.cn/api/eventPppOrder/pc/exportUserList?";
 			for (const key in params) {
 				if(params[key] !== ""){

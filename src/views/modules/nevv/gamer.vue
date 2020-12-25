@@ -51,11 +51,11 @@
 				<el-popover
 					v-else
 					placement="left"
-					width="300"
+					width="350"
 					trigger="click">
-					<el-table :data="eventCountList">
-						<el-table-column prop="eventName" label="Event" width="200"></el-table-column>
-						<el-table-column prop="eventPoint" label="Event point" width="200"></el-table-column>
+					<el-table :data="eventCountList" height="200">
+						<el-table-column prop="eventName" label="Event" width="150"></el-table-column>
+						<el-table-column prop="eventPoint" label="Event point" width="150"></el-table-column>
 					</el-table>
 					<el-button slot="reference" type="text" @click="showEventCountList(scope.row.userStrId)">
 						{{scope.row.eventCount}} items
@@ -67,17 +67,18 @@
 			<template slot-scope="scope">
 				<el-button type="text" v-if="scope.row.predictCount == 0">
 					{{scope.row.predictCount}} items
-				</el-button>
+				</el-button> 
 				<el-popover
 					v-else
 					placement="left"
-					width="500"
+					width="650"
 					trigger="click">
-					<el-table :data="predictCountList">
-						<el-table-column prop="eventName" label="Event" width="200"></el-table-column>
-						<el-table-column prop="eventPoint" label="Match" width="200"></el-table-column>
-						<el-table-column prop="eventPoint" label="Predict" width="200"></el-table-column>
-						<el-table-column prop="eventPoint" label="Result" width="200"></el-table-column>
+					<el-table :data="predictCountList" 
+					height="300">
+						<el-table-column prop="eventName" label="Event" width="150"></el-table-column>
+						<el-table-column prop="eventPoint" label="Match" width="150"></el-table-column>
+						<el-table-column prop="eventPoint" label="Predict" width="150"></el-table-column>
+						<el-table-column prop="eventPoint" label="Result" width="150"></el-table-column>
 					</el-table>
 					<el-button slot="reference" type="text" @click="showJoinMatchList(scope.row.userStrId)">
 						{{scope.row.predictCount}} items
@@ -144,7 +145,7 @@ export default {
               method: 'post',
               data: this.$http.adornData({
 				keyWord:id,
-				pageSize:10,
+				pageSize:999,
 				pageNum:1
 			  })
             }).then(({data}) => {
@@ -161,7 +162,7 @@ export default {
               method: 'post',
               data: this.$http.adornData({
 				keyWord:id,
-				pageSize:10,
+				pageSize:999,
 				pageNum:1
 			  })
             }).then(({data}) => {
@@ -174,6 +175,8 @@ export default {
 		},
 		exportHandle(){//导出列表
 			let params = this.filters;
+			params.pageSize = "";
+			params.pageNum = "";
 			let _params = "https://api.nevvorld.cn/api/user/pc/exportUserList?";
 			for (const key in params) {
 				if(params[key] !== ""){

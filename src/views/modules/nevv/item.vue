@@ -6,12 +6,29 @@
 			<el-form-item label-width="120px">
 				<el-input autocomplete="off" v-model="filters.keyWord" placeholder="Search by name"></el-input>
 			</el-form-item>
+
+			<el-form-item>
+				<el-date-picker
+				v-model="searchTime"
+				type="daterange"
+				range-separator="to"
+				value-format="yyyy-MM-dd"
+				start-placeholder="Start Date"
+				end-placeholder="End Date"
+				@change="changeSearchTime">
+				</el-date-picker>
+			</el-form-item>
+
 			<el-form-item>
 				<el-button type="primary" @click="getSearchFilters()">Search</el-button>
 			</el-form-item>
 
 			<el-form-item>
 				<el-button type="primary" @click="addOrUpdateHandle()">Add</el-button>
+			</el-form-item>
+
+			<el-form-item>
+				<el-button type="primary" @click="exportHandle()">Export</el-button>
 			</el-form-item>
 		</el-form>
 	</el-col>
@@ -39,7 +56,7 @@
 			</template>
 			
 		</el-table-column>
-		<el-table-column prop="weight" label="Weight"></el-table-column> 
+		<el-table-column prop="weight" label="Weight(kg)"></el-table-column> 
 		<el-table-column prop="nevv" label="Nevv"></el-table-column> 
 		<el-table-column prop="publishing" label="Publishing">
 			<template slot-scope="scope">
@@ -88,10 +105,13 @@ import AddOrUpdate from './item-update'
 export default {
 	data() {
 		return {
+			searchTime:"",
 			filters: {
 				keyWord:"",
 				pageSize: 10,
 				pageNum: 1,
+				startTime:"",
+				endTime:""
 			},
 			total: 0,
 			dataList: [],
@@ -105,6 +125,15 @@ export default {
 		AddOrUpdate
 	},
 	methods: {
+		changeSearchTime(){//获取时间段
+			if(this.searchTime !== null){
+				this.filters.startTime = this.searchTime[0]
+				this.filters.endTime = this.searchTime[1]
+			}else{
+				this.filters.startTime =""
+				this.filters.endTime = ""
+			}
+		},
 		//是否开启
 		switchHandle(id, value){
 			let params = {};
@@ -216,6 +245,19 @@ export default {
 			}
 			this.filters = params;
 			this.getDataList(this.filters);
+		},
+		exportHandle(){//导出列表
+			let params = this.filters;
+			params.pageSize = "";
+			params.pageNum = "";
+			let _params = "https://api.nevvorld.cn/api/product/pc/findItemInfo?";
+			for (const key in params) {
+				if(params[key] !== ""){
+					_params+= (key+'='+params[key]+'&')
+				}
+			}
+			_params = _params.substring(0,_params.length-1);
+			window.location.href=_params
 		},
 		
 	},
