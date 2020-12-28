@@ -4,7 +4,7 @@
     :title="!dataForm.userId ? 'Add' : 'Modify'"
     :close-on-click-modal="false"
     :visible.sync="visible">
-    <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
+    <el-form :model="dataForm" disabled="true" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
       <el-form-item label="*In-Game Name" class="required">
         <el-input v-model="dataForm.ign" placeholder="In-Game Name"></el-input>
       </el-form-item>
