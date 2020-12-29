@@ -250,7 +250,7 @@ export default {
 			let params = this.filters;
 			params.pageSize = "";
 			params.pageNum = "";
-			let _params = "https://api.nevvorld.cn/api/product/pc/findItemInfo?";
+			let _params = "https://api.nevvorld.cn/api/product/pc/exportRealItemList?";
 			for (const key in params) {
 				if(params[key] !== ""){
 					_params+= (key+'='+params[key]+'&')

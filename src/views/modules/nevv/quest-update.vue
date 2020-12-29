@@ -4,7 +4,7 @@
     :title="!dataForm.id ? 'Add' : 'Modify'"
     :close-on-click-modal="false"
     :visible.sync="visible">
-    <el-form :model="dataForm" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
+    <el-form :model="dataForm" ref="dataForm" label-width="100px">
       <el-form-item label="Relate to Event" class="required">
         <el-select v-model="dataForm.eventId" placeholder="Relate to Event">
           <el-option
