@@ -46,7 +46,7 @@
         <el-input type="textarea" v-model="dataForm.rules"></el-input>
       </el-form-item>
 
-      <el-form-item label="Registeration Url" class="required">
+      <el-form-item label="Registration Url" class="required">
         <el-input v-model="dataForm.resUrl" placeholder="https://"></el-input>
       </el-form-item>
 

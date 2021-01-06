@@ -80,7 +80,7 @@
         </el-date-picker>
       </el-form-item>
       
-      <el-form-item label="Blocked">
+      <el-form-item label="Publishing">
         <el-switch v-model="dataForm.teamStatus" :disabled="dataForm.isUpdate"></el-switch>
       </el-form-item>
 
