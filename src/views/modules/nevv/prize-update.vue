@@ -31,7 +31,15 @@
         <el-input v-model="dataForm.rankTitle" placeholder="Prize Name"></el-input>
       </el-form-item>
 
-      <el-form-item label="Event Point" class="required">
+      <el-form-item label="Rank From" class="required">
+        <el-input-number v-model="dataForm.rankFrom" :min="0" label="Rank From"></el-input-number>
+      </el-form-item>
+
+      <el-form-item label="Rank To" class="required">
+        <el-input-number v-model="dataForm.rankTo" :min="0" label="Rank To"></el-input-number>
+      </el-form-item>
+
+      <el-form-item label="Event Point">
         <el-input v-model="dataForm.pointNevv" placeholder="Event Point"></el-input>
       </el-form-item>
 
@@ -77,7 +85,9 @@
           isPush:false,
           pointNevv:"",
           startTime:"",
-          endTime:""
+          endTime:"",
+          rankFrom:"",
+          rankTo:""
         },
         fileList: [],
         config:{
@@ -108,6 +118,8 @@
                 this.dataForm.pointNevv = data.data.pointNevv;
                 this.dataForm.startTime = data.data.startTime;
                 this.dataForm.endTime = data.data.endTime;
+                this.dataForm.rankFrom = data.data.rankFrom;
+                this.dataForm.rankTo = data.data.rankTo;
                 let files = [];
                 files.push({url:data.data.rankImg})
                 this.fileList = files;
@@ -123,6 +135,8 @@
             this.dataForm.pointNevv = "";
             this.dataForm.startTime = "";
             this.dataForm.endTime = "";
+            this.dataForm.rankFrom = "";
+            this.dataForm.rankTo = ""
             this.fileList = [];
           }
         })
@@ -145,10 +159,21 @@
           this.$message.error("Prize Name can not be empty");
           return;
         }
-        if(this.dataForm.pointNevv == ""){
-          this.$message.error("Event Point can not be empty");
+        if(this.dataForm.rankFrom ==""){
+           this.$message.error("Rank From can not be empty");
+            return;
+        }
+
+        if(this.dataForm.rankTo ==""){
+           this.$message.error("Rank To can not be empty");
+            return;
+        }
+
+        if(!this.compareNumber()){
+          this.$message.error("Rank From cannot be greater than Rank To");
           return;
         }
+
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
@@ -162,7 +187,9 @@
                 'isPush': this.dataForm.isPush?1:0,
                 'pointNevv': this.dataForm.pointNevv,
                 'startTime': this.dataForm.startTime,
-                'endTime': this.dataForm.endTime
+                'endTime': this.dataForm.endTime,
+                'rankFrom': this.dataForm.rankFrom,
+                'rankTo': this.dataForm.rankTo
               })
             }).then(({data}) => {
               if (data && data.code === 20000) {
@@ -201,6 +228,16 @@
           this.fileList = files
         }else{
           this.$message.error(data.msg)
+        }
+      },
+      compareNumber(){//比較rank
+        if(this.dataForm.rankFrom !=="" && this.dataForm.rankTo !=="" && this.dataForm.rankFrom !== this.dataForm.rankTo){
+          let d1 = this.dataForm.rankFrom,
+              d2 = this.dataForm.rankTo;
+
+          return d1 < d2;
+        }else{
+          return true;
         }
       },
       compareDate(){//比较时间

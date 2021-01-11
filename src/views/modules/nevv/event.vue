@@ -4,7 +4,7 @@
 	<el-col :span="24" class="toolbar">
 		<el-form :inline="true" :model="filters">
 			<el-form-item label-width="120px">
-				<el-select v-model="filters.keyWord" placeholder="请选择">
+				<el-select v-model="filters.keyWord" placeholder="Select event">
 					<el-option
 					v-for="item in config.eventList"
 					:key="item.eventId"
@@ -15,7 +15,7 @@
 			</el-form-item>
 
 			<el-form-item label-width="50px">
-				<el-select v-model="filters.isOpen" placeholder="请选择">
+				<el-select v-model="filters.isOpen" placeholder="Select event">
 					<el-option
 					v-for="item in config.openOptions"
 					:key="item.value"

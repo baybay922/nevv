@@ -44,7 +44,9 @@ const mainRoutes = {
     { path: '/watch', component: _import('modules/nevv/watch'), name: 'watch', meta: { title: 'Watch List' ,isTab: true} },
     { path: '/quest', component: _import('modules/nevv/quest'), name: 'quest', meta: { title: 'Quest List' ,isTab: true} },
     { path: '/code', component: _import('modules/nevv/code'), name: 'code', meta: { title: 'Code List' ,isTab: true} },
-    { path: '/match', component: _import('modules/nevv/match'), name: 'match', meta: { title: 'Match List' ,isTab: true} }
+    { path: '/match', component: _import('modules/nevv/match'), name: 'match', meta: { title: 'Match List' ,isTab: true} },
+    { path: '/promo', component: _import('modules/nevv/promo'), name: 'promo', meta: { title: 'Promo List' ,isTab: true} }
+
   ],
   beforeEnter (to, from, next) {
     let token = Vue.cookie.get('token')

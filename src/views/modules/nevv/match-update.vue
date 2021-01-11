@@ -245,7 +245,6 @@
       },
       // 表单提交
       dataFormSubmit () {
-        console.log(this.compareDate())
         if(!this.compareDate()){
           this.$message.error("The end time cannot be greater than the activity time");
           return;

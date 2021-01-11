@@ -3,7 +3,6 @@
 	<!--工具条-->
 	<el-col :span="24" class="toolbar">
 		<el-form :inline="true" :model="filters">
-
 			<el-form-item label-width="120px">
 				<el-select v-model="filters.keyWord" placeholder="请选择">
 					<el-option
@@ -14,9 +13,8 @@
 					</el-option>
 				</el-select>
 			</el-form-item>
-
 			<el-form-item>
-				<el-button type="primary" @click="getSearchFilters()">Search</el-button>
+				<el-button type="primary" @click="searchFilters()">Search</el-button>
 			</el-form-item>
 
 			<el-form-item>
@@ -26,30 +24,22 @@
 	</el-col>
 
 	<!--列表-->
-	<el-table class="userTable" border :data="dataList" highlight-current-row v-loading="listLoading"> 
+	<el-table class="userTable" border :data="dataList" highlight-current-row v-loading="listLoading">
 		<el-table-column prop="eventName" label="Event"></el-table-column> 
-		<el-table-column prop="logoUrl" label="Logo" width="70">
-			<template slot-scope="scope">
-				<img class="listImg" :src="scope.row.logoUrl" @click="showPreviewImage(scope.row.logoUrl)" />
-			</template>
-		</el-table-column> 
-		<el-table-column prop="couponsType" label="Code Type"></el-table-column> 
-		<el-table-column prop="couponsCast" label="Event Point"></el-table-column> 
+		<el-table-column prop="promoCode" label="Code"></el-table-column> 
+		<el-table-column prop="promoPoint" label="Event Point"></el-table-column> 
 		<el-table-column prop="startTime" label="Schedule From"></el-table-column> 
 		<el-table-column prop="endTime" label="Schedule To"></el-table-column> 
-		<el-table-column prop="amount" label="Amount"></el-table-column>
-		<el-table-column prop="couponsStatus" label="Publishing">
+		<el-table-column prop="codeState" label="Publishing">
 			<template slot-scope="scope">
-				<el-switch v-model="scope.row.couponsStatus" :active-value="1" :inactive-value="0" @change="switchHandle(scope.row.id,scope.row.couponsStatus)"></el-switch>
+				<el-switch v-model="scope.row.codeState" :active-value="1" :inactive-value="0" @change="switchHandle(scope.row.id,scope.row.codeState)"></el-switch>
 			</template>
-		</el-table-column>
+		</el-table-column> 
 		<el-table-column prop="createTime" label="Create Date"></el-table-column> 
-		<el-table-column label="Operation" width="250">
+		<el-table-column label="Operation" width="200">
 			<template slot-scope="scope">
-				<!-- <el-link icon="el-icon-edit" @click="addOrUpdateHandle(scope.row.id)">Edit</el-link> -->
+				<el-link icon="el-icon-edit" @click="addOrUpdateHandle(scope.row)">Edit</el-link>
 				<el-link icon="el-icon-delete" @click="deleteHandle(scope.row.id)">Delete</el-link>
-				<el-link icon="el-icon-download" v-if="scope.row.downloadUrl !== ''"><a class="export" :href="scope.row.downloadUrl">Export</a></el-link>
-				<el-link icon="el-icon-download" v-else @click="addPrmpt()"><a class="export">Export</a></el-link>
 			</template>
 		</el-table-column>
 	</el-table>
@@ -69,35 +59,23 @@
 	</el-col>
 	<!-- 弹窗, 新增 / 修改 -->
     <AddOrUpdate v-if="addOrUpdateVisible" ref="addOrUpdate"  @refreshDataList="getDataList"></AddOrUpdate>
-	<!-- 图片查看器 -->
-	<el-dialog title="Photo Viewer" :visible.sync="imgsVisible" width="40%">
-      <div style="display: flex;justify-content: center;">
-        <el-image :src="imgs" fit="scale-down" lazy style="margin: 20px auto;">
-          <div slot="error" class="image-slot">
-            <i class="el-icon-picture-outline"></i>
-          </div>
-        </el-image>
-      </div>
-	</el-dialog>
 </section>
 </template>
 
 <script>
-import AddOrUpdate from './code-update'
+import AddOrUpdate from './promo-update'
 export default {
 	data() {
 		return {
 			filters: {
 				keyWord:"",
 				pageSize: 10,
-				pageNum: 1,
+				pageNum: 1
 			},
-			total: 0,
 			dataList: [],
 			listLoading: false,
 			addOrUpdateVisible: false,
-			imgsVisible:false,
-			imgs: "",
+			total: 0,
 			config:{
 				eventList:[]
 			},
@@ -113,17 +91,14 @@ export default {
 		AddOrUpdate
 	},
 	methods: {
-		addPrmpt(){//添加提示
-			this.$message.error("The codes are generating, please try later")
-		},
 		//是否开启
-		switchHandle(id, value){
+		switchHandle(id, value, type){
 			let params = {};
 			params['functionId'] = id;
 			params['isPush'] = value
 
 			this.$http({
-              url: this.$http.adornUrl('/eventCoupon/pc/pushEventCouponInfo'),
+              url: this.$http.adornUrl('/eventPromo/pc/pushEventPromo'),
               method: 'post',
               data: this.$http.adornData(params)
             }).then(({data}) => {
@@ -143,7 +118,7 @@ export default {
 		},
 		//删除
 		deleteHandle(id){
-			this.$confirm('This operation will permanently delete the file, do you want to continue?', 'Prompt', {
+			this.$confirm('This operation will permanently delete, do you want to continue?', 'Prompt', {
 				confirmButtonText: 'Confirm',
 				cancelButtonText: 'Cancel',
 				type: 'warning'
@@ -152,7 +127,7 @@ export default {
 					'functionId':id
 				};
 				this.$http({
-					url: this.$http.adornUrl('/eventCoupon/pc/delCouponInfo'),
+					url: this.$http.adornUrl('/eventPromo/pc/delPromo'),
 					method: 'post',
 					data: this.$http.adornData(params)
 				}).then(({data}) => {
@@ -166,45 +141,85 @@ export default {
 				
 			})
 		},
-		showPreviewImage(url){
-			this.imgsVisible = true;
-			this.imgs = url
+		//关闭或打开
+		isLockHandle(id, isLock){
+		let _message = "Are you sure you want to ";
+			if(isLock === 1){
+				_message+= 'Blocked'
+			}else{
+				_message+= 'Unblock'
+			}
+			_message+= " this user?";
+			this.$confirm(_message, 'Prompt', {
+				confirmButtonText: 'Confirm',
+				cancelButtonText: 'Cancel',
+				type: 'warning'
+			}).then(() => {
+				let params = {
+					functionId:id,
+					isLock:isLock
+				};
+				this.$http({
+				url: this.$http.adornUrl('/adminUser/pc/lockAdminUserInfo'),
+				method: 'post',
+				data: this.$http.adornData(params)
+				}).then(({data}) => {
+				if (data && data.code === 20000) {
+					this.$message.success(data.msg)
+					let filters = {
+						keyWord:this.filters.keyWord,
+						pageNum: this.filters.pageNum,
+						pageSize:this.filters.pageSize
+					}
+					this.filters = filters;
+					this.getDataList(this.filters);
+				} else {
+					this.$message.error(data.msg)
+				}
+				})
+				
+			})
+			
 		},
 		 // 新增 / 修改
-		addOrUpdateHandle (id) {
+		addOrUpdateHandle (data) {
+			let _data;
+			if(data){
+				_data = data;
+			}else{
+				_data = ""
+			}
+			console.log(_data)
 			this.addOrUpdateVisible = true
 			this.$nextTick(() => {
-				this.$refs.addOrUpdate.init(id)
+				this.$refs.addOrUpdate.init(_data)
 			})
 		},
-		//搜索
-		getSearchFilters(){
+		searchFilters(){//搜索
 			let params = {
 				keyWord:this.filters.keyWord,
-				pageNum: 1,
-				pageSize:this.filters.pageSize,
+				pageNum: this.filters.pageNum,
+				pageSize:this.filters.pageSize
 			}
 			this.filters = params;
 			this.getDataList(this.filters);
 		},
-		//上一页或者下一页
-		handleCurrentChange(val) {
+		handleCurrentChange(val) {//上一页或者下一页
 			this.filters.pageNum = val;
 			this.getDataList(this.filters);
 		},
-		//获取列表
-		getDataList(params) {
+		getDataList(params) {//获取列表
 			if(!params){
 				params = {
 					keyWord:this.filters.keyWord,
 					pageNum: this.filters.pageNum,
-					pageSize:this.filters.pageSize,
+					pageSize:this.filters.pageSize
 				}
 			}
 			let that = this;
 			this.listLoading = true;
 			this.$http({
-              url: this.$http.adornUrl('/eventCoupon/pc/findCouponList'),
+              url: this.$http.adornUrl('/eventPromo/pc/findPromoList'),
               method: 'post',
               data: this.$http.adornData(params)
             }).then(({data}) => {
@@ -217,7 +232,6 @@ export default {
               }
             })
 		},
-		//每页个数
 		handleSizeChange(val) {
 			this.filters.pageSize = val;
 			this.filters.pageNum = 1;//每次改变每页多少条都会重置当前页码为1
@@ -232,20 +246,20 @@ export default {
 		//获取活动
 		getSearchEventList(){
 			this.$http({
-			url: this.$http.adornUrl("/event/pc/searchEventList"),
-			method: 'post'
+				url: this.$http.adornUrl("/event/pc/searchEventList"),
+				method: 'post'
 			}).then(({data}) => {
-			if (data && data.code === 20000) {
-				this.config.eventList = this.all.concat(data.data);
-			} else {
-				this.$message.error(data.msg)
-			}
+				if (data && data.code === 20000) {
+					this.config.eventList = this.all.concat(data.data);
+				} else {
+					this.$message.error(data.msg)
+				}
 			})
-      },
+      	},
 		
 	},
 	mounted() {
-		this.getDataList();
+		this.getDataList(this.filters);
 		this.getSearchEventList()
 	}
 }
@@ -254,7 +268,7 @@ export default {
 
 <style scoped lang="scss">
 .toolbar{
-	padding-bottom: 20px;
+padding-bottom: 20px;
 }
 .form-item{
 width: 310px;
@@ -343,11 +357,5 @@ i{
 		font-size: 30px;
 		color: #fff;
 	}
-}
-.export{
-	color: #606266;
-}
-.export:hover{
-	color: #9733ff;
 }
 </style>
