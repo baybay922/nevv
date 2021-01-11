@@ -312,6 +312,10 @@ export default {
 			}
 			_params = _params.substring(0,_params.length-1);
 			window.location.href=_params
+			params.pageSize = 10;
+			params.pageNum = 1;
+			params.isOpen = "2";
+			this.getDataList(params)
 		},
 		
 	},

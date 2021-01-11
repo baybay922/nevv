@@ -215,7 +215,9 @@ export default {
 				params = {
 					keyWord:this.filters.keyWord,
 					pageNum:this.filters.pageNum,
-					pageSize:this.filters.pageSize
+					pageSize:this.filters.pageSize,
+					startTime:this.filters.startTime,
+					endTime:this.filters.endTime
 				}
 			}
 			let that = this;
@@ -257,7 +259,11 @@ export default {
 				}
 			}
 			_params = _params.substring(0,_params.length-1);
+			console.log(_params)
 			window.location.href=_params
+			params.pageSize = 10;
+			params.pageNum = 1;
+			this.getDataList(params)
 		},
 		
 	},
