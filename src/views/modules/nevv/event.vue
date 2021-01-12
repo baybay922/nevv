@@ -44,7 +44,7 @@
 		</el-table-column> 
 		<el-table-column prop="startTime" label="Schedule From"></el-table-column> 
 		<el-table-column prop="endTime" label="Schedule To"></el-table-column> 
-		<el-table-column prop="endTime" label="Registeration url">
+		<el-table-column prop="endTime" label="Registration Url">
 			<template slot-scope="scope">
 				<a :href="scope.row.resUrl" target="_blank">link</a>
 			</template>
