@@ -47,8 +47,8 @@
           <el-menu-item index="4-3" @click="$router.push({ name: 'watch' })">Watch</el-menu-item>
           <el-menu-item index="4-5" @click="$router.push({ name: 'quest' })">Quest</el-menu-item>
           <el-menu-item index="4-6" @click="$router.push({ name: 'code' })">Code</el-menu-item>
+          <el-menu-item index="4-7" @click="$router.push({ name: 'promo' })">Promo Code</el-menu-item>
           <el-menu-item index="4-7" @click="$router.push({ name: 'match' })">Match</el-menu-item>
-          <el-menu-item index="4-7" @click="$router.push({ name: 'promo' })">Promo</el-menu-item>
         </el-submenu>
 
         <!-- <sub-menu
