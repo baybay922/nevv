@@ -118,8 +118,8 @@
           this.$message.error("Description can not be empty");
           return;
         }
-        if(this.dataForm.weight == ""){
-          this.$message.error("Weight can not be empty");
+        if(this.dataForm.weight == "" || this.dataForm.weight <= 0){
+          this.$message.error("Weight cannot be less than 0");
           return;
         }
 
