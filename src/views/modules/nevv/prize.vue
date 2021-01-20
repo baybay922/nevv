@@ -61,7 +61,8 @@
 		</el-table-column> 
 		<el-table-column prop="rankTitle" label="Name"></el-table-column> 
 		<el-table-column prop="pointNevv" label="Point"></el-table-column> 
-		<el-table-column prop="rank" label="Rank"></el-table-column> 
+		<el-table-column prop="rankFrom" label="Rank From"></el-table-column> 
+		<el-table-column prop="rankTo" label="Rank To"></el-table-column> 
 		<el-table-column prop="startTime" label="Schedule From"></el-table-column> 
 		<el-table-column prop="endTime" label="Schedule To"></el-table-column> 
 		<el-table-column prop="isPush" label="Publishing">

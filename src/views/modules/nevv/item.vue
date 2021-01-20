@@ -133,6 +133,7 @@ export default {
 				this.filters.startTime =""
 				this.filters.endTime = ""
 			}
+			console.log(this.filters)
 		},
 		//是否开启
 		switchHandle(id, value){
@@ -199,7 +200,9 @@ export default {
 			let params = {
 				keyWord:this.filters.keyWord,
 				pageNum: 1,
-				pageSize:this.filters.pageSize
+				pageSize:this.filters.pageSize,
+				startTime:this.filters.startTime,
+				endTime:this.filters.endTime
 			}
 			this.filters = params;
 			this.getDataList(this.filters);
@@ -250,6 +253,8 @@ export default {
 		},
 		exportHandle(){//导出列表
 			let params = this.filters;
+			params.startTime = this.searchTime[0];
+			params.endTime = this.searchTime[1];
 			params.pageSize = "";
 			params.pageNum = "";
 			let _params = "https://api.nevvorld.cn/api/product/pc/exportRealItemList?";
