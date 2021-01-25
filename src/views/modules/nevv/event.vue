@@ -214,7 +214,7 @@ export default {
 				this.$message.success(data.msg)
 				let filters = {
 					keyWord:this.filters.keyWord,
-					isOpen:"2",
+					isOpen:this.filters.isOpen,
 					pageNum: this.filters.pageNum,
 					pageSize:this.filters.pageSize,
 				}
@@ -236,7 +236,7 @@ export default {
 			let params = {
 				keyWord:this.filters.keyWord,
 				isOpen: this.filters.isOpen,
-				pageNum: 1,
+				pageNum: this.filters.pageNum,
 				pageSize:this.filters.pageSize,
 			}
 			this.filters = params;
@@ -250,9 +250,9 @@ export default {
 			if(!params){
 				params = {
 					keyWord:this.filters.keyWord,
-					pageNum:1,
 					isOpen: this.filters.isOpen,
-					pageSize:10
+					pageNum: this.filters.pageNum,
+					pageSize:this.filters.pageSize,
 				}
 			}
 			let that = this;
