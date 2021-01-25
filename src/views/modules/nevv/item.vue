@@ -253,8 +253,8 @@ export default {
 		},
 		exportHandle(){//导出列表
 			let params = this.filters;
-			params.startTime = this.searchTime[0];
-			params.endTime = this.searchTime[1];
+			params.startTime = this.searchTime[0]?this.searchTime[0]:'';
+			params.endTime = this.searchTime[1]?this.searchTime[1]:'';
 			params.pageSize = "";
 			params.pageNum = "";
 			let _params = "https://api.nevvorld.cn/api/product/pc/exportRealItemList?";
