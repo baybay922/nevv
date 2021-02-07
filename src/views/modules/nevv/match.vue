@@ -79,11 +79,30 @@
 								>
 									<el-option label="A" :value="scopes.row.amatchDetailId"></el-option>
 									<el-option label="B" :value="scopes.row.bmatchDetailId"></el-option>
+									<el-option label="Draw" value="0"></el-option>
+									<el-option label="Cancel" value="-1"></el-option>
 								</el-select>
-								<el-input
+
+								<div v-else>
+									<el-input
+									v-if="scopes.row.winner == 0"
+									value="Draw"
+									disabled="disabled"
+									>
+									</el-input>
+									<el-input
+									v-else-if="scopes.row.winner == -1"
+									value="Cancel"
+									disabled="disabled"
+									>
+									</el-input>
+									<el-input
+									v-else-if="scopes.row.winner !== -1 && scopes.row.winner !== 0"
 									:value="scopes.row.winner==scopes.row.amatchDetailId?'A':'B'"
 									disabled="disabled"
-								v-else></el-input>
+									>
+									</el-input>
+								</div>
 							</template>
 						</el-table-column>
 					</el-table>
@@ -195,21 +214,37 @@ export default {
 				bObj = {
 					value: data.bmatchDetailId,
 					label: 'B'
+				},
+				DObj = {
+					value: '0',
+					label: 'Draw'
+				},
+				CObj = {
+					value: '-1',
+					label: 'Cancel'
 				};
-			arr.push(aObj,bObj)
+			arr.push(aObj,bObj,DObj,CObj)
 			this.winners = arr;
 		},
 		selectWinner(eventId,matchDetailId,matchInfoId){
+			console.log(matchDetailId)
 			let _winnerName = ""
 			this.winners.map(items=>{
-				if(items.value == matchInfoId){
+				if(items.value == matchDetailId){
 					_winnerName = items.label
 				}
 			})
 
 			let _message = "Are you sure you want to choose ";
-			_message+= _winnerName;
-			_message+= " as Winner?";
+			
+			if(_winnerName !== 'Draw' && _winnerName !== 'Cancel'){
+				_message+= _winnerName;
+				_message+= " as Winner?";
+			}else{
+				_message+= _winnerName+'?';
+
+			}
+			
 			this.$confirm(_message, 'Prompt', {
 				confirmButtonText: 'Confirm',
 				cancelButtonText: 'Cancel',

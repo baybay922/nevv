@@ -10,7 +10,7 @@
           <div class="login-version">V 1.0.0</div>
         </div>
         <div class="login-main">
-          <h3 class="login-title">登录</h3>
+          <h3 class="login-title">Login</h3>
           <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" status-icon>
             <el-form-item prop="userName">
               <el-input v-model="dataForm.userName" placeholder="Please input your email account"></el-input>
