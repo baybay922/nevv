@@ -109,10 +109,15 @@ export default {
 		},
 		 // 新增 / 修改
 		addOrUpdateHandle (id) {
-			this.addOrUpdateVisible = true
-			this.$nextTick(() => {
-				this.$refs.addOrUpdate.init(id)
+			this.common.isCheckSecoundPasswrod((flag)=>{
+				if(flag){
+					this.addOrUpdateVisible = true
+					this.$nextTick(() => {
+						this.$refs.addOrUpdate.init(id)
+					})
+				}
 			})
+			
 		},
 		searchFilters(){//搜索
 			let params = {
