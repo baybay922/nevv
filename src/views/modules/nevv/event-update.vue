@@ -6,7 +6,7 @@
     :visible.sync="visible">
     <el-form :model="dataForm" ref="dataForm"   label-width="100px">
       <el-form-item label="Event Name" class="required">
-        <el-input v-model="dataForm.eventName" placeholder="Event Name"></el-input>
+        <el-input v-model="dataForm.eventName" placeholder="Event Name" @input="handlerToUpperCase('eventName')"></el-input>
       </el-form-item>
 
       <el-form-item label="Icon" class="required">
@@ -39,11 +39,11 @@
       </el-form-item>
 
       <el-form-item label="Description" class="required">
-        <el-input type="textarea" v-model="dataForm.description"></el-input>
+        <el-input type="textarea" v-model="dataForm.description" @input="handlerToUpperCase('description')"></el-input>
       </el-form-item>
 
       <el-form-item label="Rules" class="required">
-        <el-input type="textarea" v-model="dataForm.rules"></el-input>
+        <el-input type="textarea" v-model="dataForm.rules" @input="handlerToUpperCase('rules')"></el-input>
       </el-form-item>
 
       <el-form-item label="Registration Url" class="required">
@@ -103,6 +103,8 @@
           isEnabled:false,
           isRecommend:false,
         },
+        isChangePublishing:"",
+        isChangeTransfer:"",
         iconImg: [],
         bgImg:[],
         options: [{
@@ -137,6 +139,8 @@
                 this.dataForm.sortActivity = data.data.sortActivity;
                 this.dataForm.isEnabled = data.data.isEnabled===1?true:false
                 this.dataForm.isRecommend = data.data.isRecommend===1?true:false
+                this.isChangePublishing = data.data.isEnabled===1?true:false
+                this.isChangeTransfer = data.data.isRecommend===1?true:false
                 let _iconImg = [];
                 _iconImg.push({url:data.data.eventImgCover})
                 this.iconImg = _iconImg;
@@ -206,43 +210,88 @@
           this.$message.error("Background Image can not be empty");
           return;
         }
-        this.$refs['dataForm'].validate((valid) => {
-          if (valid) {
-            this.$http({
-              url: this.$http.adornUrl(`/event/pc/${!this.dataForm.functionId ? 'addEvent' : 'editEvent'}`),
-              method: 'post',
-              data: this.$http.adornData({
-                'eventId': this.dataForm.functionId || undefined,
-                'eventName': this.dataForm.eventName,
-                'eventImgCover': this.iconImg.length>0?this.iconImg[0].url:"",
-                'startTime': this.dataForm.startTime,
-                'endTime': this.dataForm.endTime,
-                'description': this.dataForm.description,
-                'rules':this.dataForm.rules,
-                'resUrl':this.dataForm.resUrl,
-                'tourUrl':this.dataForm.tourUrl,
-                'backgroundImg': this.bgImg.length>0?this.bgImg[0].url:"",
-                'sortActivity':this.dataForm.sortActivity,
-                'isEnabled':this.dataForm.isEnabled?1:0,
-                'isRecommend':this.dataForm.isRecommend?1:0,
+        if((this.isChangePublishing !== this.dataForm.isEnabled || this.isChangeTransfer !== this.dataForm.isRecommend) && this.dataForm.functionId){
+          this.common.isCheckSecoundPasswrod((flag)=>{
+            if(flag){
+              this.$refs['dataForm'].validate((valid) => {
+                if (valid) {
+                  this.$http({
+                    url: this.$http.adornUrl(`/event/pc/${!this.dataForm.functionId ? 'addEvent' : 'editEvent'}`),
+                    method: 'post',
+                    data: this.$http.adornData({
+                      'eventId': this.dataForm.functionId || undefined,
+                      'eventName': this.dataForm.eventName,
+                      'eventImgCover': this.iconImg.length>0?this.iconImg[0].url:"",
+                      'startTime': this.dataForm.startTime,
+                      'endTime': this.dataForm.endTime,
+                      'description': this.dataForm.description,
+                      'rules':this.dataForm.rules,
+                      'resUrl':this.dataForm.resUrl,
+                      'tourUrl':this.dataForm.tourUrl,
+                      'backgroundImg': this.bgImg.length>0?this.bgImg[0].url:"",
+                      'sortActivity':this.dataForm.sortActivity,
+                      'isEnabled':this.dataForm.isEnabled?1:0,
+                      'isRecommend':this.dataForm.isRecommend?1:0,
+                    })
+                  }).then(({data}) => {
+                    if (data && data.code === 20000) {
+                      this.$message({
+                        message: 'Success',
+                        type: 'success',
+                        duration: 1500,
+                        onClose: () => {
+                          this.visible = false
+                          this.$emit('refreshDataList')
+                        }
+                      })
+                    } else {
+                      this.$message.error(data.msg)
+                    }
+                  })
+                }
               })
-            }).then(({data}) => {
-              if (data && data.code === 20000) {
-                this.$message({
-                  message: 'Success',
-                  type: 'success',
-                  duration: 1500,
-                  onClose: () => {
-                    this.visible = false
-                    this.$emit('refreshDataList')
-                  }
+            }
+          })
+        }else{
+          this.$refs['dataForm'].validate((valid) => {
+            if (valid) {
+              this.$http({
+                url: this.$http.adornUrl(`/event/pc/${!this.dataForm.functionId ? 'addEvent' : 'editEvent'}`),
+                method: 'post',
+                data: this.$http.adornData({
+                  'eventId': this.dataForm.functionId || undefined,
+                  'eventName': this.dataForm.eventName,
+                  'eventImgCover': this.iconImg.length>0?this.iconImg[0].url:"",
+                  'startTime': this.dataForm.startTime,
+                  'endTime': this.dataForm.endTime,
+                  'description': this.dataForm.description,
+                  'rules':this.dataForm.rules,
+                  'resUrl':this.dataForm.resUrl,
+                  'tourUrl':this.dataForm.tourUrl,
+                  'backgroundImg': this.bgImg.length>0?this.bgImg[0].url:"",
+                  'sortActivity':this.dataForm.sortActivity,
+                  'isEnabled':this.dataForm.isEnabled?1:0,
+                  'isRecommend':this.dataForm.isRecommend?1:0,
                 })
-              } else {
-                this.$message.error(data.msg)
-              }
-            })
-          }
-        })
+              }).then(({data}) => {
+                if (data && data.code === 20000) {
+                  this.$message({
+                    message: 'Success',
+                    type: 'success',
+                    duration: 1500,
+                    onClose: () => {
+                      this.visible = false
+                      this.$emit('refreshDataList')
+                    }
+                  })
+                } else {
+                  this.$message.error(data.msg)
+                }
+              })
+            }
+          })
+        }
+        
       },
       iconHandleUpload(response, file, fileList){//上传封面图
         if(response && response.code === 20000){
@@ -277,6 +326,9 @@
           return true;
         }
         return false;
+      },
+      handlerToUpperCase(variate){ //切换大写  
+        this.dataForm[variate] = this.dataForm[variate].toUpperCase();
       }
     }
   }

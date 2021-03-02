@@ -144,31 +144,38 @@ export default {
 	methods: {
 		//是否开启
 		switchHandle(id, value, type){
-			let params = {};
-			params['functionId'] = id;
-			if(!type){
-				params['isEnabled'] = value
-			}else{
-				params['isPush'] = value
-			}
-			this.$http({
-              url: this.$http.adornUrl(`/event/pc/${!type ? 'enabledEventInfo' : 'pushEventInfo'}`),
-              method: 'post',
-              data: this.$http.adornData(params)
-            }).then(({data}) => {
-              if (data && data.code === 20000) {
-                this.$message({
-                  message: 'Success',
-                  type: 'success',
-                  duration: 1500,
-                  onClose: () => {
-                    this.getDataList()
-                  }
-                })
-              } else {
-                this.$message.error(data.msg)
-              }
-            })
+			this.common.isCheckSecoundPasswrod((flag)=>{
+				if(flag){
+					let params = {};
+					params['functionId'] = id;
+					if(!type){
+						params['isEnabled'] = value
+					}else{
+						params['isPush'] = value
+					}
+					this.$http({
+					url: this.$http.adornUrl(`/event/pc/${!type ? 'enabledEventInfo' : 'pushEventInfo'}`),
+					method: 'post',
+					data: this.$http.adornData(params)
+					}).then(({data}) => {
+						if (data && data.code === 20000) {
+							this.$message({
+							message: 'Success',
+							type: 'success',
+							duration: 1500,
+							onClose: () => {
+								this.getDataList()
+							}
+							})
+						} else {
+							this.$message.error(data.msg)
+						}
+					})
+				}else{
+					this.getDataList()
+				}
+			})
+			
 		},
 		//删除
 		deleteHandle(id){
@@ -193,7 +200,7 @@ export default {
 					}
 				})
 				
-			})
+			})	
 		},
 		//图片预览
 		showPreviewImage(url){
@@ -201,29 +208,43 @@ export default {
 			this.imgs = url
 		},
 		isLockHandle(id, isLock){//关闭或打开
-			let params = {
-				functionId:id,
-				isLock:isLock
-			};
-			this.$http({
-              url: this.$http.adornUrl('/adminUser/pc/lockAdminUserInfo'),
-              method: 'post',
-              data: this.$http.adornData(params)
-            }).then(({data}) => {
-              if (data && data.code === 20000) {
-				this.$message.success(data.msg)
-				let filters = {
-					keyWord:this.filters.keyWord,
-					isOpen:this.filters.isOpen,
-					pageNum: this.filters.pageNum,
-					pageSize:this.filters.pageSize,
+			this.common.isCheckSecoundPasswrod((flag)=>{
+				if(flag){
+					let params = {
+						functionId:id,
+						isLock:isLock
+					};
+					this.$http({
+					url: this.$http.adornUrl('/adminUser/pc/lockAdminUserInfo'),
+					method: 'post',
+					data: this.$http.adornData(params)
+					}).then(({data}) => {
+						if (data && data.code === 20000) {
+							this.$message.success(data.msg)
+							let filters = {
+								keyWord:this.filters.keyWord,
+								isOpen:this.filters.isOpen,
+								pageNum: this.filters.pageNum,
+								pageSize:this.filters.pageSize,
+							}
+							this.filters = filters;
+							this.getDataList(this.filters);
+						} else {
+							this.$message.error(data.msg)
+						}
+					})
+				}else{
+					let filters = {
+						keyWord:this.filters.keyWord,
+						isOpen:this.filters.isOpen,
+						pageNum: this.filters.pageNum,
+						pageSize:this.filters.pageSize,
+					}
+					this.filters = filters;
+					this.getDataList(this.filters);
 				}
-				this.filters = filters;
-				this.getDataList(this.filters);
-              } else {
-                this.$message.error(data.msg)
-              }
-            })
+			})
+			
 		},
 		 // 新增 / 修改
 		addOrUpdateHandle (id) {

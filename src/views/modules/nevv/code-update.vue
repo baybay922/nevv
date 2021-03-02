@@ -53,7 +53,7 @@
       </el-form-item>
 
       <el-form-item label="Event Points"  class="required">
-        <el-input v-model="dataForm.couponsCast" placeholder="Event Points"></el-input>
+        <el-input v-model="dataForm.couponsCast" placeholder="Event Points" @input="handlerToUpperCase('couponsCast')"></el-input>
       </el-form-item>
 
       <el-form-item label="Batch amount" class="required">
@@ -188,6 +188,9 @@
         }else{
           return true;
         }
+      },
+      handlerToUpperCase(variate){ //切换大写  
+        this.dataForm[variate] = this.dataForm[variate].toUpperCase();
       }
     }
   }

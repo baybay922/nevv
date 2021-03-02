@@ -174,54 +174,64 @@ export default {
             })
 		},
 		exportHandle(){//导出列表
-			let params = this.filters;
-			params.pageSize = "";
-			params.pageNum = "";
-			let _params = "https://api.nevvorld.cn/api/user/pc/exportUserList?";
-			for (const key in params) {
-				if(params[key] !== ""){
-					_params+= (key+'='+params[key]+'&')
+			this.common.isCheckSecoundPasswrod((flag)=>{
+				if(flag){
+					let params = this.filters;
+					params.pageSize = "";
+					params.pageNum = "";
+					let _params = "https://api.nevvorld.cn/api/user/pc/exportUserList?";
+					for (const key in params) {
+						if(params[key] !== ""){
+							_params+= (key+'='+params[key]+'&')
+						}
+					}
+					_params = _params.substring(0,_params.length-1);
+					window.location.href=_params
 				}
-			}
-			_params = _params.substring(0,_params.length-1);
-			window.location.href=_params
+			})
+			
 		},
 		isLockHandle(id, isLock){//关闭或打开
-			let _message = "Are you sure you want to ";
-			if(isLock === 1){
-				_message+= 'Blocked'
-			}else{
-				_message+= 'Unblock'
-			}
-			_message+= " this user?";
-			this.$confirm(_message, 'Prompt', {
-				confirmButtonText: 'Confirm',
-				cancelButtonText: 'Cancel',
-				type: 'warning'
-			}).then(() => {
-				let params = {
-					functionId:id,
-					isLock:isLock
-				};
-				this.$http({
-					url: this.$http.adornUrl('/user/pc/lockUserInfo'),
-					method: 'post',
-					data: this.$http.adornData(params)
-					}).then(({data}) => {
-					if (data && data.code === 20000) {
-						this.$message.success(data.msg)
-						let filters = {
-							keyWord:this.filters.keyWord,
-							pageNum:1,
-							pageSize:10
-						}
-						this.filters = filters;
-						this.getDataList(this.filters);
-					} else {
-						this.$message.error(data.msg)
+
+			this.common.isCheckSecoundPasswrod((flag)=>{
+				if(flag){
+					let _message = "Are you sure you want to ";
+					if(isLock === 1){
+						_message+= 'Blocked'
+					}else{
+						_message+= 'Unblock'
 					}
-				})
-				
+					_message+= " this user?";
+					this.$confirm(_message, 'Prompt', {
+						confirmButtonText: 'Confirm',
+						cancelButtonText: 'Cancel',
+						type: 'warning'
+					}).then(() => {
+						let params = {
+							functionId:id,
+							isLock:isLock
+						};
+						this.$http({
+							url: this.$http.adornUrl('/user/pc/lockUserInfo'),
+							method: 'post',
+							data: this.$http.adornData(params)
+							}).then(({data}) => {
+							if (data && data.code === 20000) {
+								this.$message.success(data.msg)
+								let filters = {
+									keyWord:this.filters.keyWord,
+									pageNum:1,
+									pageSize:10
+								}
+								this.filters = filters;
+								this.getDataList(this.filters);
+							} else {
+								this.$message.error(data.msg)
+							}
+						})
+						
+					})
+				}
 			})
 			
 		},

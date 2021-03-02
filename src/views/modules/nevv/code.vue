@@ -48,7 +48,7 @@
 			<template slot-scope="scope">
 				<!-- <el-link icon="el-icon-edit" @click="addOrUpdateHandle(scope.row.id)">Edit</el-link> -->
 				<el-link icon="el-icon-delete" @click="deleteHandle(scope.row.id)">Delete</el-link>
-				<el-link icon="el-icon-download" v-if="scope.row.downloadUrl !== ''"><a class="export" :href="scope.row.downloadUrl">Export</a></el-link>
+				<el-link icon="el-icon-download" v-if="scope.row.downloadUrl !== ''" @click="handleDownloadUrl(scope.row.eventName, scope.row.downloadUrl)">Export</el-link>
 				<el-link icon="el-icon-download" v-else @click="addPrmpt()"><a class="export">Export</a></el-link>
 			</template>
 		</el-table-column>
@@ -113,33 +113,51 @@ export default {
 		AddOrUpdate
 	},
 	methods: {
+		handleDownloadUrl(name,url){
+			this.common.isCheckSecoundPasswrod((flag)=>{
+				if(flag){
+					var a = document.createElement('a');
+					a.href = 'data:text/csv;charset=utf-8,\ufeff' + (name);
+					a.download = url;
+					a.click();
+				}
+			})
+			
+		},
 		addPrmpt(){//添加提示
 			this.$message.error("The codes are generating, please try later")
 		},
 		//是否开启
 		switchHandle(id, value){
-			let params = {};
-			params['functionId'] = id;
-			params['isPush'] = value
+			this.common.isCheckSecoundPasswrod((flag)=>{
+				if(flag){
+					let params = {};
+					params['functionId'] = id;
+					params['isPush'] = value
 
-			this.$http({
-              url: this.$http.adornUrl('/eventCoupon/pc/pushEventCouponInfo'),
-              method: 'post',
-              data: this.$http.adornData(params)
-            }).then(({data}) => {
-              if (data && data.code === 20000) {
-                this.$message({
-                  message: 'Success',
-                  type: 'success',
-                  duration: 1500,
-                  onClose: () => {
-                    this.getDataList()
-                  }
-                })
-              } else {
-                this.$message.error(data.msg)
-              }
-            })
+					this.$http({
+					url: this.$http.adornUrl('/eventCoupon/pc/pushEventCouponInfo'),
+					method: 'post',
+					data: this.$http.adornData(params)
+					}).then(({data}) => {
+					if (data && data.code === 20000) {
+						this.$message({
+						message: 'Success',
+						type: 'success',
+						duration: 1500,
+						onClose: () => {
+							this.getDataList()
+						}
+						})
+					} else {
+						this.$message.error(data.msg)
+					}
+					})
+				}else{
+					this.getDataList()
+				}
+			})
+			
 		},
 		//删除
 		deleteHandle(id){
@@ -163,8 +181,7 @@ export default {
 						this.$message.error(data.msg)
 					}
 				})
-				
-			})
+			})	
 		},
 		showPreviewImage(url){
 			this.imgsVisible = true;

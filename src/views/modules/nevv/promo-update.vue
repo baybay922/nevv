@@ -170,6 +170,9 @@
         }
         return true
         
+      },
+      handlerToUpperCase(variate){ //切换大写  
+        this.dataForm[variate] = this.dataForm[variate].toUpperCase();
       }
     }
   }

@@ -1,6 +1,5 @@
-import Vue from 'vue'
-import axios from 'axios'
-import { MessageBox } from 'element-ui';
+import httpRequest from '@/utils/httpRequest' // api: https://github.com/axios/axios
+import { MessageBox,Message } from 'element-ui';
 
 let common = {};
 
@@ -10,12 +9,37 @@ common.isCheckSecoundPasswrod = (callback)=>{//檢查二級密碼
         cancelButtonText: 'Cancle',
         inputType:"password"
     }).then(({ value }) => {
-    console.log(value)
-        if(callback){
-            callback(true)
+        if(value !== null || value !== ''){
+            if(callback){
+                httpRequest({
+                    url: httpRequest.adornUrl('/user/pc/secondary/password'),
+                    method: 'post',
+                    data: httpRequest.adornData({
+                        secondPassword:value
+                    })
+                }).then(({data}) => {
+                    console.log(data)
+                    if (data && data.code === 20000) {
+                        callback(true)
+                    } else {
+                        Message({
+                            showClose: true,
+                            message: data.msg,
+                            type: 'error'
+                        });
+                    }
+                })
+            }
+        }else{
+            if(callback){
+                callback(false)
+            }
         }
-    }).catch(() => {
         
+    }).catch(() => {
+        if(callback){
+            callback(false)
+        }
     });
     
 };
