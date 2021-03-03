@@ -259,17 +259,6 @@ export default {
 			this.getDataList(this.filters);
 		},
 		exportHandle(){//导出列表
-<<<<<<< HEAD
-			let params = this.filters;
-			params.startTime = this.searchTime[0]?this.searchTime[0]:'';
-			params.endTime = this.searchTime[1]?this.searchTime[1]:'';
-			params.pageSize = "";
-			params.pageNum = "";
-			let _params = "https://api.nevvorld.com/api/product/pc/exportRealItemList?";
-			for (const key in params) {
-				if(params[key] !== ""){
-					_params+= (key+'='+params[key]+'&')
-=======
 			this.common.isCheckSecoundPasswrod((flag)=>{
 				if(flag){
 					let params = this.filters;
@@ -277,7 +266,7 @@ export default {
 					params.endTime = this.searchTime[1]?this.searchTime[1]:'';
 					params.pageSize = "";
 					params.pageNum = "";
-					let _params = "https://api.nevvorld.cn/api/product/pc/exportRealItemList?";
+					let _params = "https://api.nevvorld.com/api/product/pc/exportRealItemList?";					
 					for (const key in params) {
 						if(params[key] !== ""){
 							_params+= (key+'='+params[key]+'&')
@@ -289,7 +278,6 @@ export default {
 					params.pageSize = 10;
 					params.pageNum = 1;
 					this.getDataList(params)
->>>>>>> 4e3a2452176afa0884653962a19c43f0a64bb1a9
 				}
 			})
 			

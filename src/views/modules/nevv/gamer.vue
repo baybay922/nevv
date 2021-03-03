@@ -174,21 +174,12 @@ export default {
             })
 		},
 		exportHandle(){//导出列表
-<<<<<<< HEAD
-			let params = this.filters;
-			params.pageSize = "";
-			params.pageNum = "";
-			let _params = "https://api.nevvorld.com/api/user/pc/exportUserList?";
-			for (const key in params) {
-				if(params[key] !== ""){
-					_params+= (key+'='+params[key]+'&')
-=======
 			this.common.isCheckSecoundPasswrod((flag)=>{
 				if(flag){
 					let params = this.filters;
 					params.pageSize = "";
 					params.pageNum = "";
-					let _params = "https://api.nevvorld.cn/api/user/pc/exportUserList?";
+					let _params = "https://api.nevvorld.com/api/user/pc/exportUserList?";
 					for (const key in params) {
 						if(params[key] !== ""){
 							_params+= (key+'='+params[key]+'&')
@@ -196,7 +187,6 @@ export default {
 					}
 					_params = _params.substring(0,_params.length-1);
 					window.location.href=_params
->>>>>>> 4e3a2452176afa0884653962a19c43f0a64bb1a9
 				}
 			})
 			

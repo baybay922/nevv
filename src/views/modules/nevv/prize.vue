@@ -308,23 +308,13 @@ export default {
 			})
 		  },
 		exportHandle(){//导出列表
-<<<<<<< HEAD
-			let params = this.filters;
-			params.isOpen = "";
-			params.pageSize = "";
-			params.pageNum = "";
-			let _params = "https://api.nevvorld.com/api/eventPppOrder/pc/exportUserList?";
-			for (const key in params) {
-				if(params[key] !== ""){
-					_params+= (key+'='+params[key]+'&')
-=======
 			this.common.isCheckSecoundPasswrod((flag)=>{
 				if(flag){
 					let params = this.filters;
 					params.isOpen = "";
 					params.pageSize = "";
 					params.pageNum = "";
-					let _params = "https://api.nevvorld.cn/api/eventPppOrder/pc/exportUserList?";
+					let _params = "https://api.nevvorld.com/api/eventPppOrder/pc/exportUserList?";
 					for (const key in params) {
 						if(params[key] !== ""){
 							_params+= (key+'='+params[key]+'&')
@@ -336,7 +326,6 @@ export default {
 					params.pageNum = 1;
 					params.isOpen = "2";
 					this.getDataList(params)
->>>>>>> 4e3a2452176afa0884653962a19c43f0a64bb1a9
 				}
 			})
 			
