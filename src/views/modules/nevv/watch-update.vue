@@ -19,7 +19,7 @@
       <el-form-item label="Image"  class="required">
         <el-upload
           class="upload-demo"
-          action="https://api.nevvorld.cn/api/public/cos/uploadfile"
+          action="https://api.nevvorld.com/api/public/cos/uploadfile"
           :on-success="handleUpload"
           :file-list="fileList"
           list-type="picture">

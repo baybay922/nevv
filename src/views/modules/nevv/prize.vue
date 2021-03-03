@@ -305,7 +305,7 @@ export default {
 			params.isOpen = "";
 			params.pageSize = "";
 			params.pageNum = "";
-			let _params = "https://api.nevvorld.cn/api/eventPppOrder/pc/exportUserList?";
+			let _params = "https://api.nevvorld.com/api/eventPppOrder/pc/exportUserList?";
 			for (const key in params) {
 				if(params[key] !== ""){
 					_params+= (key+'='+params[key]+'&')

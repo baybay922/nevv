@@ -177,7 +177,7 @@ export default {
 			let params = this.filters;
 			params.pageSize = "";
 			params.pageNum = "";
-			let _params = "https://api.nevvorld.cn/api/user/pc/exportUserList?";
+			let _params = "https://api.nevvorld.com/api/user/pc/exportUserList?";
 			for (const key in params) {
 				if(params[key] !== ""){
 					_params+= (key+'='+params[key]+'&')
