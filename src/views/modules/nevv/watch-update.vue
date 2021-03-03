@@ -28,7 +28,7 @@
       </el-form-item>
 
       <el-form-item label="Title"  class="required">
-        <el-input v-model="dataForm.watchTitle" placeholder="Title"></el-input>
+        <el-input v-model="dataForm.watchTitle" placeholder="Title" @input="handlerToUpperCase('watchTitle')"></el-input>
       </el-form-item>
 
       <el-form-item label="Plat URL"  class="required">
@@ -64,6 +64,7 @@
           isBanner:false,
           sort:""
         },
+        isChangePublishing:"",
         fileList: [],
         config:{
           eventList:[]
@@ -91,6 +92,7 @@
                 this.dataForm.watchTitle = data.data.watchTitle;
                 this.dataForm.eventWatchUrl = data.data.eventWatchUrl;
                 this.dataForm.isBanner = data.data.isBanner===1?true:false;
+                this.isChangePublishing = data.data.isBanner===1?true:false;
                 this.dataForm.sort = data.data.sort;
                 let files = [];
                 files.push({url:data.data.eventWatchImg})
@@ -131,37 +133,75 @@
           this.$message.error("Plat URL can not be empty");
           return;
         }
-        this.$refs['dataForm'].validate((valid) => {
-          if (valid) {
-            this.$http({
-              url: this.$http.adornUrl(`/eventWatch/pc/${!this.dataForm.id ? 'addWatch' : 'editWatch'}`),
-              method: 'post',
-              data: this.$http.adornData({
-                'id': this.dataForm.id || undefined,
-                'eventId': this.dataForm.eventId,
-                'watchTitle': this.dataForm.watchTitle,
-                'eventWatchUrl': this.dataForm.eventWatchUrl,
-                'eventWatchImg': this.fileList.length>0?this.fileList[0].url:"",
-                'isBanner': this.dataForm.isBanner ? 1 : 0,
-                'sort': this.dataForm.sort,
+        if(this.dataForm.id && this.isChangePublishing !== this.dataForm.isBanner){
+          this.common.isCheckSecoundPasswrod((flag)=>{
+            if(flag){
+              this.$refs['dataForm'].validate((valid) => {
+                if (valid) {
+                  this.$http({
+                    url: this.$http.adornUrl(`/eventWatch/pc/${!this.dataForm.id ? 'addWatch' : 'editWatch'}`),
+                    method: 'post',
+                    data: this.$http.adornData({
+                      'id': this.dataForm.id || undefined,
+                      'eventId': this.dataForm.eventId,
+                      'watchTitle': this.dataForm.watchTitle,
+                      'eventWatchUrl': this.dataForm.eventWatchUrl,
+                      'eventWatchImg': this.fileList.length>0?this.fileList[0].url:"",
+                      'isBanner': this.dataForm.isBanner ? 1 : 0,
+                      'sort': this.dataForm.sort,
+                    })
+                  }).then(({data}) => {
+                    if (data && data.code === 20000) {
+                      this.$message({
+                        message: 'Success',
+                        type: 'success',
+                        duration: 1500,
+                        onClose: () => {
+                          this.visible = false
+                          this.$emit('refreshDataList')
+                        }
+                      })
+                    } else {
+                      this.$message.error(data.msg)
+                    }
+                  })
+                }
               })
-            }).then(({data}) => {
-              if (data && data.code === 20000) {
-                this.$message({
-                  message: 'Success',
-                  type: 'success',
-                  duration: 1500,
-                  onClose: () => {
-                    this.visible = false
-                    this.$emit('refreshDataList')
-                  }
+            }
+          })
+        }else{
+          this.$refs['dataForm'].validate((valid) => {
+            if (valid) {
+              this.$http({
+                url: this.$http.adornUrl(`/eventWatch/pc/${!this.dataForm.id ? 'addWatch' : 'editWatch'}`),
+                method: 'post',
+                data: this.$http.adornData({
+                  'id': this.dataForm.id || undefined,
+                  'eventId': this.dataForm.eventId,
+                  'watchTitle': this.dataForm.watchTitle,
+                  'eventWatchUrl': this.dataForm.eventWatchUrl,
+                  'eventWatchImg': this.fileList.length>0?this.fileList[0].url:"",
+                  'isBanner': this.dataForm.isBanner ? 1 : 0,
+                  'sort': this.dataForm.sort,
                 })
-              } else {
-                this.$message.error(data.msg)
-              }
-            })
-          }
-        })
+              }).then(({data}) => {
+                if (data && data.code === 20000) {
+                  this.$message({
+                    message: 'Success',
+                    type: 'success',
+                    duration: 1500,
+                    onClose: () => {
+                      this.visible = false
+                      this.$emit('refreshDataList')
+                    }
+                  })
+                } else {
+                  this.$message.error(data.msg)
+                }
+              })
+            }
+          })
+        }
       },
       getSearchEventList(){
         this.$http({
@@ -189,6 +229,9 @@
           return true;
         }
         return false;
+      },
+      handlerToUpperCase(variate){ //切换大写  
+        this.dataForm[variate] = this.dataForm[variate].toUpperCase();
       }
     }
   }

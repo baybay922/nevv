@@ -93,28 +93,35 @@ export default {
 	methods: {
 		//是否开启
 		switchHandle(id, value, type){
-			let params = {};
-			params['functionId'] = id;
-			params['isPush'] = value
+			this.common.isCheckSecoundPasswrod((flag)=>{
+				if(flag){
+					let params = {};
+					params['functionId'] = id;
+					params['isPush'] = value
 
-			this.$http({
-              url: this.$http.adornUrl('/eventPromo/pc/pushEventPromo'),
-              method: 'post',
-              data: this.$http.adornData(params)
-            }).then(({data}) => {
-              if (data && data.code === 20000) {
-                this.$message({
-                  message: 'Success',
-                  type: 'success',
-                  duration: 1500,
-                  onClose: () => {
-                    this.getDataList()
-                  }
-                })
-              } else {
-                this.$message.error(data.msg)
-              }
-            })
+					this.$http({
+					url: this.$http.adornUrl('/eventPromo/pc/pushEventPromo'),
+					method: 'post',
+					data: this.$http.adornData(params)
+					}).then(({data}) => {
+					if (data && data.code === 20000) {
+						this.$message({
+						message: 'Success',
+						type: 'success',
+						duration: 1500,
+						onClose: () => {
+							this.getDataList()
+						}
+						})
+					} else {
+						this.$message.error(data.msg)
+					}
+					})
+				}else{
+					this.getDataList()
+				}
+			})
+			
 		},
 		//删除
 		deleteHandle(id){
@@ -189,7 +196,6 @@ export default {
 			}else{
 				_data = ""
 			}
-			console.log(_data)
 			this.addOrUpdateVisible = true
 			this.$nextTick(() => {
 				this.$refs.addOrUpdate.init(_data)

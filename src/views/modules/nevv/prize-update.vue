@@ -28,7 +28,7 @@
       </el-form-item>
 
       <el-form-item label="Prize Name" class="required">
-        <el-input v-model="dataForm.rankTitle" placeholder="Prize Name"></el-input>
+        <el-input v-model="dataForm.rankTitle" placeholder="Prize Name" @input="handlerToUpperCase('rankTitle')"></el-input>
       </el-form-item>
 
       <el-form-item label="Rank From" class="required">
@@ -40,7 +40,7 @@
       </el-form-item>
 
       <el-form-item label="Event Point">
-        <el-input v-model="dataForm.pointNevv" placeholder="Event Point"></el-input>
+        <el-input v-model="dataForm.pointNevv" placeholder="Event Point" @input="handlerToUpperCase('pointNevv')"></el-input>
       </el-form-item>
 
       <el-form-item label="Schedule From" >
@@ -89,6 +89,7 @@
           rankFrom:"",
           rankTo:""
         },
+        isChangePublishing:"",
         fileList: [],
         config:{
           eventList:[]
@@ -120,6 +121,7 @@
                 this.dataForm.endTime = data.data.endTime;
                 this.dataForm.rankFrom = data.data.rankFrom;
                 this.dataForm.rankTo = data.data.rankTo;
+                this.isChangePublishing = data.data.isPush==0?false:true
                 let files = [];
                 files.push({url:data.data.rankImg})
                 this.fileList = files;
@@ -173,41 +175,82 @@
           this.$message.error("Rank From cannot be greater than Rank To");
           return;
         }
-
-        this.$refs['dataForm'].validate((valid) => {
-          if (valid) {
-            this.$http({
-              url: this.$http.adornUrl(`/eventPpp/pc/${!this.dataForm.id ? 'addPpp' : 'editPpp'}`),
-              method: 'post',
-              data: this.$http.adornData({
-                'id': this.dataForm.id || undefined,
-                'eventId': this.dataForm.eventId,
-                'rankTitle': this.dataForm.rankTitle,
-                'rankImg':this.fileList.length>0?this.fileList[0].url:"",
-                'isPush': this.dataForm.isPush?1:0,
-                'pointNevv': this.dataForm.pointNevv,
-                'startTime': this.dataForm.startTime,
-                'endTime': this.dataForm.endTime,
-                'rankFrom': this.dataForm.rankFrom,
-                'rankTo': this.dataForm.rankTo
+        if(this.dataForm.id && this.isChangePublishing !== this.dataForm.isPush){
+          this.common.isCheckSecoundPasswrod((flag)=>{
+            if(flag){
+              this.$refs['dataForm'].validate((valid) => {
+                if (valid) {
+                  this.$http({
+                    url: this.$http.adornUrl(`/eventPpp/pc/${!this.dataForm.id ? 'addPpp' : 'editPpp'}`),
+                    method: 'post',
+                    data: this.$http.adornData({
+                      'id': this.dataForm.id || undefined,
+                      'eventId': this.dataForm.eventId,
+                      'rankTitle': this.dataForm.rankTitle,
+                      'rankImg':this.fileList.length>0?this.fileList[0].url:"",
+                      'isPush': this.dataForm.isPush?1:0,
+                      'pointNevv': this.dataForm.pointNevv,
+                      'startTime': this.dataForm.startTime,
+                      'endTime': this.dataForm.endTime,
+                      'rankFrom': this.dataForm.rankFrom,
+                      'rankTo': this.dataForm.rankTo
+                    })
+                  }).then(({data}) => {
+                    if (data && data.code === 20000) {
+                      this.$message({
+                        message: 'Success',
+                        type: 'success',
+                        duration: 1500,
+                        onClose: () => {
+                          this.visible = false
+                          this.$emit('refreshDataList')
+                        }
+                      })
+                    } else {
+                      this.$message.error(data.msg)
+                    }
+                  })
+                }
               })
-            }).then(({data}) => {
-              if (data && data.code === 20000) {
-                this.$message({
-                  message: 'Success',
-                  type: 'success',
-                  duration: 1500,
-                  onClose: () => {
-                    this.visible = false
-                    this.$emit('refreshDataList')
-                  }
+            }
+          })
+        }else{
+          this.$refs['dataForm'].validate((valid) => {
+            if (valid) {
+              this.$http({
+                url: this.$http.adornUrl(`/eventPpp/pc/${!this.dataForm.id ? 'addPpp' : 'editPpp'}`),
+                method: 'post',
+                data: this.$http.adornData({
+                  'id': this.dataForm.id || undefined,
+                  'eventId': this.dataForm.eventId,
+                  'rankTitle': this.dataForm.rankTitle,
+                  'rankImg':this.fileList.length>0?this.fileList[0].url:"",
+                  'isPush': this.dataForm.isPush?1:0,
+                  'pointNevv': this.dataForm.pointNevv,
+                  'startTime': this.dataForm.startTime,
+                  'endTime': this.dataForm.endTime,
+                  'rankFrom': this.dataForm.rankFrom,
+                  'rankTo': this.dataForm.rankTo
                 })
-              } else {
-                this.$message.error(data.msg)
-              }
-            })
-          }
-        })
+              }).then(({data}) => {
+                if (data && data.code === 20000) {
+                  this.$message({
+                    message: 'Success',
+                    type: 'success',
+                    duration: 1500,
+                    onClose: () => {
+                      this.visible = false
+                      this.$emit('refreshDataList')
+                    }
+                  })
+                } else {
+                  this.$message.error(data.msg)
+                }
+              })
+            }
+          })
+        }
+        
       },
       getSearchEventList(){
         this.$http({
@@ -248,6 +291,9 @@
         }else{
           return true;
         }
+      },
+      handlerToUpperCase(variate){ //切换大写  
+        this.dataForm[variate] = this.dataForm[variate].toUpperCase();
       }
     }
   }

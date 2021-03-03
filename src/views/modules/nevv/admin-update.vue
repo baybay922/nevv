@@ -90,31 +90,63 @@
           this.$message.error("Password can not be empty");
           return;
         }
-        this.$http({
-          url: this.$http.adornUrl(`/adminUser/pc/${!this.dataForm.id ? 'addAdminUser' : 'editAdminUser'}`),
-          method: 'post',
-          data: this.$http.adornData({
-            'userId': this.dataForm.id || undefined,
-            'adminUserName':this.dataForm.adminUserName,
-            'email':this.dataForm.email,
-            "passWord":this.dataForm.passWord,
-            "isBlock":this.dataForm.isBlock?1:0,
+        if(this.dataForm.id){
+          this.common.isCheckSecoundPasswrod((flag)=>{
+            if(flag){
+              this.$http({
+                url: this.$http.adornUrl(`/adminUser/pc/${!this.dataForm.id ? 'addAdminUser' : 'editAdminUser'}`),
+                method: 'post',
+                data: this.$http.adornData({
+                  'userId': this.dataForm.id || undefined,
+                  'adminUserName':this.dataForm.adminUserName,
+                  'email':this.dataForm.email,
+                  "passWord":this.dataForm.passWord,
+                  "isBlock":this.dataForm.isBlock?1:0,
+                })
+              }).then(({data}) => {
+                if (data && data.code === 20000) {
+                  this.$message({
+                    message: 'Success',
+                    type: 'success',
+                    duration: 1500,
+                    onClose: () => {
+                      this.visible = false
+                      this.$emit('refreshDataList')
+                    }
+                  })
+                } else {
+                  this.$message.error(data.msg)
+                }
+              })
+            }
           })
-        }).then(({data}) => {
-          if (data && data.code === 20000) {
-            this.$message({
-              message: 'Success',
-              type: 'success',
-              duration: 1500,
-              onClose: () => {
-                this.visible = false
-                this.$emit('refreshDataList')
-              }
+        }else{
+          this.$http({
+            url: this.$http.adornUrl(`/adminUser/pc/${!this.dataForm.id ? 'addAdminUser' : 'editAdminUser'}`),
+            method: 'post',
+            data: this.$http.adornData({
+              'userId': this.dataForm.id || undefined,
+              'adminUserName':this.dataForm.adminUserName,
+              'email':this.dataForm.email,
+              "passWord":this.dataForm.passWord,
+              "isBlock":this.dataForm.isBlock?1:0,
             })
-          } else {
-            this.$message.error(data.msg)
-          }
-        })
+          }).then(({data}) => {
+            if (data && data.code === 20000) {
+              this.$message({
+                message: 'Success',
+                type: 'success',
+                duration: 1500,
+                onClose: () => {
+                  this.visible = false
+                  this.$emit('refreshDataList')
+                }
+              })
+            } else {
+              this.$message.error(data.msg)
+            }
+          })
+        }
       }
     }
   }

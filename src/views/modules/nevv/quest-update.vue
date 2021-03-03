@@ -17,15 +17,15 @@
       </el-form-item>
 
       <el-form-item label="Title" class="required">
-        <el-input v-model="dataForm.questName" placeholder="Title"></el-input>
+        <el-input v-model="dataForm.questName" placeholder="Title" @input="handlerToUpperCase('questName')"></el-input>
       </el-form-item>
 
       <el-form-item label="Rules" class="required">
-        <el-input type="textarea" v-model="dataForm.questRule" placeholder="Rules"></el-input>
+        <el-input type="textarea" v-model="dataForm.questRule" placeholder="Rules" @input="handlerToUpperCase('questRule')"></el-input>
       </el-form-item>
 
       <el-form-item label="FAQ" class="required">
-        <el-input type="textarea" v-model="dataForm.questFaq" placeholder="FAQ"></el-input>
+        <el-input type="textarea" v-model="dataForm.questFaq" placeholder="FAQ" @input="handlerToUpperCase('questFaq')"></el-input>
       </el-form-item>
 
       <el-form-item label="Objective" class="required">
@@ -45,7 +45,7 @@
       </el-form-item>
 
       <el-form-item label="Event Point" class="required">
-        <el-input v-model="dataForm.questCast" placeholder="Event Point"></el-input>
+        <el-input v-model="dataForm.questCast" placeholder="Event Point" @input="handlerToUpperCase('questCast')"></el-input>
       </el-form-item>
 
       <el-form-item label="Schedule From" >
@@ -245,6 +245,9 @@
         }else{
           return true;
         }
+      },
+      handlerToUpperCase(variate){ //切换大写  
+        this.dataForm[variate] = this.dataForm[variate].toUpperCase();
       }
     }
   }

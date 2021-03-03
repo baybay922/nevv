@@ -137,27 +137,34 @@ export default {
 		},
 		//是否开启
 		switchHandle(id, value){
-			let params = {};
-			params['id'] = id;
-			params['publishing'] = value
-			this.$http({
-              url: this.$http.adornUrl("/product/pc/publishing"),
-              method: 'post',
-              data: this.$http.adornData(params)
-            }).then(({data}) => {
-              if (data && data.code === 20000) {
-                this.$message({
-                  message: 'Success',
-                  type: 'success',
-                  duration: 1500,
-                  onClose: () => {
-                    this.getDataList()
-                  }
-                })
-              } else {
-                this.$message.error(data.msg)
-              }
-            })
+			this.common.isCheckSecoundPasswrod((flag)=>{
+				if(flag){
+					let params = {};
+					params['id'] = id;
+					params['publishing'] = value
+					this.$http({
+					url: this.$http.adornUrl("/product/pc/publishing"),
+					method: 'post',
+					data: this.$http.adornData(params)
+					}).then(({data}) => {
+					if (data && data.code === 20000) {
+						this.$message({
+						message: 'Success',
+						type: 'success',
+						duration: 1500,
+						onClose: () => {
+							this.getDataList()
+						}
+						})
+					} else {
+						this.$message.error(data.msg)
+					}
+					})
+				}else{
+					this.getDataList()
+				}
+			})
+			
 		},
 		//删除
 		deleteHandle(id){
@@ -252,6 +259,7 @@ export default {
 			this.getDataList(this.filters);
 		},
 		exportHandle(){//导出列表
+<<<<<<< HEAD
 			let params = this.filters;
 			params.startTime = this.searchTime[0]?this.searchTime[0]:'';
 			params.endTime = this.searchTime[1]?this.searchTime[1]:'';
@@ -261,14 +269,30 @@ export default {
 			for (const key in params) {
 				if(params[key] !== ""){
 					_params+= (key+'='+params[key]+'&')
+=======
+			this.common.isCheckSecoundPasswrod((flag)=>{
+				if(flag){
+					let params = this.filters;
+					params.startTime = this.searchTime[0]?this.searchTime[0]:'';
+					params.endTime = this.searchTime[1]?this.searchTime[1]:'';
+					params.pageSize = "";
+					params.pageNum = "";
+					let _params = "https://api.nevvorld.cn/api/product/pc/exportRealItemList?";
+					for (const key in params) {
+						if(params[key] !== ""){
+							_params+= (key+'='+params[key]+'&')
+						}
+					}
+					_params = _params.substring(0,_params.length-1);
+					console.log(_params)
+					window.location.href=_params
+					params.pageSize = 10;
+					params.pageNum = 1;
+					this.getDataList(params)
+>>>>>>> 4e3a2452176afa0884653962a19c43f0a64bb1a9
 				}
-			}
-			_params = _params.substring(0,_params.length-1);
-			console.log(_params)
-			window.location.href=_params
-			params.pageSize = 10;
-			params.pageNum = 1;
-			this.getDataList(params)
+			})
+			
 		},
 		
 	},

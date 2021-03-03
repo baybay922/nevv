@@ -18,15 +18,15 @@
       </el-form-item>
 
       <el-form-item label="Match Name">
-        <el-input v-model="dataForm.matchName" placeholder="Match Name"  :disabled="dataForm.isUpdate"></el-input>
+        <el-input v-model="dataForm.matchName" placeholder="Match Name"  :disabled="dataForm.isUpdate"  @input="handlerToUpperCase('matchName')"></el-input>
       </el-form-item>
 
       <el-form-item label="Team A Name" class="required">
-        <el-input v-model="dataForm.matchTeamNameA" placeholder="Team A Name"  :disabled="dataForm.isUpdate"></el-input>
+        <el-input v-model="dataForm.matchTeamNameA" placeholder="Team A Name"  :disabled="dataForm.isUpdate"  @input="handlerToUpperCase('matchTeamNameA')"></el-input>
       </el-form-item>
 
       <el-form-item label="Team B Name" class="required">
-        <el-input v-model="dataForm.matchTeamNameB" placeholder="Team B Name"  :disabled="dataForm.isUpdate"></el-input>
+        <el-input v-model="dataForm.matchTeamNameB" placeholder="Team B Name"  :disabled="dataForm.isUpdate"  @input="handlerToUpperCase('matchTeamNameB')"></el-input>
       </el-form-item>
 
       <el-form-item label="Predict" class="required">
@@ -98,7 +98,7 @@
       :visible.sync="innerVisible">
       <el-form :model="innerForm" label-width="200px">
         <el-form-item label="Title" class="required">
-          <el-input v-model="innerForm.title" placeholder="Title"></el-input>
+          <el-input v-model="innerForm.title" placeholder="Title"  @input="handlerToUpperCaseInner('title')"></el-input>
         </el-form-item>
 
         <el-form-item label="A Icon" class="required">
@@ -183,7 +183,8 @@
         },
         aIconUrl:[],
         bIconUrl:[],
-        savePredictIndex:""
+        savePredictIndex:"",
+        isChangePublishing:""
       }
     },
     methods: {
@@ -212,6 +213,7 @@
                 this.dataForm.endTime = data.data.endTime
                 this.dataForm.teamStatus = data.data.teamStatus===0?false:true
                 this.dataForm.isUpdate = data.data.isUpdate===0?false:true
+                this.isChangePublishing = data.data.teamStatus===0?false:true
                 
               }
             })
@@ -265,40 +267,82 @@
           this.$message.error("Predict can not be empty");
           return;
         }
-        this.$refs['dataForm'].validate((valid) => {
-          if (valid) {
-            this.$http({
-              url: this.$http.adornUrl(`/eventMatch/pc/${!this.dataForm.id ? 'addMatch' : 'editMatch'}`),
-              method: 'post',
-              data: this.$http.adornData({
-                'id': this.dataForm.id || undefined,
-                'eventId': this.dataForm.eventId,
-                'matchName':this.dataForm.matchName,
-                'matchTeamNameA': this.dataForm.matchTeamNameA,
-                'matchTeamNameB': this.dataForm.matchTeamNameB,
-                'matchInfoParamsList':this.dataForm.matchInfoParamsList,
-                'startTime': this.dataForm.startTime,
-                'endTime': this.dataForm.endTime,
-                'teamStatus': this.dataForm.teamStatus?1:0,
-                'isUpdate': this.dataForm.isUpdate?1:0
+        if(this.dataForm.id && this.isChangePublishing !== this.dataForm.teamStatus){
+          this.common.isCheckSecoundPasswrod((flag)=>{
+            if(flag){
+              this.$refs['dataForm'].validate((valid) => {
+                if (valid) {
+                  this.$http({
+                    url: this.$http.adornUrl(`/eventMatch/pc/${!this.dataForm.id ? 'addMatch' : 'editMatch'}`),
+                    method: 'post',
+                    data: this.$http.adornData({
+                      'id': this.dataForm.id || undefined,
+                      'eventId': this.dataForm.eventId,
+                      'matchName':this.dataForm.matchName,
+                      'matchTeamNameA': this.dataForm.matchTeamNameA,
+                      'matchTeamNameB': this.dataForm.matchTeamNameB,
+                      'matchInfoParamsList':this.dataForm.matchInfoParamsList,
+                      'startTime': this.dataForm.startTime,
+                      'endTime': this.dataForm.endTime,
+                      'teamStatus': this.dataForm.teamStatus?1:0,
+                      'isUpdate': this.dataForm.isUpdate?1:0
+                    })
+                  }).then(({data}) => {
+                    if (data && data.code === 20000) {
+                      this.$message({
+                        message: 'Success',
+                        type: 'success',
+                        duration: 1500,
+                        onClose: () => {
+                          this.visible = false
+                          this.$emit('refreshDataList')
+                        }
+                      })
+                    } else {
+                      this.$message.error(data.msg)
+                    }
+                  })
+                }
               })
-            }).then(({data}) => {
-              if (data && data.code === 20000) {
-                this.$message({
-                  message: 'Success',
-                  type: 'success',
-                  duration: 1500,
-                  onClose: () => {
-                    this.visible = false
-                    this.$emit('refreshDataList')
-                  }
+            }
+          })
+        }else{
+          this.$refs['dataForm'].validate((valid) => {
+            if (valid) {
+              this.$http({
+                url: this.$http.adornUrl(`/eventMatch/pc/${!this.dataForm.id ? 'addMatch' : 'editMatch'}`),
+                method: 'post',
+                data: this.$http.adornData({
+                  'id': this.dataForm.id || undefined,
+                  'eventId': this.dataForm.eventId,
+                  'matchName':this.dataForm.matchName,
+                  'matchTeamNameA': this.dataForm.matchTeamNameA,
+                  'matchTeamNameB': this.dataForm.matchTeamNameB,
+                  'matchInfoParamsList':this.dataForm.matchInfoParamsList,
+                  'startTime': this.dataForm.startTime,
+                  'endTime': this.dataForm.endTime,
+                  'teamStatus': this.dataForm.teamStatus?1:0,
+                  'isUpdate': this.dataForm.isUpdate?1:0
                 })
-              } else {
-                this.$message.error(data.msg)
-              }
-            })
-          }
-        })
+              }).then(({data}) => {
+                if (data && data.code === 20000) {
+                  this.$message({
+                    message: 'Success',
+                    type: 'success',
+                    duration: 1500,
+                    onClose: () => {
+                      this.visible = false
+                      this.$emit('refreshDataList')
+                    }
+                  })
+                } else {
+                  this.$message.error(data.msg)
+                }
+              })
+            }
+          })
+        }
+        
       },
       showPreviewImage(url){
         this.imgsVisible = true;
@@ -434,6 +478,12 @@
         this.dataForm.matchInfoParamsList = _curArr;
         this.innerVisible = false;
         
+      },
+      handlerToUpperCaseInner(variate){
+        this.innerForm[variate] = this.innerForm[variate].toUpperCase();
+      },
+      handlerToUpperCase(variate){ //切换大写  
+        this.dataForm[variate] = this.dataForm[variate].toUpperCase();
       }
     }
   }
