@@ -60,6 +60,14 @@
           placeholder="Schedule To">
         </el-date-picker>
       </el-form-item>
+
+      <el-form-item label="SKU">
+        <el-input v-model="dataForm.productNumber" placeholder="SKU" type="number"></el-input>
+      </el-form-item>
+
+      <el-form-item label="Exchanges limited pre user">
+        <el-input v-model="dataForm.limitedQuantity" placeholder="Exchanges limited pre user" type="number"></el-input>
+      </el-form-item>
       
       <el-form-item label="Publishing" >
         <el-switch v-model="dataForm.isPush"></el-switch>
@@ -87,7 +95,9 @@
           startTime:"",
           endTime:"",
           rankFrom:"",
-          rankTo:""
+          rankTo:"",
+          productNumber:"",
+          limitedQuantity:""
         },
         isChangePublishing:"",
         fileList: [],
@@ -121,7 +131,10 @@
                 this.dataForm.endTime = data.data.endTime;
                 this.dataForm.rankFrom = data.data.rankFrom;
                 this.dataForm.rankTo = data.data.rankTo;
-                this.isChangePublishing = data.data.isPush==0?false:true
+                this.isChangePublishing = data.data.isPush==0?false:true;
+                this.dataForm.productNumber = data.data.productNumber
+                this.dataForm.limitedQuantity = data.data.limitedQuantity
+
                 let files = [];
                 files.push({url:data.data.rankImg})
                 this.fileList = files;
@@ -139,6 +152,9 @@
             this.dataForm.endTime = "";
             this.dataForm.rankFrom = "";
             this.dataForm.rankTo = ""
+            this.dataForm.limitedQuantity = ""
+            this.dataForm.publishing = ""
+
             this.fileList = [];
           }
         })
@@ -193,7 +209,10 @@
                       'startTime': this.dataForm.startTime,
                       'endTime': this.dataForm.endTime,
                       'rankFrom': this.dataForm.rankFrom,
-                      'rankTo': this.dataForm.rankTo
+                      'rankTo': this.dataForm.rankTo,
+                      'productNumber': this.dataForm.productNumber,
+                      'limitedQuantity':this.dataForm.limitedQuantity
+
                     })
                   }).then(({data}) => {
                     if (data && data.code === 20000) {
@@ -230,7 +249,9 @@
                   'startTime': this.dataForm.startTime,
                   'endTime': this.dataForm.endTime,
                   'rankFrom': this.dataForm.rankFrom,
-                  'rankTo': this.dataForm.rankTo
+                  'rankTo': this.dataForm.rankTo,
+                  'productNumber': this.dataForm.productNumber,
+                  'limitedQuantity':this.dataForm.limitedQuantity
                 })
               }).then(({data}) => {
                 if (data && data.code === 20000) {

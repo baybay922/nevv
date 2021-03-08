@@ -32,6 +32,14 @@
         <el-input v-model="dataForm.nevv" placeholder="nevv" type="number"></el-input>
       </el-form-item>
 
+      <el-form-item label="SKU">
+        <el-input v-model="dataForm.productNumber" placeholder="SKU" type="number"></el-input>
+      </el-form-item>
+
+      <el-form-item label="Exchanges limited pre user">
+        <el-input v-model="dataForm.limitedQuantity" placeholder="Exchanges limited pre user" type="number"></el-input>
+      </el-form-item>
+
       <el-form-item label="Publishing" >
         <el-switch v-model="dataForm.publishing"></el-switch>
       </el-form-item>
@@ -55,7 +63,9 @@
           description:"",
           weight:"",
           nevv:"",
-          publishing:false
+          publishing:false,
+          productNumber:"",
+          limitedQuantity:""
         },
         isChangePubling:"",
         fileList: [],
@@ -85,6 +95,8 @@
                 this.dataForm.description = data.data.description
                 this.dataForm.weight = data.data.weight
                 this.dataForm.nevv = data.data.nevv
+                this.dataForm.productNumber = data.data.productNumber
+                this.dataForm.limitedQuantity = data.data.limitedQuantity
                 this.dataForm.publishing = data.data.publishing==0?false:true;
                 this.isChangePubling = data.data.publishing==0?false:true;
                 let files = [];
@@ -100,6 +112,8 @@
             this.dataForm.description = ""
             this.dataForm.weight = ""
             this.dataForm.nevv = ""
+            this.dataForm.limitedQuantity = ""
+            this.dataForm.publishing = ""
             this.dataForm.publishing = false
             this.fileList = []
           }
@@ -144,7 +158,9 @@
                       'description': this.dataForm.description,
                       'weight': this.dataForm.weight,
                       'nevv': this.dataForm.nevv,
-                      'publishing':!this.dataForm.publishing?0:1
+                      'publishing':!this.dataForm.publishing?0:1,
+                      'productNumber': this.dataForm.productNumber,
+                      'limitedQuantity':this.dataForm.limitedQuantity
                     })
                   }).then(({data}) => {
                     if (data && data.code === 20000) {
@@ -179,7 +195,9 @@
                   'description': this.dataForm.description,
                   'weight': this.dataForm.weight,
                   'nevv': this.dataForm.nevv,
-                  'publishing':!this.dataForm.publishing?0:1
+                  'publishing':!this.dataForm.publishing?0:1,
+                  'productNumber': this.dataForm.productNumber,
+                  'limitedQuantity':this.dataForm.limitedQuantity
                 })
               }).then(({data}) => {
                 if (data && data.code === 20000) {
