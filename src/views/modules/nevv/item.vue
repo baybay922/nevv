@@ -266,7 +266,7 @@ export default {
 					params.endTime = this.searchTime[1]?this.searchTime[1]:'';
 					params.pageSize = "";
 					params.pageNum = "";
-					let _params = "https://api.nevvorld.com/api/product/pc/exportRealItemList?";					
+					let _params = window.SITE_CONFIG['baseUrl']+"/product/pc/exportRealItemList?";					
 					for (const key in params) {
 						if(params[key] !== ""){
 							_params+= (key+'='+params[key]+'&')

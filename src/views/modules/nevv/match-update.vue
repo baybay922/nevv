@@ -104,7 +104,7 @@
         <el-form-item label="A Icon" class="required">
           <el-upload
           class="upload-demo"
-          action="https://api.nevvorld.com/api/public/cos/uploadfile"
+          :action="uploadUrl"
           :on-success="handleUploadA"
           :file-list="aIconUrl"
           list-type="picture">
@@ -115,7 +115,7 @@
         <el-form-item label="B Icon" class="required">
           <el-upload
           class="upload-demo"
-          action="https://api.nevvorld.com/api/public/cos/uploadfile"
+          :action="uploadUrl"
           :on-success="handleUploadB"
           :file-list="bIconUrl"
           list-type="picture">
@@ -150,6 +150,7 @@
   export default {
     data () {
       return {
+        uploadUrl:window.SITE_CONFIG['baseUrl']+"/public/cos/uploadfile",
         visible: false,
         innerVisible:false,
         imgsVisible:false,
