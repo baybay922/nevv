@@ -12,7 +12,7 @@
       <el-form-item label="Icon" class="required">
        <el-upload
           class="upload-demo"
-          action="https://api.nevvorld.com/api/public/cos/uploadfile"
+          :action="uploadUrl"
           :on-success="iconHandleUpload"
           :file-list="iconImg"
           list-type="picture">
@@ -57,7 +57,7 @@
       <el-form-item label="Background Image" class="required">
        <el-upload
           class="upload-demo"
-          action="https://api.nevvorld.com/api/public/cos/uploadfile"
+          :action="uploadUrl"
           :on-success="bgHandleUpload"
           :file-list="bgImg"
           list-type="picture">
@@ -89,6 +89,7 @@
   export default {
     data () {
       return {
+        uploadUrl:window.SITE_CONFIG['baseUrl']+"/public/cos/uploadfile",
         visible: false,
         dataForm: {
           functionId:"",

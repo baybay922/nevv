@@ -15,11 +15,10 @@
 					</el-option>
         </el-select>
       </el-form-item>
-
       <el-form-item label="Logo" >
         <el-upload
           class="upload-demo"
-          action="https://api.nevvorld.com/api/public/cos/uploadfile"
+          :action="uploadUrl"
           :on-success="handleUpload"
           :file-list="fileList"
           list-type="picture">
@@ -72,6 +71,7 @@
   export default {
     data () {
       return {
+        uploadUrl:window.SITE_CONFIG['baseUrl']+"/public/cos/uploadfile",
         visible: false,
         dataForm: {
           eventId:"",
