@@ -116,13 +116,12 @@ export default {
 		handleDownloadUrl(name,url){
 			this.common.isCheckSecoundPasswrod((flag)=>{
 				if(flag){
-					var a = document.createElement('a');
-					a.href = 'data:text/csv;charset=utf-8,\ufeff' + (name);
-					a.download = url;
-					a.click();
+					var aEle = document.createElement("a");
+					aEle.download = name;
+					aEle.href = url;
+					aEle.click();
 				}
 			})
-			
 		},
 		addPrmpt(){//添加提示
 			this.$message.error("The codes are generating, please try later")

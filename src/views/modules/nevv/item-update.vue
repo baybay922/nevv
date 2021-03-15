@@ -32,8 +32,8 @@
         <el-input v-model="dataForm.nevv" placeholder="nevv" type="number"></el-input>
       </el-form-item>
 
-      <el-form-item label="SKU">
-        <el-input v-model="dataForm.productNumber" placeholder="SKU" type="number"></el-input>
+      <el-form-item label="Stock">
+        <el-input v-model="dataForm.productNumber" placeholder="Stock" type="number"></el-input>
       </el-form-item>
 
       <el-form-item label="Exchanges limited pre user">
