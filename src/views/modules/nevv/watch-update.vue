@@ -135,8 +135,7 @@
           return;
         }
         if(this.dataForm.id && this.isChangePublishing !== this.dataForm.isBanner){
-          this.common.isCheckSecoundPasswrod((flag)=>{
-            if(flag){
+         
               this.$refs['dataForm'].validate((valid) => {
                 if (valid) {
                   this.$http({
@@ -168,8 +167,7 @@
                   })
                 }
               })
-            }
-          })
+          
         }else{
           this.$refs['dataForm'].validate((valid) => {
             if (valid) {
