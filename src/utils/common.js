@@ -5,7 +5,7 @@ let common = {};
 
 common.isCheckSecoundPasswrod = (callback)=>{//檢查二級密碼
     MessageBox.prompt('Please enter the security password', 'Prompt', {
-        confirmButtonText: 'Sure',
+        confirmButtonText: 'Ok',
         cancelButtonText: 'Cancle',
         inputType:"password"
     }).then(({ value }) => {
