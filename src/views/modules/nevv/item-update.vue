@@ -36,12 +36,12 @@
         <el-input v-model="dataForm.productNumber" placeholder="Stock" type="number"></el-input>
       </el-form-item>
 
-      <el-form-item label="Exchanges limited pre user">
-        <el-input v-model="dataForm.limitedQuantity" placeholder="Exchanges limited pre user" type="number"></el-input>
+      <el-form-item label="Exchange limit per user">
+        <el-input v-model="dataForm.limitedQuantity" placeholder="Exchange limit per user" type="number"></el-input>
       </el-form-item>
 
       <el-form-item label="Publishing" >
-        <el-switch v-model="dataForm.publishing"></el-switch>
+        <el-switch v-model="dataForm.publishing" :disabled="disabled"></el-switch>
       </el-form-item>
 
     </el-form>
@@ -58,6 +58,7 @@
       return {
         uploadUrl:window.SITE_CONFIG['baseUrl']+"/public/cos/uploadfile",
         visible: false,
+        disabled:false,
         dataForm: {
           productId: 0,
           productName:"",
@@ -103,6 +104,7 @@
                 let files = [];
                 files.push({url:data.data.showUrl})
                 this.fileList = files;
+                this.disabled = false
               }else{
                 this.$message.error(data.msg)
               }
@@ -117,6 +119,7 @@
             this.dataForm.publishing = ""
             this.dataForm.publishing = false
             this.fileList = []
+            this.disabled = true
           }
         })
       },

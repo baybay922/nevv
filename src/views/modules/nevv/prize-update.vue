@@ -65,12 +65,12 @@
         <el-input v-model="dataForm.productNumber" placeholder="Stock" type="number"></el-input>
       </el-form-item>
 
-      <el-form-item label="Exchanges limited pre user">
-        <el-input v-model="dataForm.limitedQuantity" placeholder="Exchanges limited pre user" type="number"></el-input>
+      <el-form-item label="Exchange limit per user">
+        <el-input v-model="dataForm.limitedQuantity" placeholder="Exchange limit per user" type="number"></el-input>
       </el-form-item>
       
       <el-form-item label="Publishing" >
-        <el-switch v-model="dataForm.isPush"></el-switch>
+        <el-switch v-model="dataForm.isPush" :disabled="disabled"></el-switch>
       </el-form-item>
 
     </el-form>
@@ -87,6 +87,7 @@
       return {
         uploadUrl:window.SITE_CONFIG['baseUrl']+"/public/cos/uploadfile",
         visible: false,
+        disabled:false,
         dataForm: {
           id: 0,
           eventId: "",
@@ -135,7 +136,7 @@
                 this.isChangePublishing = data.data.isPush==0?false:true;
                 this.dataForm.productNumber = data.data.productNumber
                 this.dataForm.limitedQuantity = data.data.limitedQuantity
-
+                this.disabled = false
                 let files = [];
                 files.push({url:data.data.rankImg})
                 this.fileList = files;
@@ -155,7 +156,7 @@
             this.dataForm.rankTo = ""
             this.dataForm.limitedQuantity = ""
             this.dataForm.publishing = ""
-
+            this.disabled = true
             this.fileList = [];
           }
         })

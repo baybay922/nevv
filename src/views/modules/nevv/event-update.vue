@@ -70,7 +70,7 @@
       </el-form-item>
 
       <el-form-item label="Publishing" >
-        <el-switch v-model="dataForm.isRecommend"></el-switch>
+        <el-switch v-model="dataForm.isRecommend" :disabled="disabled"></el-switch>
       </el-form-item>
 
       <el-form-item label="Transfer Event Point">
@@ -91,6 +91,7 @@
       return {
         uploadUrl:window.SITE_CONFIG['baseUrl']+"/public/cos/uploadfile",
         visible: false,
+        disabled:false,
         dataForm: {
           functionId:"",
           eventName:"",
@@ -148,6 +149,7 @@
                 let _bgImg = [];
                 _bgImg.push({url:data.data.backgroundImg})
                 this.bgImg = _bgImg;
+                this.disabled = false
               }
             })
           }else{
@@ -163,6 +165,7 @@
             this.dataForm.isRecommend = false
             this.iconImg = [];
             this.bgImg = [];
+            this.disabled = true
           }
         })
       },

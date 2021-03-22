@@ -81,7 +81,7 @@
       </el-form-item>
       
       <el-form-item label="Publishing">
-        <el-switch v-model="dataForm.teamStatus" :disabled="dataForm.isUpdate"></el-switch>
+        <el-switch v-model="dataForm.teamStatus" :disabled="dataForm.isUpdate || disabled"></el-switch>
       </el-form-item>
 
     </el-form>
@@ -154,6 +154,7 @@
         visible: false,
         innerVisible:false,
         imgsVisible:false,
+        disabled:false,
 			  imgs: "",
         dataForm: {
           id: 0,
@@ -215,7 +216,7 @@
                 this.dataForm.teamStatus = data.data.teamStatus===0?false:true
                 this.dataForm.isUpdate = data.data.isUpdate===0?false:true
                 this.isChangePublishing = data.data.teamStatus===0?false:true
-                
+                this.disabled = false
               }
             })
           }else{
@@ -231,6 +232,7 @@
             this.aIconUrl = []
             this.bIconUrl = []
             this.dataForm.isUpdate = false
+            this.disabled = true
           }
         })
         
