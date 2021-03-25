@@ -54,25 +54,27 @@
       </el-form-item>
 
       <el-form-item label="Province">
-        <el-select v-model="dataForm.province" placeholder="Province" @change="changeProvince($event)">
+        <!-- <el-select v-model="dataForm.province" placeholder="Province" @change="changeProvince($event)">
           <el-option
             v-for="item in config.countryArray"
             :key="item.province_id"
             :label="item.province"
             :value="item.province_id">
           </el-option>
-        </el-select>
+        </el-select> -->
+        <el-input v-model="dataForm.provinceName" placeholder="Province"></el-input>
       </el-form-item>
 
       <el-form-item label="City" >
-        <el-select v-model="dataForm.city" placeholder="City" @change="selectCityText($event)">
+        <!-- <el-select v-model="dataForm.city" placeholder="City" @change="selectCityText($event)">
           <el-option
             v-for="item in config.cityArray"
             :key="item.city_id"
             :label="item.city_name"
             :value="item.city_id">
           </el-option>
-        </el-select>
+        </el-select> -->
+        <el-input v-model="dataForm.cityName" placeholder="City"></el-input>
       </el-form-item>
 
       <el-form-item label="Favorite Game Genre">
@@ -116,9 +118,9 @@
           birthdate:"",
           genter:"",
           province:"",
-          provinceName:"",
+          provinceName:"No Selected",
           city:"",
-          cityName:"",
+          cityName:"No Selected",
           fgameGen:"",
           isLocked:true
         },
