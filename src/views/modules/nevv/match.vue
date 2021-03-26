@@ -116,7 +116,7 @@
 		<el-table-column prop="endTime" label="Schedule To"></el-table-column> 
 		<el-table-column prop="teamStatus" label="Publishing">
 			<template slot-scope="scope">
-				<el-switch v-model="scope.row.teamStatus" :active-value="1" :inactive-value="0" @change="switchHandle(scope.row.id,scope.row.teamStatus)"></el-switch>
+				<el-switch v-model="scope.row.teamStatus" :active-value="1" :inactive-value="0" :disabled="scope.row.isUpdate==1" @change="switchHandle(scope.row.id,scope.row.teamStatus)"></el-switch>
 			</template>	
 		</el-table-column> 
 
