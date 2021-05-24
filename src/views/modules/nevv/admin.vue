@@ -12,7 +12,7 @@
 
 			<el-form-item>
 				<el-button type="primary" @click="addOrUpdateHandle()">Add</el-button>
-			</el-form-item>
+			</el-form-item>			
 		</el-form>
 	</el-col>
 

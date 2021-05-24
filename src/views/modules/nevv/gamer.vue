@@ -22,7 +22,15 @@
 			</el-form-item>
 
 			<el-form-item>
-				<el-button type="primary" @click="exportHandle()">Export</el-button>
+				<el-button type="primary" @click="exportHandle(0)">Export</el-button>
+			</el-form-item>
+
+			<el-form-item>
+				<el-button type="primary" @click="exportHandle(1)">GAMER’S PREDICT HISTORY</el-button>
+			</el-form-item>
+
+			<el-form-item>
+				<el-button type="primary" @click="exportHandle(2)">EXPORT NEVV</el-button>
 			</el-form-item>
 		</el-form>
 	</el-col>
@@ -173,13 +181,21 @@ export default {
               }
             })
 		},
-		exportHandle(){//导出列表
+		exportHandle(type){//导出列表
 			this.common.isCheckSecoundPasswrod((flag)=>{
 				if(flag){
 					let params = this.filters;
 					params.pageSize = "";
 					params.pageNum = "";
-					let _params = window.SITE_CONFIG['baseUrl']+"/user/pc/exportUserList?";
+					let _params = "";
+					if(type ==0){
+						_params = window.SITE_CONFIG['baseUrl']+"/user/pc/exportUserList?";
+					}else if(type ==1){
+						_params = window.SITE_CONFIG['baseUrl']+"/eventMatchPredict/gamePredictHistory?";
+					}else if(type ==2){
+						_params = window.SITE_CONFIG['baseUrl']+"/accountDetail/nevvBuyHistory?";
+					}
+					
 					for (const key in params) {
 						if(params[key] !== ""){
 							_params+= (key+'='+params[key]+'&')

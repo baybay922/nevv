@@ -33,6 +33,10 @@
 			<el-form-item>
 				<el-button type="primary" @click="addOrUpdateHandle()">Add</el-button>
 			</el-form-item>
+
+			<el-form-item>
+				<el-button type="primary" @click="exportHandle()">EXPORT MATCH</el-button>
+			</el-form-item>
 		</el-form>
 	</el-col>
 
@@ -205,6 +209,25 @@ export default {
 		AddOrUpdate
 	},
 	methods: {
+		exportHandle(){//导出列表
+			this.common.isCheckSecoundPasswrod((flag)=>{
+				if(flag){
+					let params = this.filters;
+					params.pageSize = "";
+					params.pageNum = "";
+					let _params = window.SITE_CONFIG['baseUrl']+"/eventMatch/matchHistory?";
+					for (const key in params) {
+						if(params[key] !== ""){
+							_params+= (key+'='+params[key]+'&')
+						}
+					}
+					_params = _params.substring(0,_params.length-1);
+					window.location.href=_params
+					params.pageSize = 10;
+					params.pageNum = 1;
+				}
+			})
+		},
 		setWinnerOptions(data){
 			let arr = [];
 			let aObj = {
