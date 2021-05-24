@@ -30,6 +30,10 @@
 			<el-form-item>
 				<el-button type="primary" @click="exportHandle()">Export</el-button>
 			</el-form-item>
+
+			<el-form-item>
+				<el-button type="primary" @click="exportHandle()">EXPORT BAGPACK</el-button>
+			</el-form-item>
 		</el-form>
 	</el-col>
 
@@ -125,6 +129,25 @@ export default {
 		AddOrUpdate
 	},
 	methods: {
+		exportHandle(){//导出列表
+			this.common.isCheckSecoundPasswrod((flag)=>{
+				if(flag){
+					let params = this.filters;
+					params.pageSize = "";
+					params.pageNum = "";
+					let _params = window.SITE_CONFIG['baseUrl']+"/user/exportBagpackHistory?";
+					for (const key in params) {
+						if(params[key] !== ""){
+							_params+= (key+'='+params[key]+'&')
+						}
+					}
+					_params = _params.substring(0,_params.length-1);
+					window.location.href=_params
+					params.pageSize = 10;
+					params.pageNum = 1;
+				}
+			})
+		},
 		changeSearchTime(){//获取时间段
 			if(this.searchTime !== null){
 				this.filters.startTime = this.searchTime[0]
