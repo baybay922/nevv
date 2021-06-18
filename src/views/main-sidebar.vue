@@ -33,6 +33,7 @@
             <span>Shop Management</span>
           </template>
           <el-menu-item index="3-1" @click="$router.push({ name: 'item' })">Real Item</el-menu-item>
+          <el-menu-item index="3-2" @click="$router.push({ name: 'bagpack' })">Bagpack</el-menu-item>
         </el-submenu>
 
         <el-submenu index="4">

@@ -30,7 +30,11 @@
 			</el-form-item>
 
 			<el-form-item>
-				<el-button type="primary" @click="exportHandle(2)">EXPORT NEVV</el-button>
+				<el-button type="primary" @click="exportHandle(2)">Export NEVV Purchase</el-button>
+			</el-form-item>
+
+			<el-form-item>
+				<el-button type="primary" @click="exportHandle(3)">Export NEVV Used</el-button>
 			</el-form-item>
 		</el-form>
 	</el-col>
@@ -194,6 +198,8 @@ export default {
 						_params = window.SITE_CONFIG['baseUrl']+"/eventMatchPredict/gamePredictHistory?";
 					}else if(type ==2){
 						_params = window.SITE_CONFIG['baseUrl']+"/accountDetail/nevvBuyHistory?";
+					}else if(type == 3){
+						_params = window.SITE_CONFIG['baseUrl']+"/accountDetail/nevvPayHistory?";
 					}
 					
 					for (const key in params) {
