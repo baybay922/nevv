@@ -101,7 +101,7 @@ export default {
 					let params = this.filters;
 					params.pageSize = "";
 					params.pageNum = "";
-					let _params = window.SITE_CONFIG['baseUrl']+"/user/exportBagpackHistory?";
+					let _params = window.SITE_CONFIG['baseUrl']+"/eventPromo/exportPromoCodeHistory?";
 					for (const key in params) {
 						if(params[key] !== ""){
 							_params+= (key+'='+params[key]+'&')
