@@ -14,6 +14,17 @@
 				</el-select>
 			</el-form-item>
 			<el-form-item>
+				<el-date-picker
+				v-model="searchTime"
+				type="daterange"
+				range-separator="to"
+				value-format="yyyy-MM-dd"
+				start-placeholder="Start Date"
+				end-placeholder="End Date"
+				@change="changeSearchTime">
+				</el-date-picker>
+			</el-form-item>
+			<el-form-item>
 				<el-button type="primary" @click="searchFilters()">Search</el-button>
 			</el-form-item>
 
@@ -88,19 +99,35 @@ export default {
 					'eventId':"",
 					'eventName':"All"
 				}
-			]
+			],
+			searchTime:"",
+			startTime:"",
+			endTime:""
 		}
 	},
 	components: {
 		AddOrUpdate
 	},
 	methods: {
+		changeSearchTime(){//获取时间段
+			if(this.searchTime !== null){
+				this.startTime = this.searchTime[0]
+				this.endTime = this.searchTime[1]
+			}else{
+				this.startTime =""
+				this.endTime = ""
+			}
+		},
 		exportHandle(){//导出列表
 			this.common.isCheckSecoundPasswrod((flag)=>{
 				if(flag){
 					let params = this.filters;
 					params.pageSize = "";
 					params.pageNum = "";
+					if(this.startTime !== '' && this.endTime !== ''){
+						params.startTime = this.startTime
+						params.endTime = this.endTime
+					}
 					let _params = window.SITE_CONFIG['baseUrl']+"/eventPromo/exportPromoCodeHistory?";
 					for (const key in params) {
 						if(params[key] !== ""){
